@@ -3,8 +3,8 @@ name: literature-review
 description: Conduct comprehensive, systematic literature reviews using multiple academic databases (PubMed, arXiv, bioRxiv, Semantic Scholar, etc.). This skill should be used when conducting systematic literature reviews, meta-analyses, research synthesis, or comprehensive literature searches across biomedical, scientific, and technical domains. Creates professionally formatted markdown documents and PDFs with verified citations in multiple citation styles (APA, Nature, Vancouver, etc.).
 allowed-tools: Read Write Edit Bash
 license: MIT license
-required_environment_variables: [{"name": "OPENROUTER_API_KEY", "prompt": "OpenRouter API key for the skill's LLM-powered steps.", "required_for": "optional features"}]
-metadata: {"version": "1.2", "skill-author": "K-Dense Inc.", "openclaw": {"primaryEnv": "OPENROUTER_API_KEY", "envVars": [{"name": "OPENROUTER_API_KEY", "required": false, "description": "OpenRouter API key for the skill's LLM-powered steps."}]}}
+required_environment_variables: [{"name": "OPENALEX_API_KEY", "prompt": "OpenAlex API key (free) — required for search_openalex / expand_citations in kernel.py.", "required_for": "literature search and citation-graph expansion"}, {"name": "OPENROUTER_API_KEY", "prompt": "OpenRouter API key for the skill's LLM-powered steps.", "required_for": "optional features"}]
+metadata: {"version": "1.3", "skill-author": "K-Dense Inc.", "merged-from": "Claude Science literature-review (kernel.py + citation-integrity rules)", "openclaw": {"primaryEnv": "OPENALEX_API_KEY", "envVars": [{"name": "OPENALEX_API_KEY", "required": true, "description": "Free OpenAlex API key; required by kernel.py search/expansion helpers."}, {"name": "OPENROUTER_API_KEY", "required": false, "description": "OpenRouter API key for the skill's LLM-powered steps."}]}}
 ---
 
 # Literature Review
@@ -14,6 +14,85 @@ metadata: {"version": "1.2", "skill-author": "K-Dense Inc.", "openclaw": {"prima
 Conduct systematic, comprehensive literature reviews following rigorous academic methodology. Search multiple literature databases, synthesize findings thematically, verify all citations for accuracy, and generate professional output documents in markdown and PDF formats.
 
 This skill uses the **parallel-web skill** (`parallel-cli search`) as the primary web search tool for broad academic literature discovery, supplemented by specialized database access skills (gget, bioservices, datacommons-client). It provides specialized tools for citation verification, result aggregation, and document generation.
+
+## Retrieval helpers — `kernel.py`
+
+Load once at the top of any script that touches the literature:
+
+```python
+exec(open("/home/jmche/.agents/skills/literature-review/kernel.py").read())
+```
+
+| Function | What it does |
+|---|---|
+| `search_openalex(query, n=10, filters="")` | OpenAlex work search → `[{doi, title, authors, year, cited_by, ...}]` |
+| `expand_citations(doi, n_backward=50, n_forward=15)` | One step each way on the citation graph → `{references, cited_by}` |
+| `crossref_lookup(ref_string)` | Free-text reference → best CrossRef match with DOI |
+| `verify_dois([doi, ...])` | Per-DOI `{ok, title, authors, year, journal, retracted}`; a fabricated DOI returns `ok=False` |
+| `extract_dois(text)` | Pull every DOI out of a draft |
+| `style_pass(draft)` | Deterministic prose lint (no LLM): EMDASH / HONEST / PROCNOTE / PARENDOI / LONGHEAD / FLATSTRUCT |
+
+`search_openalex` and `expand_citations` need `OPENALEX_API_KEY` (free, https://openalex.org/settings/api).
+The other four are keyless. If the key is missing, `litrev_openalex_key()` raises with the exact fix —
+**skip the OpenAlex-backed steps, do not fall back to anonymous calls** (OpenAlex rejects them with 409/429).
+
+## Grounding & Citation Integrity — non-negotiable
+
+**Retrieve first, then write.** For broad-survey, where-are-the-gaps, and compare-methods requests, the
+first move is a literature sweep, and the answer is built from what comes back. Your recall picks the
+framing; the retrieval picks the citations. A real survey usually carries fifteen or more distinct
+primary-paper DOIs, because each claim is anchored to the paper that established it; a handful of review
+citations is a reading list, not a synthesis.
+
+**This applies even when you know the answer cold.** Resolving the DOI for a paper you are certain of is
+a one-second tool call, and it is the difference between a citation and a claim about a citation.
+**A DOI you emit either resolves to a real paper that says what you claim, or it is a fabrication, and the
+difference is checkable in five seconds.** When you have author/year/journal but not the DOI, look it up
+via `crossref_lookup` or `search_openalex` rather than pattern-completing one; when even those details are
+hazy, that is a search query, not a citation. Verification happens in your tool trace, not in a sentence
+in your reply.
+
+**Walk the citation graph.** After the first sweep, take the two or three most relevant hits and run
+`expand_citations(doi)` on each. The seminal paper a field builds on surfaces in the backward step; the
+work that extends or contests your top hits surfaces in the forward step. Neither reliably appears in a
+keyword sweep alone.
+
+**Prefer the primary publication.** When the question is after a *specific* paper — "the original," "the
+seminal," a named trial or method — find the highly-cited primary publication that the follow-ups all
+cite, not a review, a news piece, or a Faculty-Opinions-style recommendation wrapper. Relevance ranking in
+both CrossRef and OpenAlex will happily hand you the wrapper; check the returned title before citing it.
+
+**Do not re-sort a relevance-ranked result set by citation count.** `search_openalex` returns results
+ranked by relevance to the query; a mega-cited paper from an adjacent field routinely sits in that list
+with a five-figure citation count. Sorting the list by `cited_by` promotes it over the on-topic answer,
+and if you then seed `expand_citations` from it the entire citation walk goes off-topic — silently, since
+every DOI it returns is real and verifiable. *Observed:* querying for base editing returned Komor 2016
+(`10.1038/nature17946`, the actual CBE paper) at relevance rank 2, behind a 10k-cited mutational-signatures
+paper; a `cited_by` sort picked the wrong seed and the whole walk landed in cancer genomics. **Pick the
+seed by reading titles in relevance order**, then use `cited_by` only to rank *within* the
+`expand_citations` output, where every item already shares the seed's citation neighborhood.
+
+**Retractions and the null result.** CrossRef's `update-to` field flags retractions and `verify_dois`
+surfaces it as `retracted`; for any high-profile or surprising finding, check. The related trap is the
+question whose honest answer is "no such paper exists": when someone asks for "the paper showing X" and X
+fell apart or was never established, the right answer names the claim, says what happened to it, and
+points to what the evidence actually shows — not the closest-matching citation.
+
+**Citation format.** Cite inline as a markdown link — `[Author Year](https://doi.org/10.xxxx/xxxxxx)` — so
+the rendered prose reads `(Author Year)` and the DOI rides in the href. If the DOI itself contains
+parentheses (PII-style suffixes, e.g. `Sxxxx-xxxx(NN)nnnnn-n`), URL-encode them as `%28`/`%29` or the link
+breaks in simpler renderers. Do not use numbered `[1][2][3]` references — they desync the moment a
+paragraph is reordered. **Author names come from the retrieved record, never from recall**: keep `authors`
+riding alongside year and DOI in your working notes, because a note carrying only the DOI leaves
+`(Author Year)` to be filled from memory at prose time, and memory supplies plausible names, not the
+paper's.
+
+**Open on substance, not process.** The review — prose, citations, bottom line — belongs in your response
+text where the reader sees it; a saved artifact is additional, not a substitute. The first sentence is
+content the reader came for. "All DOIs verified against CrossRef," "no retraction flags," "the report is
+current as of today" are process narration and belong nowhere — not as an opener, not as a footer, not as
+a subtitle. Run `style_pass(draft)` once on the full markdown before saving, fix what it lists in a single
+pass, then save; it is a lint, not a gate — do not loop on it.
 
 ## When to Use This Skill
 
@@ -43,6 +122,12 @@ This is not optional. Literature reviews without visual elements are incomplete.
 ```bash
 python scripts/generate_schematic.py "your diagram description" -o figures/output.png
 ```
+
+> **Prerequisite (checked 2026-07-23): `OPENROUTER_API_KEY` is NOT configured on this machine**, so
+> `scripts/generate_schematic.py` / `generate_schematic_ai.py` will fail. Either set that key in
+> `~/.shell_env` (with `export`), or use the `nanobanana` MCP (`generate_image`) or the
+> `scientific-schematics` skill directly. For plotted data figures rather than schematics, use the
+> `figure-style` skill.
 
 The AI will automatically:
 - Create publication-quality images with proper formatting
@@ -93,11 +178,24 @@ Literature reviews follow a structured, multi-phase workflow:
 
 ### Phase 2: Systematic Literature Search
 
+0. **Structured sweep first — `kernel.py`** (do this before any web search):
+
+   ```python
+   exec(open("/home/jmche/.agents/skills/literature-review/kernel.py").read())
+   hits = search_openalex("your research topic", 25)
+   # then walk one step each way from the 2-3 most relevant hits
+   graph = expand_citations(hits[0]["doi"], n_backward=50, n_forward=15)
+   ```
+   OpenAlex returns structured records (`doi`, `title`, `authors`, `year`, `cited_by`), so every
+   downstream citation carries real author names and a resolvable DOI. `expand_citations` is what
+   surfaces the seminal paper (backward) and the work contesting it (forward) — a keyword sweep alone
+   misses both. Web search is for what OpenAlex does not index (guidelines, agency documents, news).
+
 1. **Multi-Database Search**:
 
-   Select databases appropriate for the domain. **Always start with parallel-web for broad academic coverage**, then supplement with domain-specific databases.
+   Select databases appropriate for the domain. After the structured sweep above, **use parallel-web for broad academic coverage**, then supplement with domain-specific databases.
 
-   **Web-Based Academic Search (parallel-web skill — START HERE):**
+   **Web-Based Academic Search (parallel-web skill):**
    - Use `parallel-cli search` with academic domain filtering for broad scholarly coverage
    - Run two searches: academic-focused + general to catch all relevant sources
    ```bash
@@ -260,25 +358,37 @@ Literature reviews follow a structured, multi-phase workflow:
 
 **CRITICAL**: All citations must be verified for accuracy before final submission.
 
-1. **Verify All DOIs**:
-   ```bash
-   python scripts/verify_citations.py my_literature_review.md
+1. **Verify All DOIs** — `kernel.py` (preferred; also flags retractions):
+   ```python
+   exec(open("/home/jmche/.agents/skills/literature-review/kernel.py").read())
+   draft = open("my_literature_review.md").read()
+   report = verify_dois(extract_dois(draft))
+   for doi, m in report.items():
+       if not m["ok"] or m.get("retracted"):
+           print("PROBLEM:", doi, m)
    ```
+   Each entry is `{ok, title, authors, year, journal, retracted}`. `ok=False` means the DOI does not
+   resolve — that is a fabricated citation, not a typo, and the claim it supports must be re-retrieved
+   or dropped. `retracted=True` means CrossRef carries an `update-to` retraction notice.
 
-   This script:
-   - Extracts all DOIs from the document
-   - Verifies each DOI resolves correctly
-   - Retrieves metadata from CrossRef
-   - Generates verification report
-   - Outputs properly formatted citations
+   The older `python scripts/verify_citations.py my_literature_review.md` does the CrossRef half of
+   this and emits a formatted report; use it when you want the report file.
 
 2. **Review Verification Report**:
-   - Check for any failed DOIs
-   - Verify author names, titles, and publication details match
-   - Correct any errors in the original document
-   - Re-run verification until all citations pass
+   - Any `ok=False` DOI: re-run `crossref_lookup` / `search_openalex` for the real record, or remove the claim
+   - Any `retracted=True`: say so in the prose — a retracted paper can still be cited, but never silently
+   - Cross-check that the `title` and `authors` returned match what the sentence claims. A resolving DOI
+     attached to the wrong claim is still a fabrication
+   - Re-run until clean
 
-3. **Format Citations Consistently**:
+3. **Prose lint before saving**:
+   ```python
+   style_pass(draft)   # {'ok': bool, 'issues': [{'code', 'note'}]}
+   ```
+   Fix everything it lists in one editing pass, then save. Do not loop until it returns `ok` — it is a
+   lint, not a gate, and a clean first pass is normal.
+
+4. **Format Citations Consistently**:
    - Choose one citation style and use throughout (see `references/citation_styles.md`)
    - Common styles: APA, Nature, Vancouver, Chicago, IEEE
    - Use verification script output to format citations correctly
