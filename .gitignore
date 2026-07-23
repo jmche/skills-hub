@@ -1,0 +1,18 @@
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Editor / OS noise
+.DS_Store
+*.swp
+
+# Secrets — never commit real API keys. See ENV.example for the key names.
+.env
+.shell_env
+*.key
+*.pem
+credentials.json
