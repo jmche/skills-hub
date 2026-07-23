@@ -10,6 +10,9 @@ __pycache__/
 .DS_Store
 *.swp
 
+# oh-my-claudecode runtime state — operational artifacts, not library content
+.omc/
+
 # Secrets — never commit real API keys. See ENV.example for the key names.
 .env
 .shell_env
