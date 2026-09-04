@@ -95,14 +95,15 @@ def generate(hub, meta, assignments, index_entries):
     sections = meta_h.get('sections')
     if sections:
         body = "## 子技能索引\n\n"
-        for sec in sections:
-            title, members = sec[0], sec[1]
+        if isinstance(sections, dict):
+            items = [(k, v) for k, v in sections.items()]
+        else:  # list of [title, members]
+            items = [(s[0], s[1]) for s in sections]
+        for title, members in items:
             body += f"### {title}\n\n| 子技能 | 说明 |\n|---|---|\n"
+            by_name = dict(entries)
             for nm in members:
-                if nm in dict(entries):
-                    body += f"| {nm} | {dict(entries)[nm]} |\n"
-                else:
-                    body += f"| {nm} | (缺失) |\n"
+                body += f"| {nm} | {by_name.get(nm, '(缺失)')} |\n"
             body += "\n"
     else:
         body = "## 子技能索引\n\n| 子技能 | 说明 |\n|---|---|\n"
