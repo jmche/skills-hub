@@ -1,0 +1,233 @@
+[
+ {
+  "slug": "engineering-sre",
+  "division": "engineering",
+  "name": "SRE (Site Reliability Engineer)",
+  "description": "Expert site reliability engineer specializing in SLOs, error budgets, observability, chaos engineering, and toil reduction for production systems at scale.",
+  "source_path": "engineering/engineering-sre.md"
+ },
+ {
+  "slug": "engineering-software-architect",
+  "division": "engineering",
+  "name": "Software Architect",
+  "description": "Expert software architect specializing in system design, domain-driven design, architectural patterns, and technical decision-making for scalable, maintainable systems.",
+  "source_path": "engineering/engineering-software-architect.md"
+ },
+ {
+  "slug": "engineering-code-reviewer",
+  "division": "engineering",
+  "name": "Code Reviewer",
+  "description": "Expert code reviewer who provides constructive, actionable feedback focused on correctness, maintainability, security, and performance — not style preferences.",
+  "source_path": "engineering/engineering-code-reviewer.md"
+ },
+ {
+  "slug": "engineering-codebase-onboarding-engineer",
+  "division": "engineering",
+  "name": "Codebase Onboarding Engineer",
+  "description": "Expert developer onboarding specialist who helps new engineers understand unfamiliar codebases fast by reading source code, tracing code paths, and stating only facts grounded in the code.",
+  "source_path": "engineering/engineering-codebase-onboarding-engineer.md"
+ },
+ {
+  "slug": "engineering-devops-automator",
+  "division": "engineering",
+  "name": "DevOps Automator",
+  "description": "Expert DevOps engineer specializing in infrastructure automation, CI/CD pipeline development, and cloud operations",
+  "source_path": "engineering/engineering-devops-automator.md"
+ },
+ {
+  "slug": "engineering-technical-writer",
+  "division": "engineering",
+  "name": "Technical Writer",
+  "description": "Expert technical writer specializing in developer documentation, API references, README files, and tutorials. Transforms complex engineering concepts into clear, accurate, and engaging docs that devel",
+  "source_path": "engineering/engineering-technical-writer.md"
+ },
+ {
+  "slug": "engineering-data-engineer",
+  "division": "engineering",
+  "name": "Data Engineer",
+  "description": "Expert data engineer specializing in building reliable data pipelines, lakehouse architectures, and scalable data infrastructure. Masters ETL/ELT, Apache Spark, dbt, streaming systems, and cloud data ",
+  "source_path": "engineering/engineering-data-engineer.md"
+ },
+ {
+  "slug": "engineering-prompt-engineer",
+  "division": "engineering",
+  "name": "Prompt Engineer",
+  "description": "Specialist in crafting, testing, and systematically optimizing prompts for LLMs — turning vague instructions into reliable, production-grade AI behaviors.",
+  "source_path": "engineering/engineering-prompt-engineer.md"
+ },
+ {
+  "slug": "engineering-git-workflow-master",
+  "division": "engineering",
+  "name": "Git Workflow Master",
+  "description": "Expert in Git workflows, branching strategies, and version control best practices including conventional commits, rebasing, worktrees, and CI-friendly branch management.",
+  "source_path": "engineering/engineering-git-workflow-master.md"
+ },
+ {
+  "slug": "engineering-incident-response-commander",
+  "division": "engineering",
+  "name": "Incident Response Commander",
+  "description": "Expert incident commander specializing in production incident management, structured response coordination, post-mortem facilitation, SLO/SLI tracking, and on-call process design for reliable engineer",
+  "source_path": "engineering/engineering-incident-response-commander.md"
+ },
+ {
+  "slug": "engineering-minimal-change-engineer",
+  "division": "engineering",
+  "name": "Minimal Change Engineer",
+  "description": "Engineering specialist focused on minimum-viable diffs — fixes only what was asked, refuses scope creep, prefers three similar lines over a premature abstraction. The discipline that prevents bug-fix ",
+  "source_path": "engineering/engineering-minimal-change-engineer.md"
+ },
+ {
+  "slug": "testing-test-automation-engineer",
+  "division": "testing",
+  "name": "Test Automation Engineer",
+  "description": "Expert end-to-end test automation engineer for Playwright and Cypress — resilient selectors, flake elimination, isolated test data, CI parallelization, and trace-driven failure debugging.",
+  "source_path": "testing/testing-test-automation-engineer.md"
+ },
+ {
+  "slug": "testing-performance-benchmarker",
+  "division": "testing",
+  "name": "Performance Benchmarker",
+  "description": "Expert performance testing and optimization specialist focused on measuring, analyzing, and improving system performance across all applications and infrastructure",
+  "source_path": "testing/testing-performance-benchmarker.md"
+ },
+ {
+  "slug": "testing-api-tester",
+  "division": "testing",
+  "name": "API Tester",
+  "description": "Expert API testing specialist focused on comprehensive API validation, performance testing, and quality assurance across all systems and third-party integrations",
+  "source_path": "testing/testing-api-tester.md"
+ },
+ {
+  "slug": "testing-workflow-optimizer",
+  "division": "testing",
+  "name": "Workflow Optimizer",
+  "description": "Expert process improvement specialist focused on analyzing, optimizing, and automating workflows across all business functions for maximum productivity and efficiency",
+  "source_path": "testing/testing-workflow-optimizer.md"
+ },
+ {
+  "slug": "testing-reality-checker",
+  "division": "testing",
+  "name": "Reality Checker",
+  "description": "Stops fantasy approvals, evidence-based certification - Default to \"NEEDS WORK\", requires overwhelming proof for production readiness",
+  "source_path": "testing/testing-reality-checker.md"
+ },
+ {
+  "slug": "testing-test-results-analyzer",
+  "division": "testing",
+  "name": "Test Results Analyzer",
+  "description": "Expert test analysis specialist focused on comprehensive test result evaluation, quality metrics analysis, and actionable insight generation from testing activities",
+  "source_path": "testing/testing-test-results-analyzer.md"
+ },
+ {
+  "slug": "security-appsec-engineer",
+  "division": "security",
+  "name": "Application Security Engineer",
+  "description": "AppSec specialist who secures the software development lifecycle through threat modeling, secure code review, SAST/DAST integration, and developer security education that makes secure code the default",
+  "source_path": "security/security-appsec-engineer.md"
+ },
+ {
+  "slug": "security-architect",
+  "division": "security",
+  "name": "Security Architect",
+  "description": "Expert security architect specializing in threat modeling, secure-by-design architecture, trust-boundary analysis, defense-in-depth, and risk-based security reviews across web, API, cloud-native, and ",
+  "source_path": "security/security-architect.md"
+ },
+ {
+  "slug": "security-cloud-security-architect",
+  "division": "security",
+  "name": "Cloud Security Architect",
+  "description": "Cloud-native security specialist designing zero trust architectures, implementing defense-in-depth across AWS, Azure, and GCP, and securing infrastructure-as-code pipelines from day one.",
+  "source_path": "security/security-cloud-security-architect.md"
+ },
+ {
+  "slug": "security-incident-responder",
+  "division": "security",
+  "name": "Incident Responder",
+  "description": "Digital forensics and incident response specialist who leads breach investigations, contains active threats, coordinates crisis response, and writes post-mortems that prevent recurrence.",
+  "source_path": "security/security-incident-responder.md"
+ },
+ {
+  "slug": "security-penetration-tester",
+  "division": "security",
+  "name": "Penetration Tester",
+  "description": "Offensive security specialist conducting authorized penetration tests, red team operations, and vulnerability assessments across networks, web applications, and cloud infrastructure.",
+  "source_path": "security/security-penetration-tester.md"
+ },
+ {
+  "slug": "security-senior-secops",
+  "division": "security",
+  "name": "Senior SecOps Engineer",
+  "description": "Defensive application security specialist who scans every code submission for secrets and sensitive data exposure before anything else, then implements or audits security controls following the organi",
+  "source_path": "security/security-senior-secops.md"
+ },
+ {
+  "slug": "security-ai-generated-code-auditor",
+  "division": "security",
+  "name": "AI-Generated Code Security Auditor",
+  "description": "Security reviewer for AI-generated and vibe-coded apps — hunts the hardcoded secrets, broken row-level security, and prompt-injection sinks that coding assistants ship by default, then drives a scan, ",
+  "source_path": "security/security-ai-generated-code-auditor.md"
+ },
+ {
+  "slug": "design-ui-designer",
+  "division": "design",
+  "name": "UI Designer",
+  "description": "Expert UI designer specializing in visual design systems, component libraries, and pixel-perfect interface creation. Creates beautiful, consistent, accessible user interfaces that enhance UX and refle",
+  "source_path": "design/design-ui-designer.md"
+ },
+ {
+  "slug": "design-ux-architect",
+  "division": "design",
+  "name": "UX Architect",
+  "description": "Technical architecture and UX specialist who provides developers with solid foundations, CSS systems, and clear implementation guidance",
+  "source_path": "design/design-ux-architect.md"
+ },
+ {
+  "slug": "design-ux-researcher",
+  "division": "design",
+  "name": "UX Researcher",
+  "description": "Expert user experience researcher specializing in user behavior analysis, usability testing, and data-driven design insights. Provides actionable research findings that improve product usability and u",
+  "source_path": "design/design-ux-researcher.md"
+ },
+ {
+  "slug": "product-feedback-synthesizer",
+  "division": "product",
+  "name": "Feedback Synthesizer",
+  "description": "Expert in collecting, analyzing, and synthesizing user feedback from multiple channels to extract actionable product insights. Transforms qualitative feedback into quantitative priorities and strategi",
+  "source_path": "product/product-feedback-synthesizer.md"
+ },
+ {
+  "slug": "product-sprint-prioritizer",
+  "division": "product",
+  "name": "Sprint Prioritizer",
+  "description": "Expert product manager specializing in agile sprint planning, feature prioritization, and resource allocation. Focused on maximizing team velocity and business value delivery through data-driven prior",
+  "source_path": "product/product-sprint-prioritizer.md"
+ },
+ {
+  "slug": "project-management-project-shepherd",
+  "division": "project-management",
+  "name": "Project Shepherd",
+  "description": "Expert project manager specializing in cross-functional project coordination, timeline management, and stakeholder alignment. Focused on shepherding projects from conception to completion while managi",
+  "source_path": "project-management/project-management-project-shepherd.md"
+ },
+ {
+  "slug": "project-management-jira-workflow-steward",
+  "division": "project-management",
+  "name": "Jira Workflow Steward",
+  "description": "Expert delivery operations specialist who enforces Jira-linked Git workflows, traceable commits, structured pull requests, and release-safe branch strategy across software teams.",
+  "source_path": "project-management/project-management-jira-workflow-steward.md"
+ },
+ {
+  "slug": "project-management-meeting-notes-specialist",
+  "division": "project-management",
+  "name": "Meeting Notes Specialist",
+  "description": "Extract structured decisions, action items, and open questions from meeting transcripts or rough notes into a clean 4-section summary.",
+  "source_path": "project-management/project-management-meeting-notes-specialist.md"
+ },
+ {
+  "slug": "product-product-manager",
+  "division": "product",
+  "name": "Product Manager",
+  "description": "Holistic product leader who owns the full product lifecycle — from discovery and strategy through roadmap, stakeholder alignment, go-to-market, and outcome measurement. Bridges business goals, user ne",
+  "source_path": "product/product-manager.md"
+ }
+]
