@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "generated_by": "gen_routers.py",
+  "hubs": {
+    "references": [
+      "citation-management",
+      "database-lookup",
+      "dataset-acquisition",
+      "exa-search",
+      "liteparse",
+      "literature-review",
+      "literature-search-arxiv",
+      "literature-search-biorxiv",
+      "literature-search-europepmc",
+      "literature-search-openalex",
+      "markitdown",
+      "open-notebook",
+      "openfda-database",
+      "paper-lookup",
+      "parallel-web",
+      "pubmed-database",
+      "pyzotero",
+      "research-lookup",
+      "usfiscaldata",
+      "venue-templates"
+    ]
+  },
+  "top": [
+    "autoskill",
+    "credentials",
+    "docx",
+    "find-skills",
+    "generate-image",
+    "grill-me",
+    "grill-with-docs",
+    "grounded-build",
+    "omc-reference",
+    "pdf",
+    "pptx",
+    "product-self-knowledge",
+    "skill-creator",
+    "uv",
+    "workflow-skill-creator",
+    "xlsx"
+  ],
+  "gov": [
+    "gov-adapt",
+    "gov-audit",
+    "gov-brainstorm",
+    "gov-discovery",
+    "gov-init",
+    "gov-plan",
+    "gov-release",
+    "gov-research",
+    "gov-review",
+    "gov-run",
+    "gov-status",
+    "gov-urd-draft",
+    "gov-urd-optimize",
+    "gov-vision"
+  ]
+}
