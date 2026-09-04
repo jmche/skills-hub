@@ -1,21 +1,5 @@
-# Python build artifacts
-__pycache__/
-*.py[cod]
-*.egg-info/
-
-# Notebook checkpoints
+backups/
+_backups/
+*.tar.gz
 .ipynb_checkpoints/
-
-# Editor / OS noise
-.DS_Store
-*.swp
-
-# oh-my-claudecode runtime state — operational artifacts, not library content
-.omc/
-
-# Secrets — never commit real API keys. See ENV.example for the key names.
-.env
-.shell_env
-*.key
-*.pem
-credentials.json
+__pycache__/
