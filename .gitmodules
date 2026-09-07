@@ -1,0 +1,4 @@
+[submodule "grounded-build"]
+	path = grounded-build
+	url = https://github.com/jmche/grounded-build.git
+	branch = main
