@@ -1,6 +1,6 @@
 # skills-hub
 
-带**路由 Hub**的精选 Agent 技能库：200+ 子技能归入 7 个大 Hub，让宿主（Claude Code、Codex、OpenCode、Cursor、Gemini、Copilot、Hermes、DSH）只加载很小的 catalog，按需再拉取完整说明。
+带**路由 Hub**的精选 Agent 技能库：188 个子技能 + 33 个角色归入 7 个大 Hub，让宿主（Claude Code、Codex、OpenCode、Cursor、Gemini、Copilot、Hermes、DSH）只加载很小的 catalog，按需再拉取完整说明。
 
 > **v0.1.0** —— 1.0 之前的预发布版本；版本策略见下方。
 >语言：[English](README.md) · [中文](README_zh.md) · [한국어](README_ko.md)
@@ -17,7 +17,7 @@
 | `docs-figures` | 11 | 发表级图、幻灯片、infographic、Mermaid |
 | `team` | 33 角色 | 专家人格（SRE、PM、架构师、QA、安全…） |
 
-另有 14 个顶层可用技能：`pdf`、`docx`、`xlsx`、`pptx`、`find-skills`、`skill-creator`、`workflow-skill-creator`、`credentials`、`uv`、`generate-image`、`grounded-build`、`omc-reference`、`autoskill`、`product-self-knowledge`。
+另有 16 个其他顶层可用技能：`pdf`、`docx`、`xlsx`、`pptx`、`grill-me`、`grill-with-docs`、`find-skills`、`skill-creator`、`workflow-skill-creator`、`credentials`、`uv`、`generate-image`、`grounded-build`、`omc-reference`、`autoskill`、`product-self-knowledge`。
 
 ## 安装
 

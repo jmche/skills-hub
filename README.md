@@ -1,6 +1,6 @@
 # skills-hub
 
-A curated agent-skill library with **routing hubs**: 200+ sub-skills grouped into
+A curated agent-skill library with **routing hubs**: 188 sub-skills + 33 roles grouped into
 7 large hubs so hosts (Claude Code, Codex, OpenCode, Cursor, Gemini, Copilot,
 Hermes, DSH) load a small catalog and pull the full instructions on demand.
 
@@ -19,7 +19,7 @@ Hermes, DSH) load a small catalog and pull the full instructions on demand.
 | `docs-figures` | 11 | publication figures, slides, infographics, Mermaid |
 | `team` | 33 roles | expert personas (SRE, PM, Architect, QA, Security, …) |
 
-Plus 14 directly-usable top-level skills: `pdf`, `docx`, `xlsx`, `pptx`,
+Plus 16 other directly-usable top-level skills: `pdf`, `docx`, `xlsx`, `pptx`, `grill-me`, `grill-with-docs`,
 `find-skills`, `skill-creator`, `workflow-skill-creator`, `credentials`, `uv`,
 `generate-image`, `grounded-build`, `omc-reference`, `autoskill`,
 `product-self-knowledge`.

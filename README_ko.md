@@ -20,8 +20,8 @@ Gemini, Copilot, Hermes, DSH)가 매우 작은 catalog만 로드하고 필요 �
 | `docs-figures` | 11 | 논문급 도표, 슬라이드, 인포그래픽, Mermaid |
 | `team` | 33 역할 | 전문가 페르소나(SRE, PM, 아키텍트, QA, 보안 등) |
 
-그 외 14개의 최상위 스킬: `pdf`, `docx`, `xlsx`, `pptx`, `find-skills`,
-`skill-creator`, `workflow-skill-creator`, `credentials`, `uv`, `generate-image`,
+그 외 16개의 최상위 스킬: `pdf`, `docx`, `xlsx`, `pptx`, `grill-me`, `grill-with-docs`,
+`find-skills`, `skill-creator`, `workflow-skill-creator`, `credentials`, `uv`, `generate-image`,
 `grounded-build`, `omc-reference`, `autoskill`, `product-self-knowledge`.
 
 ## 설치
