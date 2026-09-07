@@ -3,3 +3,4 @@ _backups/
 *.tar.gz
 .ipynb_checkpoints/
 __pycache__/
+.env

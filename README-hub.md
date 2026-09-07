@@ -22,6 +22,8 @@
 ├── routes_meta.yaml       人工维护：hub 的 description/判据/跳簇/scientific 分节
 ├── registry.json          生成物：机器索引
 ├── INDEX.md               生成物：人读总索引
+├── env.example            模板：所有技能用到的 API key 清单（只列 key 名，含放置规则）
+├── .env                   真密钥（gitignore 排除；放这里，全宿主共用）
 ├── _miss_log.md           路由验收记录
 └── _backups/              tar.gz 归档（20260904-1640 基线）
 ```
