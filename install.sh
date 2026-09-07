@@ -80,6 +80,7 @@ case "$SUB" in
   update)
     [ -d "$CANON/.git" ] || { echo "no git repo at $CANON"; exit 1; }
     git -C "$CANON" pull
+    git -C "$CANON" submodule update --init --recursive
     exit 0 ;;
   status)
     if [ -d "$CANON" ]; then echo "canonical:  $CANON (present)"; else echo "canonical:  $CANON (missing)"; fi
