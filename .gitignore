@@ -5,7 +5,6 @@
 .omc/
 .shell_env
 __pycache__/
-_backups/
 skills-hidden/
 # private project skills (autogov) — kept on disk, never committed
 gov-*

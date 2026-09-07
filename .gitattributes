@@ -14,5 +14,4 @@ gov-status/           export-ignore
 gov-urd-draft/        export-ignore
 gov-urd-optimize/     export-ignore
 gov-vision/           export-ignore
-_backups/             export-ignore
 .ipynb_checkpoints/   export-ignore
