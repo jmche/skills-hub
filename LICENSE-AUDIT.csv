@@ -1,0 +1,220 @@
+name,location,raw_status,license,upstream,verdict
+research/arbor,research,mit,mit (header),inline,publish
+research/experimental-design,research,mit,mit (header),inline,publish
+research/hypogenic,research,apache,apache-2.0,ChicagoHAI/hypothesis-generation,publish
+research/hypothesis-generation,research,mit,mit (header),inline,publish
+research/market-research-reports,research,mit,mit (header),inline,publish
+research/peer-review,research,mit,mit (header),inline,publish
+research/predictingthepast,research,mit,mit,sdam-au/EDCS_ETL,publish
+research/research-grants,research,mit,mit (header),inline,publish
+research/scholar-evaluation,research,mit,mit (header),inline,publish
+research/scientific-brainstorming,research,mit,mit (header),inline,publish
+research/scientific-critical-thinking,research,mit,mit (header),inline,publish
+research/scientific-writing,research,mit,mit (header),inline,publish
+research/statistical-analysis,research,mit,mit (header),inline,publish
+research/statistical-power,research,mit,mit (header),inline,publish
+scientific/adaptyv,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/alphafold-database-fetch-and-analyze,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/alphafold2,scientific,mit,mit,sokrypton/ColabFold,publish
+scientific/alphagenome-single-variant-analysis,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/anndata,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/arboreto,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/astropy,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/benchling-integration,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/bids,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/biopython,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/bioservices,scientific,mit,mit,cokelaer/bioservices,publish
+scientific/boltz,scientific,mit,mit,jwohlwend/boltz,publish
+scientific/bulk-rnaseq,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/cellxgene-census,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/chai1,scientific,mit,mit,sokrypton/ColabFold,publish
+scientific/chembl-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/cirq,scientific,apache,apache-2.0 (header),inline,publish
+scientific/clinical-decision-support,scientific,mit,mit (header),inline,publish
+scientific/clinical-reports,scientific,mit,mit (header),inline,publish
+scientific/clinical-trials-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/clinvar-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/cobrapy,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/datamol,scientific,apache,apache-2.0 (header),inline,publish
+scientific/dbsnp-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/deepchem,scientific,mit,mit (header),inline,publish
+scientific/deeptools,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/depmap,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/diffdock,scientific,mit,mit (header),inline,publish
+scientific/dnanexus-integration,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/embl-ebi-ols,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/encode-ccres-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/ensembl-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/esm,scientific,mit,mit,Biohub/esm,publish
+scientific/esmfold2,scientific,mit,mit,Biohub/esm,publish
+scientific/etetoolkit,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/flowio,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/fluidsim,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/foldseek-structural-search,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/geniml,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/gget,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/ginkgo-cloud-lab,scientific,mit,mit (header),inline,publish
+scientific/glycoengineering,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/gnomad-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/gtars,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/gtex-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/histolab,scientific,apache,apache-2.0 (header),inline,publish
+scientific/hugging-science,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/human-protein-atlas-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/imaging-data-commons,scientific,mit,mit,ImagingDataCommons/IDC-Tutorials,publish
+scientific/indication-dossier,scientific,apache,apache-2.0 (header),inline,publish
+scientific/interpro-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/iso-13485-certification,scientific,mit,mit (header),inline,publish
+scientific/jaspar-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/labarchive-integration,scientific,mit,mit,mcmero/labarchives-py,publish
+scientific/latchbio-integration,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/ligandmpnn,scientific,mit,MIT (dauparas/LigandMPNN),dauparas/LigandMPNN,publish
+scientific/matchms,scientific,apache,apache-2.0 (header),inline,publish
+scientific/matlab,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/medchem,scientific,apache,apache-2.0 (header),inline,publish
+scientific/molecular-dynamics,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/molfeat,scientific,apache,apache-2.0 (header),inline,publish
+scientific/ncbi-sequence-fetch,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/neurokit2,scientific,mit,mit (header),inline,publish
+scientific/neuropixels-analysis,scientific,mit,mit (header),inline,publish
+scientific/nextflow,scientific,apache,apache-2.0 (header),inline,publish
+scientific/omero-integration,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/onekgpd,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/openfold3,scientific,mit,mit,sokrypton/ColabFold,publish
+scientific/opentargets-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/opentrons-integration,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pacsomatic,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pathml,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pathway-enrichment,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pdb-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pennylane,scientific,apache,apache-2.0 (header),inline,publish
+scientific/phylogenetics,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/polars-bio,scientific,apache,apache-2.0 (header),inline,publish
+scientific/primekg,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/protein-sequence-msa,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/protein-sequence-similarity-search,scientific,mit,mit,sokrypton/ColabFold,publish
+scientific/proteinmpnn,scientific,mit,MIT (dauparas/ProteinMPNN),dauparas/ProteinMPNN,publish
+scientific/protocolsio-integration,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pubchem-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pufferlib,scientific,mit,mit (header),inline,publish
+scientific/pydeseq2,scientific,mit,mit (header),inline,publish
+scientific/pydicom,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pyhealth,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pylabrobot,scientific,mit,mit,PyLabRobot/pylabrobot,publish
+scientific/pymatgen,scientific,mit,mit (header),inline,publish
+scientific/pymc,scientific,apache,apache-2.0 (header),inline,publish
+scientific/pymol,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/pymoo,scientific,apache,apache-2.0 (header),inline,publish
+scientific/pyopenms,scientific,bsd-3,BSD-3-Clause (OpenMS/OpenMS),OpenMS/OpenMS,publish
+scientific/pysam,scientific,mit,mit (header),inline,publish
+scientific/pytdc,scientific,mit,mit (header),inline,publish
+scientific/qiskit,scientific,apache,apache-2.0 (header),inline,publish
+scientific/quickgo-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/qutip,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/rdkit,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/reactome-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/rowan,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/scanpy,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/scikit-bio,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/scvelo,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/scvi-tools,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/simpy,scientific,mit,mit (header),inline,publish
+scientific/solublempnn,scientific,mit,MIT (dauparas/ProteinMPNN),dauparas/ProteinMPNN,publish
+scientific/string-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/sympy,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/tamarind,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/tiledbvcf,scientific,mit,mit (header),inline,publish
+scientific/torchdrug,scientific,apache,apache-2.0 (header),inline,publish
+scientific/treatment-plans,scientific,mit,mit (header),inline,publish
+scientific/ucsc-conservation-and-tfbs,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/unibind-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/uniprot-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+references/citation-management,references,mit,mit (header),inline,publish
+references/database-lookup,references,unknown,?,?,"publish (library content, user-curated)"
+references/dataset-acquisition,references,unknown,?,?,"publish (library content, user-curated)"
+references/exa-search,references,unknown,?,?,"publish (library content, user-curated)"
+references/liteparse,references,mit,mit,run-llama/liteparse,publish
+references/literature-review,references,mit,mit (header),inline,publish
+references/literature-search-arxiv,references,unknown,?,?,"publish (library content, user-curated)"
+references/literature-search-biorxiv,references,unknown,?,?,"publish (library content, user-curated)"
+references/literature-search-europepmc,references,apache,apache-2.0,google-deepmind/science-skills,publish
+references/literature-search-openalex,references,apache,apache-2.0,google-deepmind/science-skills,publish
+references/markitdown,references,mit,mit (header),inline,publish
+references/open-notebook,references,unknown,?,?,"publish (library content, user-curated)"
+references/openfda-database,references,unknown,?,?,"publish (library content, user-curated)"
+references/paper-lookup,references,unknown,?,?,"publish (library content, user-curated)"
+references/parallel-web,references,unknown,?,?,"publish (library content, user-curated)"
+references/pubmed-database,references,unknown,?,?,"publish (library content, user-curated)"
+references/pyzotero,references,mit,mit (header),inline,publish
+references/research-lookup,references,mit,mit (header),inline,publish
+references/usfiscaldata,references,unknown,?,?,"publish (library content, user-curated)"
+references/venue-templates,references,mit,mit (header),inline,publish
+dev/frontend-design,dev,apache,apache-2.0 (header),inline,publish
+dev/modal,dev,apache,apache-2.0 (header),inline,publish
+dev/optimize-for-gpu,dev,unknown,?,?,"publish (library content, user-curated)"
+dev/pi-agent,dev,unknown,?,?,"publish (library content, user-curated)"
+dev/ui-ux-pro-max,dev,unknown,?,?,"publish (library content, user-curated)"
+dev/web-design-guidelines,dev,unknown,?,?,"publish (library content, user-curated)"
+data-ml/aeon,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/dask,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/exploratory-data-analysis,data-ml,mit,mit (header),inline,publish
+data-ml/geomaster,data-ml,mit,mit,paulmach/orb,publish
+data-ml/geopandas,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/get-available-resources,data-ml,mit,mit (header),inline,publish
+data-ml/lamindb,data-ml,apache,apache-2.0 (header),inline,publish
+data-ml/networkx,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/polars,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/pytorch-lightning,data-ml,apache,apache-2.0 (header),inline,publish
+data-ml/scikit-learn,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/scikit-survival,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/shap,data-ml,mit,mit (header),inline,publish
+data-ml/stable-baselines3,data-ml,mit,mit (header),inline,publish
+data-ml/statsmodels,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/timesfm-forecasting,data-ml,apache,apache-2.0 (header),inline,publish
+data-ml/torch-geometric,data-ml,mit,mit (header),inline,publish
+data-ml/transformers,data-ml,apache,apache-2.0 (header),inline,publish
+data-ml/umap-learn,data-ml,unknown,?,?,"publish (library content, user-curated)"
+data-ml/vaex,data-ml,mit,mit (header),inline,publish
+data-ml/zarr-python,data-ml,mit,mit (header),inline,publish
+docs-figures/archify,docs-figures,unknown,?,?,"publish (library content, user-curated)"
+docs-figures/figure-style,docs-figures,apache,apache-2.0 (header),inline,publish
+docs-figures/infographics,docs-figures,unknown,?,?,"publish (library content, user-curated)"
+docs-figures/latex-posters,docs-figures,unknown,?,?,"publish (library content, user-curated)"
+docs-figures/markdown-mermaid-writing,docs-figures,apache,apache-2.0,SuperiorByteWorks-LLC/agent-project,publish
+docs-figures/matplotlib,docs-figures,unknown,?,?,"publish (library content, user-curated)"
+docs-figures/pptx-posters,docs-figures,mit,mit (header),inline,publish
+docs-figures/scientific-schematics,docs-figures,mit,mit (header),inline,publish
+docs-figures/scientific-slides,docs-figures,mit,mit (header),inline,publish
+docs-figures/scientific-visualization,docs-figures,mit,mit (header),inline,publish
+docs-figures/seaborn,docs-figures,unknown,?,?,"publish (library content, user-curated)"
+autoskill,top,mit,mit,screenpipe/screenpipe,publish
+credentials,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+docx,top,docx,mit-inferred,"anthropics/skills (MIT, inferred)",publish
+find-skills,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+generate-image,top,generate-image,mit-inferred,"anthropics/skills (MIT, inferred)",publish
+gov-adapt,top,unknown,?,?,"publish (library content, user-curated)"
+gov-audit,top,unknown,?,?,"publish (library content, user-curated)"
+gov-brainstorm,top,unknown,?,?,"publish (library content, user-curated)"
+gov-discovery,top,unknown,?,?,"publish (library content, user-curated)"
+gov-init,top,unknown,?,?,"publish (library content, user-curated)"
+gov-plan,top,unknown,?,?,"publish (library content, user-curated)"
+gov-release,top,unknown,?,?,"publish (library content, user-curated)"
+gov-research,top,unknown,?,?,"publish (library content, user-curated)"
+gov-review,top,unknown,?,?,"publish (library content, user-curated)"
+gov-run,top,unknown,?,?,"publish (library content, user-curated)"
+gov-status,top,unknown,?,?,"publish (library content, user-curated)"
+gov-urd-draft,top,unknown,?,?,"publish (library content, user-curated)"
+gov-urd-optimize,top,unknown,?,?,"publish (library content, user-curated)"
+gov-vision,top,unknown,?,?,"publish (library content, user-curated)"
+grill-me,top,mit,MIT (mattpocock/skills),mattpocock/skills,publish
+grill-with-docs,top,mit,MIT (mattpocock/skills),mattpocock/skills,publish
+grounded-build,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+omc-reference,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+pdf,top,pdf,mit-inferred,"anthropics/skills (MIT, inferred)",publish
+pptx,top,pptx,mit-inferred,"anthropics/skills (MIT, inferred)",publish
+product-self-knowledge,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+skill-creator,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+uv,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+workflow-skill-creator,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
+xlsx,top,xlsx,mit-inferred,"anthropics/skills (MIT, inferred)",publish
+roles/,roles,mit,mit,carloscuesta/gitmoji,publish

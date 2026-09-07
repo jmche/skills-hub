@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# sync.sh — 一键拉齐：重新生成 hub 索引 → 一致性门禁 → 宿主分发
-# 用法: sync.sh [--hub <name>]   (只重生成某 hub 的索引表)
+# sync.sh - MAINTAINER-ONLY one-shot: regenerate hub indexes -> consistency gates -> host distribution
+# Usage: sync.sh [--hub <name>]   (regenerate only one hub index)
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"

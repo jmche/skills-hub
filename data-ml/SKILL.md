@@ -1,18 +1,18 @@
 ---
 name: data-ml
-description: 通用数据/ML/科学计算簇（data-ml hub）：大内存 DataFrame（polars/dask/vaex/zarr-python/ lamindb）、科学数据文件格式探查（exploratory-data-analysis）、时序与预测 （aeon/timesfm-forecasting）、统计与贝叶斯（statsmodels/statistical-analysis/ scikit-learn/scikit-survival/shap/pymc/pymoo）、深度学习（transformers/ pytorch-lightning/torch-geometric/stable-baselines3）、图与空间（networkx/ geopandas/geomaster）、降维（umap-learn）、资源自检（get-available-resources）。 触发 = ETL/polars/dask/ML 模型/时序预测/图算法/地理空间/大内存/跑通用科学计算。 非触发 = 生物领域计算（→scientific）、出发表级图（→docs-figures）、设计实验（→research）。 
+description: Generic data / ML / scientific-compute hub: large-memory DataFrames (polars/dask/ vaex/zarr-python/lamindb), scientific data format exploration (exploratory-data- analysis), time series & forecasting (aeon/timesfm), statistics & Bayesian (statsmodels/statistical-analysis/scikit-learn/scikit-survival/shap/pymc/pymoo), deep learning (transformers/pytorch-lightning/torch-geometric/stable-baselines3), graph & geography (networkx/geopandas/geomaster), dimensionality reduction (umap-learn), resource self-check (get-available-resources). TRIGGER = ETL / polars / dask / train an ML model / time-series forecasting / graph algorithms / geospatial / big-memory / run generic scientific compute. SKIP = domain bio/chem computation (-> scientific), publication figures (-> docs-figures), experimental design (-> research). 
 ---
 
 # data-ml hub
 
-## 判据
-- 通用数据与 ML 算法（无生物领域色彩）→ 本簇
-- 生物/化学/临床计算 → scientific
-- 出发表级图 → docs-figures
+## Routing rules
+- Generic data & ML libraries (no domain flavor) -> this hub
+- Bio / chem / clinical computation -> scientific
+- Publication figures -> docs-figures
 
-## 子技能索引
+## Sub-skill index
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | dask | Distributed computing for larger-than-RAM pandas/NumPy workflows. Use when you need to scale existing… |
 | polars | High-performance DataFrame library for Python ETL, analytics, and pandas migration. Use for expression-based… |
@@ -36,10 +36,10 @@ description: 通用数据/ML/科学计算簇（data-ml hub）：大内存 DataFr
 | umap-learn | Use UMAP-learn for nonlinear dimensionality reduction, 2D/3D embeddings, clustering preprocessing, supervised… |
 | get-available-resources | This skill should be used at the start of any computationally intensive scientific task to detect and report… |
 
-## 跳簇规则
-- 生物领域（单细胞/蛋白/基因组）→ scientific
-- 要发表级图 → docs-figures
+## Cross-hub handoff
+- Domain (single-cell / protein / genomics) work -> scientific
+- Publication-grade output -> docs-figures
 
-## 使用方式
+## How to use
 
-1. 按上表选中子技能；2. 读 `skills/data-ml/<name>/INSTRUCTIONS.md`；3. 其内部脚本/资源相对该文件所在目录解析。
+1. Pick the sub-skill from the index above; 2. read `<hub>/<name>/INSTRUCTIONS.md`; 3. its scripts/assets resolve relative to that file's directory.

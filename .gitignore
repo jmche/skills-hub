@@ -1,6 +1,11 @@
-backups/
-_backups/
+*.bak.20*
 *.tar.gz
-.ipynb_checkpoints/
-__pycache__/
 .env
+.ipynb_checkpoints/
+.omc/
+.shell_env
+__pycache__/
+_backups/
+skills-hidden/
+# private project skills (autogov) — kept on disk, never committed
+gov-*

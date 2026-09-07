@@ -1,22 +1,22 @@
 ---
 name: team
-description: 角色路由簇（team hub）：从 agency-agents 精选的 ~40 个角色人格 （SRE、Software Architect、Code Reviewer、Codebase Onboarding、DevOps Automator、 Technical Writer、Business/PM/Strategy/Marketing/Finance 等）+ 路由判据 + "如何请角色"（轻用：当前会话内按 persona 执行；重用：subagent 委托）。 触发 = "让 SRE/Architect 审"、"按 Product Manager 视角"、"委派给 Code Reviewer"、 "用这个角色的清单"、"角色列表"。 非触发 = 技能调用（→对应领域 hub）、工具执行（→具体技能）。 
+description: Role-routing hub: ~33 curated expert personas (SRE, Software Architect, Code Reviewer, Codebase Onboarding, DevOps Automator, Technical Writer, Product Manager, Security, QA, PM) + routing rules + "how to invoke a role" (light: in-session persona execution; heavy: subagent delegation). TRIGGER = "have the SRE check this" / "from the Product Manager's view" / "delegate to the Code Reviewer" / "walk this role's checklist" / "role list". SKIP = invoking a specific technical skill (-> the domain hub) or running a concrete tool (-> that skill). 
 ---
 
 # team hub
 
-## 判据
-- 目标是请某个专家角色做事 → 本簇
-- 目标是让某个专家执行 → 本簇
+## Routing rules
+- Goal = get an EXPERT ROLE to do the work -> this hub
+- Goal = have a specialist execute a task -> this hub
 
-## 子技能索引
+## Sub-skill index
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 
-## 跳簇规则
-- 角色 persona 在 roles/*.md；执行走 subagent 或当前会话内按 persona
+## Cross-hub handoff
+- Roles live in roles/*.md; run them in-session or via subagent.
 
-## 使用方式
+## How to use
 
-1. 按上表选中子技能；2. 读 `skills/team/<name>/INSTRUCTIONS.md`；3. 其内部脚本/资源相对该文件所在目录解析。
+1. Pick the sub-skill from the index above; 2. read `<hub>/<name>/INSTRUCTIONS.md`; 3. its scripts/assets resolve relative to that file's directory.

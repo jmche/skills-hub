@@ -1,19 +1,19 @@
 ---
 name: research
-description: 科研方法论簇（research hub）：实验设计、统计检验与推断、样本量/功效分析、假说生成与 检验、科学批判性评估、同行评审、学术写作（IMRAD）、科研头脑风暴、基金标书（NSF/NIH/DARPA/ NSTC）、市场研究报告、HTR 迭代优化、古代文本分析。 触发 = 设计实验/选统计检验/样本量/提出假说/审论文/写论文或标书/科研思路/评估证据质量。 非触发 = 跑具体生物计算与查数据库（→scientific）、找文献与引文格式（→references）、 出发表级图（→docs-figures）、通用 ML 库（→data-ml）、UI/部署工程（→dev）。 
+description: Research methodology hub: experimental design, statistical tests and inference, sample-size / power analysis, hypothesis generation and testing, critical evaluation of scientific claims, peer review, academic writing (IMRAD), research brainstorming, grant proposals (NSF/NIH/DARPA/NSTC), market research reports, HTR iterative optimization, classical text analysis. TRIGGER = design an experiment / pick a statistical test / compute sample size / generate or test a hypothesis / review a paper / write a paper or grant / evaluate evidence quality. SKIP = running concrete bio-computation, database or API lookups (-> scientific), finding papers and citation formatting (-> references), publication-grade figures (-> docs-figures), generic ML libraries (-> data-ml), UI/infrastructure engineering (-> dev). 
 ---
 
 # research hub
 
-## 判据
-- 目标 = 得出结论 / 设计实验 / 统计决策 / 写学术文本 → 本簇
-- 目标是跑具体算法、查一条数据库记录 → scientific
-- 涉及文献获取、引文、专利/法规文本 → references
-- 需要发表级图片/幻灯片/海报 → docs-figures
+## Routing rules
+- Goal = reach a CONCLUSION / design an experiment / statistical decision / academic text -> this hub
+- Goal = run a concrete algorithm or fetch a database record -> scientific
+- Paper retrieval, citation formatting, patents / regulatory text -> references
+- Publication-grade figure, slide, or poster output -> docs-figures
 
-## 子技能索引
+## Sub-skill index
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | statistical-analysis | Guided statistical analysis for research data - test selection, assumption checking, effect sizes, power… |
 | statistical-power | Sample-size and statistical power calculations for planning studies. Use whenever someone asks "how many… |
@@ -30,10 +30,10 @@ description: 科研方法论簇（research hub）：实验设计、统计检验�
 | predictingthepast | > Ancient text restoration, attribution, dating, contextualization, and embedding via Aeneas (Latin) / Ithaca… |
 | market-research-reports | Generate comprehensive market research reports (50+ pages) in the style of top consulting firms (McKinsey,… |
 
-## 跳簇规则
-- 选统计方法 → 本簇；在该数据上跑统计代码 → data-ml（statsmodels/scikit-learn/pymc）
-- 引用文献 → references；批判文献观点 → 本簇（scientific-critical-thinking）
+## Cross-hub handoff
+- Choosing a statistical method -> this hub; RUNNING the stats code on data -> data-ml (statsmodels/scikit-learn/pymc)
+- Citing literature -> references; CRITIQUING its claims -> this hub (scientific-critical-thinking)
 
-## 使用方式
+## How to use
 
-1. 按上表选中子技能；2. 读 `skills/research/<name>/INSTRUCTIONS.md`；3. 其内部脚本/资源相对该文件所在目录解析。
+1. Pick the sub-skill from the index above; 2. read `<hub>/<name>/INSTRUCTIONS.md`; 3. its scripts/assets resolve relative to that file's directory.

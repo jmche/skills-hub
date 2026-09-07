@@ -588,10 +588,10 @@ Frame proposals with DARPA-style impact questions when appropriate:
 ### NSTC Review Criteria
 
 **Core Evaluation Dimensions**:
-1. **Innovation (創新性)**: Novelty of concept and approach.
-2. **Feasibility (可行性)**: Methodology rigor and preliminary data.
-3. **PI Capability (主持人能力)**: Track record and expertise.
-4. **Value (價值)**: Academic contribution and societal/industrial impact.
+1. **Innovation**: Novelty of concept and approach.
+2. **Feasibility**: Methodology rigor and preliminary data.
+3. **PI Capability**: Track record and expertise.
+4. **Value**: Academic contribution and societal/industrial impact.
 
 For detailed review criteria, refer to `references/nstc_guidelines.md`.
 

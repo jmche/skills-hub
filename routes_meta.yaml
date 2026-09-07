@@ -1,52 +1,63 @@
-# routes_meta.yaml — 人工维护的路由文案（生成器的唯一人工输入）
-# hub 的 name/description 直接成为宿主可见的 frontmatter；rules/jump 写进正文；sections 分组科学簇。
+# routes_meta.yaml — human-authored routing copy (the only human input to the generator).
+# A hub's name/description becomes the host-visible frontmatter; rules/jump go into the
+# body; sections partition the scientific hub.
 hubs:
   research:
     description: >
-      科研方法论簇（research hub）：实验设计、统计检验与推断、样本量/功效分析、假说生成与
-      检验、科学批判性评估、同行评审、学术写作（IMRAD）、科研头脑风暴、基金标书（NSF/NIH/DARPA/
-      NSTC）、市场研究报告、HTR 迭代优化、古代文本分析。
-      触发 = 设计实验/选统计检验/样本量/提出假说/审论文/写论文或标书/科研思路/评估证据质量。
-      非触发 = 跑具体生物计算与查数据库（→scientific）、找文献与引文格式（→references）、
-      出发表级图（→docs-figures）、通用 ML 库（→data-ml）、UI/部署工程（→dev）。
+      Research methodology hub: experimental design, statistical tests and inference,
+      sample-size / power analysis, hypothesis generation and testing, critical evaluation
+      of scientific claims, peer review, academic writing (IMRAD), research brainstorming,
+      grant proposals (NSF/NIH/DARPA/NSTC), market research reports, HTR iterative
+      optimization, classical text analysis.
+      TRIGGER = design an experiment / pick a statistical test / compute sample size /
+      generate or test a hypothesis / review a paper / write a paper or grant / evaluate
+      evidence quality.
+      SKIP = running concrete bio-computation, database or API lookups (-> scientific),
+      finding papers and citation formatting (-> references), publication-grade figures
+      (-> docs-figures), generic ML libraries (-> data-ml), UI/infrastructure engineering
+      (-> dev).
     rules:
-      - "目标 = 得出结论 / 设计实验 / 统计决策 / 写学术文本 → 本簇"
-      - "目标是跑具体算法、查一条数据库记录 → scientific"
-      - "涉及文献获取、引文、专利/法规文本 → references"
-      - "需要发表级图片/幻灯片/海报 → docs-figures"
+      - "Goal = reach a CONCLUSION / design an experiment / statistical decision / academic text -> this hub"
+      - "Goal = run a concrete algorithm or fetch a database record -> scientific"
+      - "Paper retrieval, citation formatting, patents / regulatory text -> references"
+      - "Publication-grade figure, slide, or poster output -> docs-figures"
     jump:
-      - "选统计方法 → 本簇；在该数据上跑统计代码 → data-ml（statsmodels/scikit-learn/pymc）"
-      - "引用文献 → references；批判文献观点 → 本簇（scientific-critical-thinking）"
+      - "Choosing a statistical method -> this hub; RUNNING the stats code on data -> data-ml (statsmodels/scikit-learn/pymc)"
+      - "Citing literature -> references; CRITIQUING its claims -> this hub (scientific-critical-thinking)"
   scientific:
     description: >
-      生物/化学/医学计算簇（scientific hub）：结构预测与序列设计（AlphaFold2/Boltz/Chai-1/
-      ESMFold2/ESMFold/OpenFold3/Pymol/MD）、序列与基因组工具（Biopython/Clustal Omega/
-      IQ-TREE/ETE）、30+ 数据库查询（UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/
-      DepMap/1000Genomes/STRING/Reactome/KEGG-JASPAR/QuickGO…）、单细胞与转录组（Scanpy/
-      anndata/scvi-tools/cellxgene-census/scVelo/bulk RNA-seq/DESeq2/DEEPTools/GRN/
-      通路富集/geniml/gtars/pysam/TileDB-VCF）、临床医学（CDS/临床报告/适应症综述/
-      ISO13485/治疗方案/PyHealth/影像 BIDS/病理 WSI/神经电生理）、化学与药物发现
-      （RDKit/datamol/medchem/molfeat/DeepChem/TorchDrug/PyOpenMS/COBRA/DiffDock/
-      材料 pymatgen）、实验室与云平台集成（Benchling/LabArchive/DNAnexus/LatchBio/
-      Ginkgo/Opentrons/pylabrobot/protocols.io/Nextflow/pacsomatic）、量子与通用模拟
-      （Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB）。
-      触发 = 蛋白质折叠/查 UniProt PDB ChEMBL/跑 Scanpy/跑 RNA-seq/Dock 分子/写 Opentrons 协议/
-      查基因变异/跑分子动力学/查结构相似性/GRN/单细胞/药物分子。
-      非触发 = 统计方法论与假说设计（→research）、找文献与引文（→references）、
-      通用 ML 框架（transformers/polars/pytorch-lightning →data-ml）、
-      发表级图与幻灯片（→docs-figures）、UI 工程与 GPU 云（→dev）。
+      Biology / chemistry / medicine computation hub: structure prediction and sequence
+      design (AlphaFold2/Boltz/Chai-1/ESMFold2/ESMFold/OpenFold3/PyMOL/MD), sequence and
+      genomics tooling (Biopython/Clustal Omega/IQ-TREE/ETE), 30+ database queries
+      (UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/DepMap/1000Genomes/STRING/
+      Reactome/KEGG-JASPAR/QuickGO ...), single-cell and transcriptomics (Scanpy/anndata/
+      scvi-tools/cellxgene-census/scVelo/bulk RNA-seq/DESeq2/DEEPTools/GRN/pathway
+      enrichment/geniml/gtars/pysam/TileDB-VCF), clinical (CDS/clinical reporting/
+      indication dossier/ISO13485/treatment plans/PyHealth/imaging BIDS/pathology WSI/
+      electrophysiology), cheminformatics and drug discovery (RDKit/datamol/medchem/
+      molfeat/DeepChem/TorchDrug/PyOpenMS/COBRApy/DiffDock/pymatgen), lab & cloud
+      platform integration (Benchling/LabArchive/DNAnexus/LatchBio/Ginkgo/Opentrons/
+      pylabrobot/protocols.io/Nextflow/pacsomatic), quantum & general simulation
+      (Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB).
+      TRIGGER = protein folding / UniProt-PDB-ChEMBL-gnomAD lookups / run Scanpy or
+      RNA-seq / dock molecules / write Opentrons protocols / query a gene variant / MD
+      simulation / structural similarity search / single-cell analysis / drug molecules.
+      SKIP = statistical methodology and hypothesis design (-> research), literature and
+      citation (-> references), generic ML frameworks (transformers/polars/
+      pytorch-lightning -> data-ml), publication figures and slides (-> docs-figures),
+      UI engineering and GPU clouds (-> dev).
     rules:
-      - "目标 = 跑具体生物计算 / 查具体数据库 / 结构预测 / 分子设计 → 本簇"
-      - "目标是方法论层面（实验设计、统计推断、假说）→ research"
-      - "文献查找/引文/专利/法规文本 → references"
-      - "纯通用数据与 ML 库（无生物领域色彩）→ data-ml"
-      - "发表级出图/幻灯片/海报 → docs-figures"
+      - "Goal = RUN a concrete bio-computation / query a concrete database / predict structure / design a molecule -> this hub"
+      - "Goal = methodology (experimental design, statistical inference, hypothesis) -> research"
+      - "Paper retrieval / citations / patents / regulatory text -> references"
+      - "Pure generic data & ML libraries (no domain flavor) -> data-ml"
+      - "Publication-grade figure / slide / poster -> docs-figures"
     jump:
-      - "出图 → docs-figures（别在簇内硬画 matplotlib）"
-      - "统计方法论 → research；统计库本身 → data-ml"
-      - "写标书/报告 → research"
+      - "Charts & figures -> docs-figures (do not hard-draw matplotlib inside this hub)"
+      - "Statistical methodology -> research; the stats libraries themselves -> data-ml"
+      - "Writing grants / reports -> research"
     sections:
-      A 结构预测与序列设计:
+      A Structure prediction & sequence design:
         - alphafold2
         - alphafold-database-fetch-and-analyze
         - boltz
@@ -65,7 +76,7 @@ hubs:
         - tamarind
         - rowan
         - adaptyv
-      B 序列与基因组工具:
+      B Sequence & genomics tooling:
         - biopython
         - gget
         - bioservices
@@ -75,7 +86,7 @@ hubs:
         - phylogenetics
         - etetoolkit
         - scikit-bio
-      C 数据库查询:
+      C Database lookup:
         - uniprot-database
         - ensembl-database
         - pdb-database
@@ -101,7 +112,7 @@ hubs:
         - clinical-trials-database
         - gtex-database
         - human-protein-atlas-database
-      D 单细胞与转录组:
+      D Single-cell & transcriptomics:
         - scanpy
         - anndata
         - scvi-tools
@@ -117,7 +128,7 @@ hubs:
         - pysam
         - polars-bio
         - tiledbvcf
-      E 化学与药物发现:
+      E Chemistry & drug discovery:
         - rdkit
         - datamol
         - medchem
@@ -129,7 +140,7 @@ hubs:
         - pyopenms
         - cobrapy
         - pymatgen
-      F 临床与医学:
+      F Clinical & medical:
         - clinical-decision-support
         - clinical-reports
         - indication-dossier
@@ -145,7 +156,7 @@ hubs:
         - histolab
         - pathml
         - neuropixels-analysis
-      G 平台与流程:
+      G Platforms & pipelines:
         - benchling-integration
         - labarchive-integration
         - dnanexus-integration
@@ -157,7 +168,7 @@ hubs:
         - nextflow
         - pacsomatic
         - hugging-science
-      H 量子与通用模拟:
+      H Quantum & general simulation:
         - cirq
         - pennylane
         - qiskit
@@ -172,78 +183,93 @@ hubs:
         - pufferlib
   references:
     description: >
-      文献/引文/格式/法规簇（references hub）：文献检索（arXiv / bioRxiv / Europe PMC /
-      OpenAlex / PubMed / Semantic Scholar / CORE / Unpaywall / Crossref）、文献综述、
-      引文管理与 BibTeX、文献格式（Nature/Cell/CONSORT/STROBE/PRISMA）、Zotero 集成、
-      专利与法规文本（US Fiscal Data / openFDA / 数据库可查性）、文档转换（MarkItDown /
-      liteparse 提取）、并行网络搜索（Exa / parallel-cli / research-lookup）。
-      触发 = 找文献/查 DOI/引 BibTeX/文献综述/检查引用/专利/法规/提取 PDF 文本/批量获取数据集。
-      非触发 = 文献观点综合与批判（→research）、出发表级图（→docs-figures）、生物计算（→scientific）。
+      Literature / citation / formatting / regulatory hub: paper search (arXiv / bioRxiv /
+      Europe PMC / OpenAlex / PubMed / Semantic Scholar / CORE / Unpaywall / Crossref),
+      literature review, citation management and BibTeX, manuscript formatting (Nature/
+      Cell/CONSORT/STROBE/PRISMA), Zotero integration, patents and regulatory text
+      (US fiscal data / openFDA / database availability), document extraction (MarkItDown /
+      liteparse), parallel web search (Exa / parallel-cli / research-lookup).
+      TRIGGER = find papers / look up a DOI / format BibTeX / literature review /
+      check a citation / patents / regulations / extract PDF text / bulk fetch datasets.
+      SKIP = synthesizing or critiquing paper claims (-> research), publication-grade
+      figures (-> docs-figures), bio-computation (-> scientific).
     rules:
-      - "涉及文献获取、引文格式、专利/法规文本 → 本簇"
-      - "对文献做观点综合/批判 → research"
-      - "查结构化数据库（非文献）→ scientific"
+      - "Paper retrieval, citation formatting, patents / regulatory text -> this hub"
+      - "Synthesizing or critiquing claims INSIDE papers -> research"
+      - "Querying structured databases (non-literature) -> scientific"
     jump:
-      - "文献内容批判 → research（scientific-critical-thinking）"
-      - "要写综述/论文 → research（scientific-writing）"
+      - "Critiquing literature's claims -> research (scientific-critical-thinking)"
+      - "Writing a review or manuscript -> research (scientific-writing)"
   dev:
     description: >
-      工程/UI/云/GPU 簇（dev hub）：前端设计（frontend-design）、UI/UX 风格库
-      （ui-ux-pro-max，84 种风格/192 配色/74 字号/192 产品类型/98 条 UX 指南/104 图标/GSAP 动画/
-      25 种图表 × 22 栈）、Web 界面规范审查（web-design-guidelines）、Modal 无服务器
-      云（GPU/批量/端点）、NVIDIA/CUDA 加速（optimize-for-gpu：CuPy/Numba/CuDF/cuML/cuGraph/Warp）、
-      Pi 极简 agent harness（pi-agent：安装/配置/skills/extensions/MCP/RPC）。
-      触发 = 写前端/做 UI/审查界面/部署 GPU/跑批量云加速/NVIDIA 优化/装 Pi harness。
-      非触发 = 生物领域计算（→scientific）、发表级图（→docs-figures）、统计/ML 方法论（→research）。
+      Engineering / UI / cloud / GPU hub: frontend design (frontend-design), UI/UX style
+      library (ui-ux-pro-max: 84 styles / 192 palettes / 74 type scales / 192 product
+      types / 98 UX guidelines / 104 icons / GSAP motion / 25 chart types x 22 stacks),
+      web UI standard review (web-design-guidelines), Modal serverless clouds
+      (GPU/batch/endpoints), NVIDIA/CUDA acceleration (optimize-for-gpu: CuPy/Numba/CuDF/
+      cuML/cuGraph/Warp), Pi minimal agent harness (pi-agent: install/configure/skills/
+      extensions/MCP/RPC).
+      TRIGGER = build frontend / design UI / review an interface / deploy GPU / run
+      batch cloud acceleration / NVIDIA optimization / install the Pi harness.
+      SKIP = domain bio/chem computation (-> scientific), publication figures
+      (-> docs-figures), statistical & ML methodology (-> research).
     rules:
-      - "写代码 / 做 UI / 部署云 / GPU 加速 → 本簇"
-      - "领域计算（生物/化学）→ scientific"
-      - "通用数据与 ML 库 → data-ml"
+      - "Build web UI / frontend / deploy to cloud / GPU acceleration -> this hub"
+      - "Domain (bio/chem) computation -> scientific"
+      - "Generic data & ML libraries -> data-ml"
     jump:
-      - "出 UI 设计系统 → 本簇（ui-ux-pro-max）；出发表级图 → docs-figures"
+      - "UI design system -> this hub (ui-ux-pro-max); publication-grade figures -> docs-figures"
   data-ml:
     description: >
-      通用数据/ML/科学计算簇（data-ml hub）：大内存 DataFrame（polars/dask/vaex/zarr-python/
-      lamindb）、科学数据文件格式探查（exploratory-data-analysis）、时序与预测
-      （aeon/timesfm-forecasting）、统计与贝叶斯（statsmodels/statistical-analysis/
-      scikit-learn/scikit-survival/shap/pymc/pymoo）、深度学习（transformers/
-      pytorch-lightning/torch-geometric/stable-baselines3）、图与空间（networkx/
-      geopandas/geomaster）、降维（umap-learn）、资源自检（get-available-resources）。
-      触发 = ETL/polars/dask/ML 模型/时序预测/图算法/地理空间/大内存/跑通用科学计算。
-      非触发 = 生物领域计算（→scientific）、出发表级图（→docs-figures）、设计实验（→research）。
+      Generic data / ML / scientific-compute hub: large-memory DataFrames (polars/dask/
+      vaex/zarr-python/lamindb), scientific data format exploration (exploratory-data-
+      analysis), time series & forecasting (aeon/timesfm), statistics & Bayesian
+      (statsmodels/statistical-analysis/scikit-learn/scikit-survival/shap/pymc/pymoo),
+      deep learning (transformers/pytorch-lightning/torch-geometric/stable-baselines3),
+      graph & geography (networkx/geopandas/geomaster), dimensionality reduction
+      (umap-learn), resource self-check (get-available-resources).
+      TRIGGER = ETL / polars / dask / train an ML model / time-series forecasting /
+      graph algorithms / geospatial / big-memory / run generic scientific compute.
+      SKIP = domain bio/chem computation (-> scientific), publication figures
+      (-> docs-figures), experimental design (-> research).
     rules:
-      - "通用数据与 ML 算法（无生物领域色彩）→ 本簇"
-      - "生物/化学/临床计算 → scientific"
-      - "出发表级图 → docs-figures"
+      - "Generic data & ML libraries (no domain flavor) -> this hub"
+      - "Bio / chem / clinical computation -> scientific"
+      - "Publication figures -> docs-figures"
     jump:
-      - "生物领域（单细胞/蛋白/基因组）→ scientific"
-      - "要发表级图 → docs-figures"
+      - "Domain (single-cell / protein / genomics) work -> scientific"
+      - "Publication-grade output -> docs-figures"
   docs-figures:
     description: >
-      发表级交付物样式簇（docs-figures hub）：发表级图（figure-style/scientific-visualization/
-      scientific-schematics）、快速探索图（seaborn/matplotlib）、幻灯片/演示
-      （scientific-slides/pptx-posters/latex-posters）、infographic（infographics）、
-      Mermaid 工作流图（markdown-mermaid-writing/archify）、科学示意图
-      （scientific-schematics）、AI 生图（generate-image，顶层直用不走本簇）。
-      触发 = 出发表级图/画幻灯片/做海报/生成 infographic/Mermaid 流程图/科学示意图。
-      非触发 = 快速 EDA 图（直接用 seaborn/matplotlib）、UI 设计（→dev）、写论文正文（→research）。
+      Publication-grade visual deliverables hub: publication figures (figure-style /
+      scientific-visualization / scientific-schematics), quick exploratory plots
+      (seaborn/matplotlib), slide decks & presentations (scientific-slides /
+      pptx-posters / latex-posters), infographics (infographics), Mermaid workflow
+      diagrams (markdown-mermaid-writing / archify), scientific schematics
+      (scientific-schematics), AI image generation (generate-image, top-level, NOT routed
+      through this hub).
+      TRIGGER = produce a publication figure / build slides / make a poster / generate an
+      infographic / draw a Mermaid flow / technical schematic.
+      SKIP = quick exploratory plots (use seaborn/matplotlib directly), UI design
+      (-> dev), writing the paper body (-> research).
     rules:
-      - "目标是产出交付物样式的图/幻灯片/海报/示意图 → 本簇"
-      - "快速探索性图表 → 直接用 seaborn/matplotlib（仍在 docs-figures 簇内可查）"
-      - "写论文正文 → research"
+      - "Goal = deliverable-style figure / slides / poster / schematic -> this hub"
+      - "Exploratory charting -> plain seaborn/matplotlib (still inside this hub, but no checklist needed)"
+      - "Writing the paper body -> research"
     jump:
-      - "要 EDA 快图 → 直接用 seaborn/matplotlib，不必加载发表级 checklist"
+      - "Quick exploratory plot -> plain seaborn/matplotlib, skip the checklist"
   team:
     description: >
-      角色路由簇（team hub）：从 agency-agents 精选的 ~40 个角色人格
-      （SRE、Software Architect、Code Reviewer、Codebase Onboarding、DevOps Automator、
-      Technical Writer、Business/PM/Strategy/Marketing/Finance 等）+ 路由判据 +
-      "如何请角色"（轻用：当前会话内按 persona 执行；重用：subagent 委托）。
-      触发 = "让 SRE/Architect 审"、"按 Product Manager 视角"、"委派给 Code Reviewer"、
-      "用这个角色的清单"、"角色列表"。
-      非触发 = 技能调用（→对应领域 hub）、工具执行（→具体技能）。
+      Role-routing hub: ~33 curated expert personas (SRE, Software Architect, Code
+      Reviewer, Codebase Onboarding, DevOps Automator, Technical Writer, Product Manager,
+      Security, QA, PM) + routing rules + "how to invoke a role" (light: in-session
+      persona execution; heavy: subagent delegation).
+      TRIGGER = "have the SRE check this" / "from the Product Manager's view" /
+      "delegate to the Code Reviewer" / "walk this role's checklist" / "role list".
+      SKIP = invoking a specific technical skill (-> the domain hub) or running a
+      concrete tool (-> that skill).
     rules:
-      - "目标是请某个专家角色做事 → 本簇"
-      - "目标是让某个专家执行 → 本簇"
+      - "Goal = get an EXPERT ROLE to do the work -> this hub"
+      - "Goal = have a specialist execute a task -> this hub"
     jump:
-      - "角色 persona 在 roles/*.md；执行走 subagent 或当前会话内按 persona"
+      - "Roles live in roles/*.md; run them in-session or via subagent."

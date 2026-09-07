@@ -1,0 +1,18 @@
+# Files excluded from GitHub source archives (curl | tarball / download ZIP).
+# Note: a clone still contains them; the installer-side whitelist is the second layer.
+gov-adapt/            export-ignore
+gov-audit/            export-ignore
+gov-brainstorm/       export-ignore
+gov-discovery/        export-ignore
+gov-init/             export-ignore
+gov-plan/             export-ignore
+gov-release/          export-ignore
+gov-research/         export-ignore
+gov-review/           export-ignore
+gov-run/              export-ignore
+gov-status/           export-ignore
+gov-urd-draft/        export-ignore
+gov-urd-optimize/     export-ignore
+gov-vision/           export-ignore
+_backups/             export-ignore
+.ipynb_checkpoints/   export-ignore

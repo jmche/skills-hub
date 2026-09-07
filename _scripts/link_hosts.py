@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""link_hosts.py — 把 canonical 技能以"技能级软链"分发到已装宿主。
+"""link_hosts.py - distribute canonical skills to detected hosts via per-skill symlinks.
 
-策略（纯增量 / 幂等 / 不丢宿主本地版本）：
-  顶层技能目录 canonical/<name>/（含 SKILL.md）：
-    宿主 skills 目录不存在  → 建目录，整目录软链 canonical -> host/skills
-    宿主已有 <name>        → 跳过（保留宿主本地版本）
-    否则                  → 建软链 host/skills/<name> -> canonical/<name>
-  角色 canonical/roles/：
-    宿主 agents 目录不存在 → 整目录软链 -> host/agents
-    宿主已有 agents        → 跳过
-  单个失败隔离记录，不中断。--dry-run 只打印。
+Policy (purely additive / idempotent / never destroys host-local versions):
+  Top-level skill dirs canonical/<name>/ (containing SKILL.md):
+    host skills dir absent  -> create the dir, symlink canonical -> host/skills
+    host already has <name> -> skip (host-local version kept)
+    otherwise               -> symlink host/skills/<name> -> canonical/<name>
+  Roles canonical/roles/:
+    host agents dir absent  -> symlink roles -> host/agents
+    host already has agents -> skip
+  A single failure is isolated and reported; --dry-run just prints.
 """
 import os, sys, pathlib
 
@@ -18,8 +18,8 @@ DRY = '--dry-run' in sys.argv
 
 HOSTS = {
     'claude':   dict(skills='~/.claude/skills',        roles='~/.claude/agents'),
-    'codex':    dict(skills='~/.codex/skills',        roles=None),          # roles 需渲染 toml，单独处理
-    'hermes':   dict(skills='~/.hermes/skills',       roles=None),          # roles 走插件/delegate
+    'codex':    dict(skills='~/.codex/skills',        roles=None),          # roles need toml rendering; handled separately
+    'hermes':   dict(skills='~/.hermes/skills',       roles=None),          # roles go through the host plugin / delegate mechanism
     'opencode': dict(skills='~/.config/opencode/skills', roles=None),
     'cursor':   dict(skills='~/.cursor/skills',       roles='~/.cursor/agents'),
     'gemini':   dict(skills='~/.gemini/skills',       roles='~/.gemini/agents'),

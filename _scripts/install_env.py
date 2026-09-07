@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""install_env.py — 幂等的 shell 环境安装器。
+"""install_env.py - idempotent shell-environment installer.
 
-做三件事（全部可重复执行，已存在的项直接跳过）：
-  1. ~/.bashrc 与 ~/.profile：确保存在核心行
+Does three things (all repeatable; existing items are skipped):
+  1. ~/.bashrc and ~/.profile: ensure the core line
         [ -f "$HOME/.shell_env" ] && . "$HOME/.shell_env"
-     且位于交互式守卫（case $- in / # If not running interactively）之前；
-     已存在则跳过。修改前先备份 .bak.YYYYmmdd-HHMMSS。
-  2. 把源 env 文件（默认 ~/.agents/.env，其次 ~/.agents/skills/.env）里缺失的
-     KEY=VALUE 合并进 ~/.shell_env：已存在的 key 跳过；新 key 带日期注释追加。
-     ~/.shell_env 不存在则创建；权限强制 600。
-  3. 校验：用 bash -lc 检查关键 key 非空（不打印值）。
+     exists, placed BEFORE the interactive guard ("case $- in" /
+     "If not running interactively"). Skipped when already present.
+     A .bak.TIMESTAMP copy is made before any edit.
+  2. Merge missing KEY=VALUE pairs from source env files (~/.agents/.env,
+     then ~/.agents/skills/.env) into ~/.shell_env: existing keys are
+     kept as-is; new keys appended with a dated comment. Creates
+     ~/.shell_env if missing; forces 0600 permissions.
+  3. Verify: `bash -lc` checks that imported keys are non-empty
+     (values are never printed).
 """
 import datetime
 import os
@@ -30,12 +33,12 @@ def ts():
     print(f'  [{datetime.datetime.now().strftime("%H:%M:%S")}]', end=' ')
 
 def ensure_core_line(path: str) -> str:
-    """返回 action: skipped|inserted|appended|absent-skip"""
+    """Returns the action taken: skipped|inserted|appended|absent."""
     if not os.path.isfile(path):
-        ts(); print(f'{os.path.basename(path)}: 文件不存在，跳过（新建 shell 环境时可手建）'); return 'absent'
+        ts(); print(f'{os.path.basename(path)}: file missing; skipped (create it by hand if wanted)'); return 'absent'
     txt = open(path, encoding='utf-8', errors='replace').read()
     if CORE in txt:
-        ts(); print(f'{os.path.basename(path)}: 核心行已存在 → 跳过'); return 'skipped'
+        ts(); print(f'{os.path.basename(path)}: core line already present -> skipped'); return 'skipped'
     lines = txt.splitlines(keepends=True)
     insert_at = None
     guard = re.compile(r'^(case \$- in|# If not running interactively|#.*interactive guard|export PS1=)', re.I)
@@ -57,7 +60,7 @@ def ensure_core_line(path: str) -> str:
     shutil.copy2(path, bak)
     with open(path, 'w', encoding='utf-8') as f:
         f.writelines(lines)
-    ts(); print(f'{os.path.basename(path)}: 核心行{action}（备份 {os.path.basename(bak)}）')
+    ts(); print(f'{os.path.basename(path)}: core line {action} (backup: {os.path.basename(bak)})')
     return action
 
 def parse_env_lines(path: str):
@@ -94,18 +97,18 @@ def merge_into_shell_env() -> int:
         for src in sources:
             for key, val in parse_env_lines(src):
                 if key in existing:
-                    ts(); print(f'key 已存在，跳过: {key}')
+                    ts(); print(f'key already present, skipped: {key}')
                     continue
                 f.write(f'\n# merged from {os.path.basename(src)} @ {DATE} (by install.sh)\n')
                 f.write(f'export {key}="{val}"\n')
-                ts(); print(f'key 新增: {key}（来源 {src}）')
+                ts(); print(f'key added: {key} (from {src})')
                 added += 1
                 existing.add(key)
     os.chmod(shell_env, 0o600)
     return added
 
 def verify(keys):
-    ts(); print('校验 bash -lc 环境可见性 …')
+    ts(); print('verifying key visibility under bash -lc ...')
     for k in keys:
         r = subprocess.run(['bash', '-lc', f'test -n "${{{k}:-}}" && echo yes'],
                            capture_output=True, text=True)
@@ -113,19 +116,19 @@ def verify(keys):
         print(f'        {mark} {k}')
 
 def main(dry=False):
-    ts(); print('── 1/3 shell 启动文件 ──')
+    ts(); print('-- 1/3 shell startup files --')
     if dry:
-        print('  [dry] 会检查 ~/.bashrc ~/.profile')
+        print('  [dry] (dry) would check ~/.bashrc ~/.profile')
     else:
         ensure_core_line(os.path.join(HOME, '.bashrc'))
         ensure_core_line(os.path.join(HOME, '.profile'))
-    ts(); print('── 2/3 合并 env 到 ~/.shell_env ──')
+    ts(); print('-- 2/3 merge env into ~/.shell_env --')
     added = 0 if dry else merge_into_shell_env()
     if dry:
         for src in sources:
             for k, _ in parse_env_lines(src):
-                print(f'  [dry] 候选 key: {k}')
-    ts(); print('── 3/3 校验 ──')
+                print(f'  [dry] candidate key: {k}')
+    ts(); print('-- 3/3 verification --')
     sample = []
     for src in sources:
         for k, _ in parse_env_lines(src):
@@ -134,7 +137,7 @@ def main(dry=False):
         if sample:
             break
     if dry or not sample:
-        print('  (dry-run 或无候选 key，跳过校验)')
+        print('  (dry-run or no candidate keys; verification skipped)')
     else:
         verify(sample[:8])
     ts(); print('DONE')

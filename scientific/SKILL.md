@@ -1,22 +1,22 @@
 ---
 name: scientific
-description: 生物/化学/医学计算簇（scientific hub）：结构预测与序列设计（AlphaFold2/Boltz/Chai-1/ ESMFold2/ESMFold/OpenFold3/Pymol/MD）、序列与基因组工具（Biopython/Clustal Omega/ IQ-TREE/ETE）、30+ 数据库查询（UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/ DepMap/1000Genomes/STRING/Reactome/KEGG-JASPAR/QuickGO…）、单细胞与转录组（Scanpy/ anndata/scvi-tools/cellxgene-census/scVelo/bulk RNA-seq/DESeq2/DEEPTools/GRN/ 通路富集/geniml/gtars/pysam/TileDB-VCF）、临床医学（CDS/临床报告/适应症综述/ ISO13485/治疗方案/PyHealth/影像 BIDS/病理 WSI/神经电生理）、化学与药物发现 （RDKit/datamol/medchem/molfeat/DeepChem/TorchDrug/PyOpenMS/COBRA/DiffDock/ 材料 pymatgen）、实验室与云平台集成（Benchling/LabArchive/DNAnexus/LatchBio/ Ginkgo/Opentrons/pylabrobot/protocols.io/Nextflow/pacsomatic）、量子与通用模拟 （Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB）。 触发 = 蛋白质折叠/查 UniProt PDB ChEMBL/跑 Scanpy/跑 RNA-seq/Dock 分子/写 Opentrons 协议/ 查基因变异/跑分子动力学/查结构相似性/GRN/单细胞/药物分子。 非触发 = 统计方法论与假说设计（→research）、找文献与引文（→references）、 通用 ML 框架（transformers/polars/pytorch-lightning →data-ml）、 发表级图与幻灯片（→docs-figures）、UI 工程与 GPU 云（→dev）。 
+description: Biology / chemistry / medicine computation hub: structure prediction and sequence design (AlphaFold2/Boltz/Chai-1/ESMFold2/ESMFold/OpenFold3/PyMOL/MD), sequence and genomics tooling (Biopython/Clustal Omega/IQ-TREE/ETE), 30+ database queries (UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/DepMap/1000Genomes/STRING/ Reactome/KEGG-JASPAR/QuickGO ...), single-cell and transcriptomics (Scanpy/anndata/ scvi-tools/cellxgene-census/scVelo/bulk RNA-seq/DESeq2/DEEPTools/GRN/pathway enrichment/geniml/gtars/pysam/TileDB-VCF), clinical (CDS/clinical reporting/ indication dossier/ISO13485/treatment plans/PyHealth/imaging BIDS/pathology WSI/ electrophysiology), cheminformatics and drug discovery (RDKit/datamol/medchem/ molfeat/DeepChem/TorchDrug/PyOpenMS/COBRApy/DiffDock/pymatgen), lab & cloud platform integration (Benchling/LabArchive/DNAnexus/LatchBio/Ginkgo/Opentrons/ pylabrobot/protocols.io/Nextflow/pacsomatic), quantum & general simulation (Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB). TRIGGER = protein folding / UniProt-PDB-ChEMBL-gnomAD lookups / run Scanpy or RNA-seq / dock molecules / write Opentrons protocols / query a gene variant / MD simulation / structural similarity search / single-cell analysis / drug molecules. SKIP = statistical methodology and hypothesis design (-> research), literature and citation (-> references), generic ML frameworks (transformers/polars/ pytorch-lightning -> data-ml), publication figures and slides (-> docs-figures), UI engineering and GPU clouds (-> dev). 
 ---
 
 # scientific hub
 
-## 判据
-- 目标 = 跑具体生物计算 / 查具体数据库 / 结构预测 / 分子设计 → 本簇
-- 目标是方法论层面（实验设计、统计推断、假说）→ research
-- 文献查找/引文/专利/法规文本 → references
-- 纯通用数据与 ML 库（无生物领域色彩）→ data-ml
-- 发表级出图/幻灯片/海报 → docs-figures
+## Routing rules
+- Goal = RUN a concrete bio-computation / query a concrete database / predict structure / design a molecule -> this hub
+- Goal = methodology (experimental design, statistical inference, hypothesis) -> research
+- Paper retrieval / citations / patents / regulatory text -> references
+- Pure generic data & ML libraries (no domain flavor) -> data-ml
+- Publication-grade figure / slide / poster -> docs-figures
 
-## 子技能索引
+## Sub-skill index
 
-### A 结构预测与序列设计
+### A Structure prediction & sequence design
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | alphafold2 | > Predict protein structure for monomers and multimers with AlphaFold2 via the ColabFold runner (Mirdita et… |
 | alphafold-database-fetch-and-analyze | > Retrieve and analyze AlphaFold predicted structures for a protein. Use when the user provides a specific… |
@@ -37,9 +37,9 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | rowan | Rowan is a cloud-native molecular modeling and medicinal-chemistry workflow platform with a Python API. Use… |
 | adaptyv | "How to use the Adaptyv Bio Foundry API and Python SDK for protein experiment design, submission, and results… |
 
-### B 序列与基因组工具
+### B Sequence & genomics tooling
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | biopython | Comprehensive molecular biology toolkit. Use for sequence manipulation, file parsing (FASTA/GenBank/PDB),… |
 | gget | "Fast CLI/Python queries to 20+ bioinformatics databases. Use for quick lookups: gene info, BLAST/BLAT, viral… |
@@ -51,9 +51,9 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | etetoolkit | Phylogenetic tree toolkit (ETE). Tree manipulation (Newick/NHX), evolutionary event detection,… |
 | scikit-bio | Biological data toolkit. Sequence analysis, alignments, phylogenetic trees, diversity metrics (alpha/beta,… |
 
-### C 数据库查询
+### C Database lookup
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | uniprot-database | >- Access protein metadata, function, taxonomy, and sequences across UniProtKB, UniParc, and UniRef. Use when… |
 | ensembl-database | > Query the Ensembl database to resolve gene, transcript, and protein IDs, fetch genomic or protein… |
@@ -81,9 +81,9 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | gtex-database | > Use when you want to retrieve quantitative RNA expression data and variant eQTL information from the GTEx… |
 | human-protein-atlas-database | > Use when you want to retrieve semi-quantitative protein expression and spatial localisation data from the… |
 
-### D 单细胞与转录组
+### D Single-cell & transcriptomics
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | scanpy | Standard single-cell RNA-seq analysis pipeline. Use for QC, normalization, dimensionality reduction… |
 | anndata | Data structure for annotated matrices in single-cell analysis. Use when working with .h5ad files or… |
@@ -101,9 +101,9 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | polars-bio | High-performance genomic interval operations and bioinformatics file I/O on Polars DataFrames. Overlap,… |
 | tiledbvcf | Efficient storage and retrieval of genomic variant data using TileDB. Scalable VCF/BCF ingestion, incremental… |
 
-### E 化学与药物发现
+### E Chemistry & drug discovery
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | rdkit | Cheminformatics toolkit for fine-grained molecular control. SMILES/SDF parsing, descriptors (MW, LogP, TPSA),… |
 | datamol | Pythonic wrapper around RDKit with simplified interface and sensible defaults. Preferred for standard drug… |
@@ -117,9 +117,9 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | cobrapy | Constraint-based metabolic modeling (COBRA). FBA, FVA, gene knockouts, flux sampling, SBML models, for… |
 | pymatgen | Materials science toolkit. Crystal structures (CIF, POSCAR), phase diagrams, band structure, DOS, Materials… |
 
-### F 临床与医学
+### F Clinical & medical
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | clinical-decision-support | Generate professional clinical decision support (CDS) documents for pharmaceutical and clinical research… |
 | clinical-reports | Write comprehensive clinical reports including case reports (CARE guidelines), diagnostic reports… |
@@ -137,9 +137,9 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | pathml | Full-featured computational pathology toolkit. Use for advanced WSI analysis including multiplexed… |
 | neuropixels-analysis | Analyze Neuropixels extracellular recordings end-to-end with SpikeInterface. Covers loading SpikeGLX/Open… |
 
-### G 平台与流程
+### G Platforms & pipelines
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | benchling-integration | Benchling Python SDK and REST API integration for registry entities, inventory, ELN entries, workflows,… |
 | labarchive-integration | Electronic lab notebook API integration. Access notebooks, manage entries/attachments, backup notebooks,… |
@@ -153,9 +153,9 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | pacsomatic | Operator toolkit for nf-core/pacsomatic matched tumor-normal workflows from BAM inputs. Use this skill when… |
 | hugging-science | Use when the user is doing AI/ML work in a scientific domain such as biology, chemistry, physics, astronomy,… |
 
-### H 量子与通用模拟
+### H Quantum & general simulation
 
-| 子技能 | 说明 |
+| skill | description |
 |---|---|
 | cirq | Google quantum computing framework. Use when targeting Google Quantum AI hardware, designing noise-aware… |
 | pennylane | Hardware-agnostic quantum ML framework with automatic differentiation. Use when training quantum circuits via… |
@@ -171,11 +171,11 @@ description: 生物/化学/医学计算簇（scientific hub）：结构预测与
 | pufferlib | High-performance reinforcement learning framework optimized for speed and scale. Use when you need fast… |
 
 
-## 跳簇规则
-- 出图 → docs-figures（别在簇内硬画 matplotlib）
-- 统计方法论 → research；统计库本身 → data-ml
-- 写标书/报告 → research
+## Cross-hub handoff
+- Charts & figures -> docs-figures (do not hard-draw matplotlib inside this hub)
+- Statistical methodology -> research; the stats libraries themselves -> data-ml
+- Writing grants / reports -> research
 
-## 使用方式
+## How to use
 
-1. 按上表选中子技能；2. 读 `skills/scientific/<name>/INSTRUCTIONS.md`；3. 其内部脚本/资源相对该文件所在目录解析。
+1. Pick the sub-skill from the index above; 2. read `<hub>/<name>/INSTRUCTIONS.md`; 3. its scripts/assets resolve relative to that file's directory.

@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "hubs": ["research", "scientific", "references", "dev", "data-ml", "docs-figures", "team"],
+  "top": [
+    "autoskill", "credentials", "docx", "find-skills", "generate-image",
+    "grill-me", "grill-with-docs",
+    "grounded-build", "omc-reference", "pdf", "pptx", "product-self-knowledge",
+    "skill-creator", "uv", "workflow-skill-creator", "xlsx"
+  ],
+  "local_only": ["gov-*"],
+  "roles": true
+}
