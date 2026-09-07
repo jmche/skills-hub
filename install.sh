@@ -99,12 +99,14 @@ if [ ! -f "$CANON/install.sh" ]; then
   [ -e "$CANON" ] && { echo "ERROR: $CANON exists but is not skills-hub. Move it away first."; exit 1; }
   echo "[1/4] no local clone found — cloning $REPO"
   mkdir -p "$H"
-  git clone --depth 1 "$REPO" "$CANON"
+  git clone --depth 1 --recurse-submodules "$REPO" "$CANON"
 else
   echo "[1/4] local clone at $CANON"
   if [ -d "$CANON/.git" ] && [ "$NOPULL" -eq 0 ]; then
     git -C "$CANON" pull --quiet && echo "      updated" || echo "      pull skipped/failed; using local state"
   fi
+  # ensure submodules (grounded-build) are checked out
+  [ -d "$CANON/.git" ] && git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
 fi
 cd "$CANON"
 
