@@ -51,7 +51,7 @@ host directories is error-prone. skills-hub fixes this with a hub-and-spoke layo
 
 ![grounded-build demo: frozen snapshot → parallel investigations → cross-review → plan → isolated implementation](docs/img/demo-grounded-build.gif)
 
-*(Illustrated flows. The UniProt line is real API data; grounded-build ships as its own repo — see [Related projects](#related-projects).)*
+*(The routing GIF is fully real — real hub rules, real index rows, real frontmatter, real API response, captured on this machine; only the execution order is scripted. The grounded-build GIF is an illustrative walkthrough of its documented flow.)*
 
 ## Highlights
 

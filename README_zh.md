@@ -49,7 +49,7 @@ Hub。agent 看到的是极小的目录（23 个条目而非 221 个），只在
 
 ![grounded-build 演示：冻结快照 → 并行调查 → 交叉评审 → 计划 → 隔离实现](docs/img/demo-grounded-build.gif)
 
-*（示意流程；UniProt 行为真实 API 数据；grounded-build 是独立仓库，见[相关项目](#相关项目)。）*
+*（路由 GIF 全部为真实内容——真实的 hub 规则、索引行、frontmatter、API 响应，均取自本机；仅执行顺序为脚本编排。grounded-build GIF 为其文档流程的示意演示。）*
 
 ## 精选亮点
 
