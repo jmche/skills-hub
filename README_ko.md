@@ -51,7 +51,7 @@ skills-hub은 코딩 에이전트를 위한 큐레이션된 스킬 라이브러�
 
 ![grounded-build 데모: 고정 스냅샷 → 병렬 조사 → 교차 리뷰 → 계획 → 격리 구현](docs/img/demo-grounded-build.gif)
 
-*(예시 흐름. UniProt 줄은 실제 API 데이터; grounded-build는 별도 리포 — [관련 프로젝트](#관련-프로젝트) 참조.)*
+*(라우팅 GIF은 전부 실제 콘텐츠 — 실제 허브 규칙, 인덱스 행, frontmatter, API 응답을 이 머신에서 캡처; 실행 순서만 스크립트로 지정. grounded-build GIF은 문서화된 흐름의 예시 데모.)*
 
 ## 하이라이트
 
