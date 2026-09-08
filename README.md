@@ -1,50 +1,64 @@
 # skills-hub
 
-A curated agent-skill library with **routing hubs**: 188 sub-skills + 33 roles grouped into
-7 large hubs so hosts (Claude Code, Codex, OpenCode, Cursor, Gemini, Copilot,
-Hermes, DSH) load a small catalog and pull the full instructions on demand.
+**Stop loading 200 skills into your agent's context window.**
 
-> **v0.1.0** — pre-1.0 release; versioning policy below.
->Languages: [English](README.md) · [中文](README_zh.md) · [한국어](README_ko.md)
+skills-hub is a curated library of **188 sub-skills and 33 expert roles** for coding agents,
+organized into 7 routing hubs. Your agent sees a tiny catalog (23 entries instead of 221)
+and pulls full instructions only when a task actually needs them — progressive disclosure
+at the library level.
 
-## What you get
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](VERSION)
+[![Sub-skills](https://img.shields.io/badge/sub--skills-188-8A2BE2)](#whats-inside)
+[![Roles](https://img.shields.io/badge/roles-33-FF69B4)](#whats-inside)
+[![Hosts](https://img.shields.io/badge/hosts-7-4A90D9)](#hosts)
+[![Repo size](https://img.shields.io/github/repo-size/jmche/skills-hub)](https://github.com/jmche/skills-hub)
 
-| Hub | Sub-skills | Covers |
-|---|---|---|
-| `research` | 14 | experimental design, statistics, grants, peer review, academic writing |
-| `scientific` | 116 | structure prediction, genomics, 30+ databases, single-cell, chem, clinical, lab platforms |
-| `references` | 20 | paper search, BibTeX, citation formats, patents, document extraction |
-| `dev` | 6 | frontend, UI/UX systems, cloud, GPU, agent harness |
-| `data-ml` | 21 | polars/dask, time series, stats, deep learning, graphs |
-| `docs-figures` | 11 | publication figures, slides, infographics, Mermaid |
-| `team` | 33 roles | expert personas (SRE, PM, Architect, QA, Security, …) |
+[English](README.md) · [中文](README_zh.md) · [한국어](README_ko.md)
 
-Plus 16 other directly-usable top-level skills: `pdf`, `docx`, `xlsx`, `pptx`, `grill-me`, `grill-with-docs`,
-`find-skills`, `skill-creator`, `workflow-skill-creator`, `credentials`, `uv`,
-`generate-image`, `grounded-build`, `omc-reference`, `autoskill`,
-`product-self-knowledge`.
+## The problem it solves
+
+Dropping 200 raw skills into `~/.claude/skills` burns ~20K tokens of catalog on every
+turn, still leaves the agent guessing which skill to use, and hand-wiring 7 different
+host directories is error-prone. skills-hub fixes this with a hub-and-spoke layout:
+
+```text
+~/.agents/skills/
+├── research/      ┐
+├── scientific/     │  7 hubs — SKILL.md = small index (one line per sub-skill)
+├── references/     │  full instructions live in <hub>/<name>/INSTRUCTIONS.md,
+├── dev/            │  read on demand, never preloaded
+├── data-ml/        │
+├── docs-figures/   │
+└── team/          ┘  33 expert personas, invoked by name or via subagent
+```
+
+- **Catalog cost**: 82,939 → 11,898 chars of host-visible descriptions (−86%)
+- **On demand**: the hub index is read first; only the chosen sub-skill body is loaded
+- **Single source of truth**: every host symlinks into `~/.agents/skills` — edit once,
+  all agents see it; no per-host copies to drift
 
 ## Install
 
-One command (installs to `~/.agents/skills`, asks which hosts to link, checks keys):
+One command (clones to `~/.agents/skills`, asks which hosts to link, checks API keys):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash
 ```
 
-Interactive selection (pick which hubs/skills to install):
+Interactive selection (pick hubs/skills one by one):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- --select
 ```
 
-Skip host linking (library only, for DSH-style hosts that read `~/.agents/skills`):
+Library only (for hosts like DSH that read `~/.agents/skills` directly):
 
 ```bash
-curl -fsSL … | bash -s -- --skip-hosts
+curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- --skip-hosts
 ```
 
-Alternative — npm ecosystem (`npx skills`):
+Or via the npm ecosystem:
 
 ```bash
 npx skills add jmche/skills-hub -s scientific -a claude
@@ -52,9 +66,8 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 ### Hosts
 
-The installer detects installed coding agents and offers to link the library
-into their skill directories (purely additive symlinks, idempotent, never
-deletes your local skills):
+The installer detects installed coding agents and links the library into their skill
+directories — purely additive symlinks, idempotent, never deletes your local skills:
 
 | Host | Skills dir | Roles dir |
 |---|---|---|
@@ -66,61 +79,70 @@ deletes your local skills):
 | GitHub Copilot | `~/.copilot/skills` | `~/.copilot/agents` |
 | Hermes | `~/.hermes/skills` | — |
 
-## API keys
+## What's inside
 
-Many skills benefit from API keys (OpenAlex, NCBI, Exa, OpenRouter, …).
-The required keys and where to get them: [`env.example`](env.example).
+| Hub | Sub-skills | Covers |
+|---|---|---|
+| `research` | 14 | experimental design, statistics, grants, peer review, academic writing |
+| `scientific` | 116 | structure prediction, genomics, 30+ databases, single-cell, cheminformatics, clinical, lab platforms |
+| `references` | 20 | paper search, BibTeX, citation formats, patents, document extraction |
+| `dev` | 6 | frontend, UI/UX systems, cloud, GPU, agent harness |
+| `data-ml` | 21 | polars/dask, time series, stats, deep learning, graphs |
+| `docs-figures` | 11 | publication figures, slides, infographics, Mermaid |
+| `team` | 33 roles | SRE, PM, Architect, QA, Security, … |
 
-Put your real values in `~/.shell_env` (or `.env` in the repo root) and source
-it from `~/.bashrc` **and** `~/.profile`:
+Plus 16 other top-level skills: `pdf`, `docx`, `xlsx`, `pptx`, `grill-me`,
+`grill-with-docs`, `find-skills`, `skill-creator`, `workflow-skill-creator`,
+`credentials`, `uv`, `generate-image`, `grounded-build` (git submodule),
+`omc-reference`, `autoskill`, `product-self-knowledge`.
 
-```sh
-[ -f "$HOME/.shell_env" ] && . "$HOME/.shell_env"
-```
+Each hub's `SKILL.md` carries the full sub-skill index with one-line descriptions and
+routing rules (when to use this hub vs. a neighboring one).
 
-The installer offers to set this up (`install_env.py`) and verifies with
-`bash -lc` that the keys are visible to non-interactive shells.
+## Updating
 
-## Update / uninstall
-
-One line, works from anywhere (no need to cd into the repo):
+One line, from any directory:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-Or from the repo itself:
+Or inside the repo: `bash install.sh update` (git pull + submodule sync).
+Also available: `hidden` (list non-published skills) · `enable <name>` (restore one) ·
+`status` (what's installed and where).
 
-```bash
-bash ~/.agents/skills/install.sh update      # git pull + submodule sync
-bash ~/.agents/skills/install.sh hidden      # list moved-away (non-published) skills
-bash ~/.agents/skills/install.sh enable <name>
-bash ~/.agents/skills/install.sh status
-# uninstall
-rm -rf ~/.agents/skills
+## API keys
+
+Many skills benefit from keys (OpenAlex, NCBI, Exa, OpenRouter, …). The full list with
+signup links lives in [`env.example`](env.example). Real values go in `~/.shell_env`
+(or `.env` next to this README), sourced from both `~/.bashrc` and `~/.profile`:
+
+```sh
+[ -f "$HOME/.shell_env" ] && . "$HOME/.shell_env"
 ```
 
-## Versioning
+The installer offers to set this up and verifies that keys are visible under `bash -lc`.
 
-`0.x.y` while the library is not yet product-grade (current: **v0.1.0**):
+## Design notes
 
-- **patch** (0.1.x) — wording/description fixes, gate & script bugfixes
-- **minor** (0.y.0) — skills added/removed, hub structure changes, installer behavior
-- **1.0.0** — reserved; will be tagged only on an explicit product-grade declaration
+- **C1 gate**: sub-skill dirs contain only `INSTRUCTIONS.md`, never a stray `SKILL.md` —
+  so deep scanners (e.g. `npx skills`) cannot double-register 188 sub-skills as top-level.
+- **Additive host links**: the installer never overwrites a host-local skill; it only adds
+  links for skills the host is missing.
+- **Private content stays private**: personal skills can sit next to the library and stay
+  out of version control (our `gov-*` case) — a fresh clone never contains them.
 
 ## License
 
-MIT for the library (routing hubs, curation, installer, tooling).
-Sub-skills curate upstream content; full attribution in
-[`LICENSE-NOTES.md`](LICENSE-NOTES.md) and machine-readable
-[`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv). Some sub-skills document how to
-call third-party tools (e.g. ProteinMPNN → MIT, OpenMS → BSD-3-Clause) —
-the documents stay MIT; the tools keep their own permissive licenses (see
-notes).
+MIT for the library (routing hubs, curation, installer, tooling). Sub-skills curate
+upstream content; attribution in [`LICENSE-NOTES.md`](LICENSE-NOTES.md) and the
+machine-readable [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv). Some sub-skills document
+third-party tools (e.g. ProteinMPNN → MIT, OpenMS → BSD-3-Clause) — documents stay MIT;
+the tools keep their own permissive licenses.
 
-## Maintainer tools (not needed by users)
+## Related projects
 
-- `sync.sh` — regenerate hub indexes, run gates, refresh host links
-- `check.py` — C1–C9 consistency gates (no stray SKILL.md, links, depth, catalog size…)
-- `gen_routers.py` — collect skills into hubs, render hub `SKILL.md` indexes
-- `_assignments.json` / `routes_meta.yaml` — the two human-maintained inputs
+- [grounded-build](https://github.com/jmche/grounded-build) — repo-grounded implementation
+  plans for coding agents (bundled as a git submodule)
+- [agency-agents](https://github.com/msitarzewski/agency-agents) — source of the 33 role
+  personas in `team/` (MIT)
