@@ -67,8 +67,16 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 ## 업데이트 / 제거
 
+한 줄 업데이트, 어느 디렉터리에서든 실행 가능(리포 진입 불필요):
+
 ```bash
-bash ~/.agents/skills/install.sh update       # git pull
+curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
+```
+
+또는 리포 안에서:
+
+```bash
+bash ~/.agents/skills/install.sh update       # git pull + submodule 동기화
 bash ~/.agents/skills/install.sh hidden       # 옮기진(未공개) 스킬 목록
 bash ~/.agents/skills/install.sh enable <name>
 bash ~/.agents/skills/install.sh status

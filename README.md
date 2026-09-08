@@ -83,8 +83,16 @@ The installer offers to set this up (`install_env.py`) and verifies with
 
 ## Update / uninstall
 
+One line, works from anywhere (no need to cd into the repo):
+
 ```bash
-bash ~/.agents/skills/install.sh update      # git pull
+curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
+```
+
+Or from the repo itself:
+
+```bash
+bash ~/.agents/skills/install.sh update      # git pull + submodule sync
 bash ~/.agents/skills/install.sh hidden      # list moved-away (non-published) skills
 bash ~/.agents/skills/install.sh enable <name>
 bash ~/.agents/skills/install.sh status

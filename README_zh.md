@@ -59,8 +59,16 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 ## 更新 / 卸载
 
+一行命令，任意目录执行（无需进入仓库）：
+
 ```bash
-bash ~/.agents/skills/install.sh update       # git pull
+curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
+```
+
+或在仓库内：
+
+```bash
+bash ~/.agents/skills/install.sh update       # git pull + submodule 同步
 bash ~/.agents/skills/install.sh hidden       # 列出被移走的（未发布）技能
 bash ~/.agents/skills/install.sh enable <name>
 bash ~/.agents/skills/install.sh status
