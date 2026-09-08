@@ -41,6 +41,18 @@ host directories is error-prone. skills-hub fixes this with a hub-and-spoke layo
 
 ![Catalog before and after skills-hub](docs/img/catalog.svg)
 
+## See it in action
+
+**Routing — a protein lookup touches exactly one sub-skill:**
+
+![Routing demo: catalog → scientific hub → uniprot-database → real UniProt API result](docs/img/demo-routing.gif)
+
+**grounded-build (bundled as a submodule) — evidence-backed plans on a frozen SHA:**
+
+![grounded-build demo: frozen snapshot → parallel investigations → cross-review → plan → isolated implementation](docs/img/demo-grounded-build.gif)
+
+*(Illustrated flows. The UniProt line is real API data; grounded-build ships as its own repo — see [Related projects](#related-projects).)*
+
 ## Highlights
 
 A few of the 188, to make it concrete:

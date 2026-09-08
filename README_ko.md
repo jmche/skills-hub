@@ -41,6 +41,18 @@ skills-hub은 코딩 에이전트를 위한 큐레이션된 스킬 라이브러�
 
 ![skills-hub 전후 비교](docs/img/catalog.svg)
 
+## 실제 동작
+
+**라우팅 — 단백질 조회가 건드리는 서브스킬은 정확히 하나:**
+
+![라우팅 데모: catalog → scientific hub → uniprot-database → 실제 UniProt API 결과](docs/img/demo-routing.gif)
+
+**grounded-build(submodule로 통합) — 고정 SHA 기반의 증거 중심 계획:**
+
+![grounded-build 데모: 고정 스냅샷 → 병렬 조사 → 교차 리뷰 → 계획 → 격리 구현](docs/img/demo-grounded-build.gif)
+
+*(예시 흐름. UniProt 줄은 실제 API 데이터; grounded-build는 별도 리포 — [관련 프로젝트](#관련-프로젝트) 참조.)*
+
 ## 하이라이트
 
 188개 중 일부, 구체적으로:

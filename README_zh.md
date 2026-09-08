@@ -39,6 +39,18 @@ Hub。agent 看到的是极小的目录（23 个条目而非 221 个），只在
 
 ![skills-hub 前后对比](docs/img/catalog.svg)
 
+## 实际效果
+
+**路由 —— 一次蛋白查询只触碰一个子技能：**
+
+![路由演示：catalog → scientific hub → uniprot-database → 真实 UniProt API 结果](docs/img/demo-routing.gif)
+
+**grounded-build（以 submodule 集成）—— 冻结 SHA 上的证据驱动规划：**
+
+![grounded-build 演示：冻结快照 → 并行调查 → 交叉评审 → 计划 → 隔离实现](docs/img/demo-grounded-build.gif)
+
+*（示意流程；UniProt 行为真实 API 数据；grounded-build 是独立仓库，见[相关项目](#相关项目)。）*
+
 ## 精选亮点
 
 188 个中的一小部分，先看具体的：
