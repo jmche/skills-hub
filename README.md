@@ -8,6 +8,7 @@ and pulls full instructions only when a task actually needs them — progressive
 at the library level.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/jmche/skills-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/jmche/skills-hub/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](VERSION)
 [![Sub-skills](https://img.shields.io/badge/sub--skills-188-8A2BE2)](#whats-inside)
 [![Roles](https://img.shields.io/badge/roles-33-FF69B4)](#whats-inside)
@@ -37,6 +38,34 @@ host directories is error-prone. skills-hub fixes this with a hub-and-spoke layo
 - **On demand**: the hub index is read first; only the chosen sub-skill body is loaded
 - **Single source of truth**: every host symlinks into `~/.agents/skills` — edit once,
   all agents see it; no per-host copies to drift
+
+![Catalog before and after skills-hub](docs/img/catalog.svg)
+
+## Highlights
+
+A few of the 188, to make it concrete:
+
+| Skill | What it gives the agent |
+|---|---|
+| `scientific/alphafold2` | protein structure prediction from sequence |
+| `scientific/scanpy` | full single-cell RNA-seq analysis workflows |
+| `scientific/gnomad-database` | population variant-frequency lookups with proper API handling |
+| `scientific/rdkit` | cheminformatics: descriptors, substructure search, reactions |
+| `scientific/diffdock` | diffusion-based molecular docking |
+| `scientific/opentrons-integration` | liquid-handling lab protocols |
+| `references/pubmed-database` | literature search with rate-limit-aware E-utilities |
+| `dev/ui-ux-pro-max` | 84 UI styles × 22 stacks for frontend work |
+| `team/engineering-sre` | production incident review with an SRE's checklist |
+
+## How this is different
+
+| | Raw dump (200 dirs) | Awesome-list | skills-hub |
+|---|---|---|---|
+| Catalog cost | ~20K tokens every turn | — (links, not installed) | **~5K tokens, on demand** |
+| Curation | manual | good reading list | **installed & routed** |
+| Routing | agent guesses | — | **hub rules + cross-hub handoff** |
+| Multi-host | hand-copy ×7 | manual | **one symlink each, idempotent** |
+| Updates | re-download | manual | **one-line update** |
 
 ## Install
 

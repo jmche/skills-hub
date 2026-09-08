@@ -7,6 +7,7 @@ Hub。agent 看到的是极小的目录（23 个条目而非 221 个），只在
 ——库级别的渐进式披露。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/jmche/skills-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/jmche/skills-hub/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](VERSION)
 [![Sub-skills](https://img.shields.io/badge/sub--skills-188-8A2BE2)](#包含内容)
 [![Roles](https://img.shields.io/badge/roles-33-FF69B4)](#包含内容)
@@ -35,6 +36,34 @@ Hub。agent 看到的是极小的目录（23 个条目而非 221 个），只在
 - **目录开销**：宿主可见 description 从 82,939 字符降到 11,898 字符（−86%）
 - **按需加载**：先读 Hub 索引，只有选中的子技能才读全文
 - **单一事实源**：所有宿主软链到 `~/.agents/skills` —— 改一处，全部生效，无副本漂移
+
+![skills-hub 前后对比](docs/img/catalog.svg)
+
+## 精选亮点
+
+188 个中的一小部分，先看具体的：
+
+| 技能 | 给 agent 的能力 |
+|---|---|
+| `scientific/alphafold2` | 从序列预测蛋白质结构 |
+| `scientific/scanpy` | 完整的单细胞 RNA-seq 分析流程 |
+| `scientific/gnomad-database` | 人群变异频率查询（含 API 限流处理） |
+| `scientific/rdkit` | 化学信息学：描述符、子结构搜索、反应 |
+| `scientific/diffdock` | 扩散模型分子对接 |
+| `scientific/opentrons-integration` | 移液工作站实验协议 |
+| `references/pubmed-database` | PubMed 文献检索（含限速处理） |
+| `dev/ui-ux-pro-max` | 84 种 UI 风格 × 22 技术栈 |
+| `team/engineering-sre` | 以 SRE 视角复盘线上故障 |
+
+## 和其他方案的区别
+
+| | 原始堆放（200 个目录） | Awesome-list | skills-hub |
+|---|---|---|---|
+| 目录开销 | 每轮 ~2 万 token | —（只是链接） | **~5K token，按需加载** |
+| 策展 | 手动 | 好书单 | **已安装、可路由** |
+| 路由 | agent 猜 | — | **hub 判据 + 跳簇规则** |
+| 多宿主 | 手工复制 ×7 | 手动 | **每家一条软链，幂等** |
+| 更新 | 重新下载 | 手动 | **一行命令** |
 
 ## 安装
 

@@ -8,6 +8,7 @@ skills-hub은 코딩 에이전트를 위한 큐레이션된 스킬 라이브러�
 점진적 공개(progressive disclosure).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/jmche/skills-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/jmche/skills-hub/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](VERSION)
 [![Sub-skills](https://img.shields.io/badge/sub--skills-188-8A2BE2)](#포함된-내용)
 [![Roles](https://img.shields.io/badge/roles-33-FF69B4)](#포함된-내용)
@@ -37,6 +38,34 @@ skills-hub은 코딩 에이전트를 위한 큐레이션된 스킬 라이브러�
 - **온디맨드**: 허브 인덱스를 먼저 읽고, 선택된 서브스킬 본문만 로드
 - **단일 진실 공급원**: 모든 호스트가 `~/.agents/skills`로 심링크 — 한 곳만 고치면
   전체 에이전트에 반영, 사본 드리프트 없음
+
+![skills-hub 전후 비교](docs/img/catalog.svg)
+
+## 하이라이트
+
+188개 중 일부, 구체적으로:
+
+| 스킬 | 에이전트에게 주는 능력 |
+|---|---|
+| `scientific/alphafold2` | 서열 기반 단백질 구조 예측 |
+| `scientific/scanpy` | 단일세포 RNA-seq 전체 분석 워크플로 |
+| `scientific/gnomad-database` | 인구 변이 빈도 조회(API 처리 포함) |
+| `scientific/rdkit` | 화학정보학: 기술자, 부분구조 검색, 반응 |
+| `scientific/diffdock` | 확산 모델 분자 도킹 |
+| `scientific/opentrons-integration` | 자동 피펫팅 실험 프로토콜 |
+| `references/pubmed-database` | PubMed 문헌 검색(속도 제한 처리 포함) |
+| `dev/ui-ux-pro-max` | 84가지 UI 스타일 × 22 스택 |
+| `team/engineering-sre` | SRE 관점의 장애 리뷰 |
+
+## 다른 방식과의 차이
+
+| | 원시 덤프(200 디렉터리) | Awesome-list | skills-hub |
+|---|---|---|---|
+| 카탈로그 비용 | 매 턴 ~2만 토큰 | —(링크만) | **~5K 토큰, 온디맨드** |
+| 큐레이션 | 수동 | 좋은 읽기 목록 | **설치됨 + 라우팅** |
+| 라우팅 | 에이전트가 추측 | — | **허브 규칙 + 허브 간 인계** |
+| 멀티 호스트 | 수동 복사 ×7 | 수동 | **호스트당 심링크 1개, 멱등** |
+| 업데이트 | 재다운로드 | 수동 | **한 줄** |
 
 ## 설치
 
