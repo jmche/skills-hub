@@ -27,7 +27,7 @@ description: Research methodology hub: experimental design, statistical tests an
 | arbor | Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an… |
 | research-grants | Write competitive research proposals for NSF, NIH, DOE, DARPA, and Taiwan NSTC. Agency-specific formatting,… |
 | hypogenic | Automated LLM-driven hypothesis generation and testing on tabular datasets. Use when you want to… |
-| predictingthepast | > Ancient text restoration, attribution, dating, contextualization, and embedding via Aeneas (Latin) / Ithaca… |
+| predictingthepast | Ancient text restoration, attribution, dating, contextualization, and embedding via Aeneas (Latin) / Ithaca… |
 | market-research-reports | Generate comprehensive market research reports (50+ pages) in the style of top consulting firms (McKinsey,… |
 
 ## Cross-hub handoff

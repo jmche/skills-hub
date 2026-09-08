@@ -18,20 +18,20 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 
 | skill | description |
 |---|---|
-| alphafold2 | > Predict protein structure for monomers and multimers with AlphaFold2 via the ColabFold runner (Mirdita et… |
-| alphafold-database-fetch-and-analyze | > Retrieve and analyze AlphaFold predicted structures for a protein. Use when the user provides a specific… |
-| boltz | > Structure prediction for protein, nucleic-acid, and small-molecule complexes with Boltz-2 (Passaro &… |
-| chai1 | > Structure prediction for protein, nucleic-acid, and small-molecule complexes with the Chai-1 foundation… |
+| alphafold2 | Predict protein structure for monomers and multimers with AlphaFold2 via the ColabFold runner (Mirdita et al.… |
+| alphafold-database-fetch-and-analyze | Retrieve and analyze AlphaFold predicted structures for a protein. Use when the user provides a specific… |
+| boltz | Structure prediction for protein, nucleic-acid, and small-molecule complexes with Boltz-2 (Passaro & Wohlwend… |
+| chai1 | Structure prediction for protein, nucleic-acid, and small-molecule complexes with the Chai-1 foundation model… |
 | esm | Use when working directly with the `esm` Python SDK, ESM3 or ESMC model IDs, Forge/Biohub inference clients,… |
-| esmfold2 | > Biohub ESMFold2 / ESMFold2-Fast all-atom co-folding (Candido et al. 2026, github.com/Biohub/esm).… |
-| openfold3 | > Structure prediction using OpenFold3, an open-weights PyTorch reproduction of AlphaFold3 from the… |
-| foldseek-structural-search | > Performs 3D structural searches of proteins against various databases (PDB, AlphaFold, CATH, MGnify, etc.)… |
-| pymol | > Visualize, analyze, and render protein and molecular structures using PyMOL. Use when the user wants to… |
+| esmfold2 | Biohub ESMFold2 / ESMFold2-Fast all-atom co-folding (Candido et al. 2026, github.com/Biohub/esm).… |
+| openfold3 | Structure prediction using OpenFold3, an open-weights PyTorch reproduction of AlphaFold3 from the AlQuraishi… |
+| foldseek-structural-search | Performs 3D structural searches of proteins against various databases (PDB, AlphaFold, CATH, MGnify, etc.)… |
+| pymol | Visualize, analyze, and render protein and molecular structures using PyMOL. Use when the user wants to… |
 | molecular-dynamics | Run and analyze molecular dynamics simulations with OpenMM and MDAnalysis. Set up protein/small molecule… |
 | glycoengineering | Analyze and engineer protein glycosylation. Scan sequences for N-glycosylation sequons (N-X-S/T), predict… |
-| solublempnn | > Inverse-fold a backbone with SolubleMPNN — ProteinMPNN retrained on a soluble-PDB subset (Dauparas et al.… |
-| ligandmpnn | > Inverse-fold a backbone with ligand, nucleic-acid, and metal context using LigandMPNN (Dauparas et al.… |
-| proteinmpnn | > Inverse-fold a protein backbone (PDB structure) into amino-acid sequence with ProteinMPNN (Dauparas et al.… |
+| solublempnn | Inverse-fold a backbone with SolubleMPNN — ProteinMPNN retrained on a soluble-PDB subset (Dauparas et al.… |
+| ligandmpnn | Inverse-fold a backbone with ligand, nucleic-acid, and metal context using LigandMPNN (Dauparas et al. 2023,… |
+| proteinmpnn | Inverse-fold a protein backbone (PDB structure) into amino-acid sequence with ProteinMPNN (Dauparas et al.… |
 | diffdock | DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or… |
 | tamarind | Access a collection of open-source molecular design and structural biology tools on the Tamarind Bio… |
 | rowan | Rowan is a cloud-native molecular modeling and medicinal-chemistry workflow platform with a Python API. Use… |
@@ -44,9 +44,9 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 | biopython | Comprehensive molecular biology toolkit. Use for sequence manipulation, file parsing (FASTA/GenBank/PDB),… |
 | gget | "Fast CLI/Python queries to 20+ bioinformatics databases. Use for quick lookups: gene info, BLAST/BLAT, viral… |
 | bioservices | Unified Python interface to 40+ bioinformatics services. Use when querying multiple databases (UniProt, KEGG,… |
-| ncbi-sequence-fetch | > Retrieve protein and nucleotide sequences from NCBI databases using E-utilities. Supports direct accession… |
-| protein-sequence-msa | > Performs multiple sequence alignment of proteins with EBI Clustal Omega. Use when you need to align… |
-| protein-sequence-similarity-search | > Searches for homologous protein sequences using MMseqs2 (fast, default) or BLAST (comprehensive, fallback).… |
+| ncbi-sequence-fetch | Retrieve protein and nucleotide sequences from NCBI databases using E-utilities. Supports direct accession… |
+| protein-sequence-msa | Performs multiple sequence alignment of proteins with EBI Clustal Omega. Use when you need to align multiple… |
+| protein-sequence-similarity-search | Searches for homologous protein sequences using MMseqs2 (fast, default) or BLAST (comprehensive, fallback).… |
 | phylogenetics | Build and analyze phylogenetic trees using MAFFT (multiple alignment), IQ-TREE 2 (maximum likelihood), and… |
 | etetoolkit | Phylogenetic tree toolkit (ETE). Tree manipulation (Newick/NHX), evolutionary event detection,… |
 | scikit-bio | Biological data toolkit. Sequence analysis, alignments, phylogenetic trees, diversity metrics (alpha/beta,… |
@@ -55,31 +55,31 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 
 | skill | description |
 |---|---|
-| uniprot-database | >- Access protein metadata, function, taxonomy, and sequences across UniProtKB, UniParc, and UniRef. Use when… |
-| ensembl-database | > Query the Ensembl database to resolve gene, transcript, and protein IDs, fetch genomic or protein… |
-| pdb-database | > Use when you want to search for or download experimentally-determined 3D structures for biomolecules… |
-| pubchem-database | > Query PubChem, search by name/CID/SMILES, retrieve properties, similarity/substructure searches,… |
-| chembl-database | > Query the ChEMBL database for bioactive molecules, drug targets, bioactivity data, approved drugs, and… |
-| gnomad-database | > Query the Genome Aggregation Database (gnomAD). Use when determining the rarity or allele frequency of… |
-| onekgpd | > Query the 1000 Genomes Project dataset (3,202 whole-genome-sequenced individuals, GRCh38) at the level of… |
-| dbsnp-database | > Use when you want to look up, map, and search for short genetic variants (SNPs, indels) in NCBI's dbSNP… |
-| clinvar-database | > Use when needing clinical significance, pathogenicity classifications (e.g., Pathogenic, Benign, VUS),… |
+| uniprot-database | Access protein metadata, function, taxonomy, and sequences across UniProtKB, UniParc, and UniRef. Use when… |
+| ensembl-database | Query the Ensembl database to resolve gene, transcript, and protein IDs, fetch genomic or protein sequences,… |
+| pdb-database | Use when you want to search for or download experimentally-determined 3D structures for biomolecules… |
+| pubchem-database | Query PubChem, search by name/CID/SMILES, retrieve properties, similarity/substructure searches, bioactivity,… |
+| chembl-database | Query the ChEMBL database for bioactive molecules, drug targets, bioactivity data, approved drugs, and… |
+| gnomad-database | Query the Genome Aggregation Database (gnomAD). Use when determining the rarity or allele frequency of… |
+| onekgpd | Query the 1000 Genomes Project dataset (3,202 whole-genome-sequenced individuals, GRCh38) at the level of… |
+| dbsnp-database | Use when you want to look up, map, and search for short genetic variants (SNPs, indels) in NCBI's dbSNP… |
+| clinvar-database | Use when needing clinical significance, pathogenicity classifications (e.g., Pathogenic, Benign, VUS),… |
 | depmap | Query the Cancer Dependency Map (DepMap) for cancer cell line gene dependency scores (CRISPR Chronos), drug… |
-| opentargets-database | > Query Open Targets Platform for target-disease associations, drug target discovery, tractability/safety… |
+| opentargets-database | Query Open Targets Platform for target-disease associations, drug target discovery, tractability/safety data,… |
 | primekg | Query the Precision Medicine Knowledge Graph (PrimeKG) for multiscale biological data including genes, drugs,… |
-| string-database | > Query the STRING database for protein-protein interactions (PPIs), functional enrichment, and homology. Use… |
-| embl-ebi-ols | > Query and search the EMBL-EBI Ontology Lookup Service (OLS) for biomedical ontology terms, definitions, and… |
-| encode-ccres-database | > Query the ENCODE Registry of cis-Regulatory Elements (cCREs) via the SCREEN GraphQL API, or make custom… |
-| interpro-database | > Identify domains, families, and sites in proteins; find all proteins in a family or sharing a domain;… |
-| jaspar-database | > Query the JASPAR database for Transcription Factor (TF) binding profiles. Use when retrieving Position… |
-| quickgo-database | > Query the QuickGO and Evidence & Conclusion Ontology (ECO) REST API. Use this when you need to map genes to… |
-| reactome-database | > Query the Reactome database (Analysis and Content Services). Use when the user asks about pathway analysis,… |
-| ucsc-conservation-and-tfbs | > Fetch Evolutionary Conservation scores (phyloP, phastCons) and Transcription Factor Binding Sites (TFBS)… |
-| unibind-database | >- Queries the UniBind database for experimentally validated transcription factor (TF) binding sites. Use… |
-| alphagenome-single-variant-analysis | > Analyzes genetic variant effects on gene expression (RNA-seq), chromatin accessibility (DNASE), histone… |
-| clinical-trials-database | > Query ClinicalTrials.gov via APIv2. Use when you want to search for trials by condition, drug, location,… |
-| gtex-database | > Use when you want to retrieve quantitative RNA expression data and variant eQTL information from the GTEx… |
-| human-protein-atlas-database | > Use when you want to retrieve semi-quantitative protein expression and spatial localisation data from the… |
+| string-database | Query the STRING database for protein-protein interactions (PPIs), functional enrichment, and homology. Use… |
+| embl-ebi-ols | Query and search the EMBL-EBI Ontology Lookup Service (OLS) for biomedical ontology terms, definitions, and… |
+| encode-ccres-database | Query the ENCODE Registry of cis-Regulatory Elements (cCREs) via the SCREEN GraphQL API, or make custom… |
+| interpro-database | Identify domains, families, and sites in proteins; find all proteins in a family or sharing a domain; explore… |
+| jaspar-database | Query the JASPAR database for Transcription Factor (TF) binding profiles. Use when retrieving Position… |
+| quickgo-database | Query the QuickGO and Evidence & Conclusion Ontology (ECO) REST API. Use this when you need to map genes to… |
+| reactome-database | Query the Reactome database (Analysis and Content Services). Use when the user asks about pathway analysis,… |
+| ucsc-conservation-and-tfbs | Fetch Evolutionary Conservation scores (phyloP, phastCons) and Transcription Factor Binding Sites (TFBS) from… |
+| unibind-database | Queries the UniBind database for experimentally validated transcription factor (TF) binding sites. Use when… |
+| alphagenome-single-variant-analysis | Analyzes genetic variant effects on gene expression (RNA-seq), chromatin accessibility (DNASE), histone marks… |
+| clinical-trials-database | Query ClinicalTrials.gov via APIv2. Use when you want to search for trials by condition, drug, location,… |
+| gtex-database | Use when you want to retrieve quantitative RNA expression data and variant eQTL information from the GTEx… |
+| human-protein-atlas-database | Use when you want to retrieve semi-quantitative protein expression and spatial localisation data from the… |
 
 ### D Single-cell & transcriptomics
 
@@ -123,13 +123,13 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 |---|---|
 | clinical-decision-support | Generate professional clinical decision support (CDS) documents for pharmaceutical and clinical research… |
 | clinical-reports | Write comprehensive clinical reports including case reports (CARE guidelines), diagnostic reports… |
-| indication-dossier | > Generate a therapeutic indication dossier. Covers the patient population, epidemiology, disease biology,… |
+| indication-dossier | Generate a therapeutic indication dossier. Covers the patient population, epidemiology, disease biology,… |
 | iso-13485-certification | Comprehensive toolkit for preparing ISO 13485 certification documentation for medical device Quality… |
 | treatment-plans | Generate concise (3-4 page), focused medical treatment plans in LaTeX/PDF format for all clinical… |
 | pyhealth | Build clinical/healthcare deep-learning pipelines with PyHealth — loading EHR/signal/imaging datasets… |
 | neurokit2 | Comprehensive biosignal processing toolkit for analyzing physiological data including ECG, EEG, EDA, RSP,… |
 | imaging-data-commons | Query and download public cancer imaging data from NCI Imaging Data Commons using idc-index. Use for… |
-| bids | > Use this skill when working with Brain Imaging Data Structure (BIDS) datasets: organizing neuroscience and… |
+| bids | Use this skill when working with Brain Imaging Data Structure (BIDS) datasets: organizing neuroscience and… |
 | flowio | Parse FCS (Flow Cytometry Standard) files v2.0-3.1. Extract events as NumPy arrays, read metadata/channels,… |
 | pydicom | Python library for working with DICOM (Digital Imaging and Communications in Medicine) files. Use this skill… |
 | omero-integration | Microscopy data management platform. Access images via Python, retrieve datasets, analyze pixels, manage… |

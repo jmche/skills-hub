@@ -43,7 +43,8 @@ def fm_name_desc(skilldir):
     def grab(key):
         mm = re.search(rf'^{key}:\s*(.*?)(?=\n\w+:\s|\Z)', fm, re.S | re.M)
         if not mm: return None
-        return re.sub(r'\s+', ' ', mm.group(1).strip())
+        d = re.sub(r'\s+', ' ', mm.group(1).strip())
+        return re.sub(r'^(?:>[-+]?|\|[-+]?)[ ]?', '', d)
     return grab('name'), grab('description')
 
 def oneline(desc, n=110):
@@ -91,7 +92,9 @@ def generate(hub, meta, assignments, index_entries):
         desc = None
         if m:
             dm = re.search(r'description:\s*(.*?)(?=\n\w+:\s|\Z)', m.group(1), re.S | re.M)
-            if dm: desc = re.sub(r'\s+',' ', dm.group(1).strip())
+            if dm:
+                desc = re.sub(r'\s+',' ', dm.group(1).strip())
+                desc = re.sub(r'^(?:>[-+]?|\|[-+]?)[ ]?', '', desc)
         entries.append((name, oneline(desc)))
     sections = meta_h.get('sections')
     if sections:
