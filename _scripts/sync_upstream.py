@@ -110,6 +110,9 @@ def main():
         msg = f"sync {name}: {old_ver} -> {new_ver} ({cfg['repo']}@{ref})"
         c = sh(f'git add -A "{cfg["vendored"]}" && git commit -m "{msg}"')
         print("  committed:", msg)
+        if "--push" in sys.argv:
+            p = sh("git push origin HEAD")
+            print("  pushed" if p.returncode == 0 else f"  push failed: {p.stderr.strip()[:120]}")
     else:
         print("  (dry: pass --commit to commit)")
     shutil.rmtree(tmp, ignore_errors=True)

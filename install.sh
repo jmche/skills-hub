@@ -81,6 +81,17 @@ case "$SUB" in
     [ -d "$CANON/.git" ] || { echo "no git repo at $CANON"; exit 1; }
     git -C "$CANON" pull
     git -C "$CANON" submodule update --init --recursive
+    # vendored third-party skills (see upstreams.json): if a newer STABLE
+    # release exists upstream, sync it in. Only done when this machine can
+    # push to origin (i.e. the maintainer) - end users receive the bump
+    # through this very git pull instead.
+    if [ -f "$CANON/upstreams.json" ] && command -v python3 >/dev/null 2>&1; then
+      if git -C "$CANON" push --dry-run >/dev/null 2>&1; then
+        python3 "$CANON/_scripts/check_upstreams.py" --sync --push || true
+      else
+        echo "(vendored-skill sync skipped: no push access here - upstream bumps arrive via git pull)"
+      fi
+    fi
     exit 0 ;;
   sync-upstream)
     [ -n "$SUBARG" ] || { echo "usage: install.sh sync-upstream <name>   (see upstreams.json)"; exit 2; }
