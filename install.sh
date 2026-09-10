@@ -47,6 +47,7 @@ usage() { awk 'NR==1{next} /^# =/{next} /^$/{next} sub{exit} {sub(/^# ?/,""); pr
 while [ $# -gt 0 ]; do
   case "$1" in
     --yes) YES=1; shift ;;
+    --update) SUB="update"; shift ;;
     --select) SELECT=1; shift ;;
     --skip-hosts) SKIP_HOSTS=1; shift ;;
     --skip-env) SKIP_ENV=1; shift ;;
@@ -81,16 +82,29 @@ case "$SUB" in
     [ -d "$CANON/.git" ] || { echo "no git repo at $CANON"; exit 1; }
     git -C "$CANON" pull
     git -C "$CANON" submodule update --init --recursive
-    # vendored third-party skills (see upstreams.json): if a newer STABLE
-    # release exists upstream, sync it in. Only done when this machine can
-    # push to origin (i.e. the maintainer) - end users receive the bump
-    # through this very git pull instead.
-    if [ -f "$CANON/upstreams.json" ] && command -v python3 >/dev/null 2>&1; then
-      if git -C "$CANON" push --dry-run >/dev/null 2>&1; then
-        python3 "$CANON/_scripts/check_upstreams.py" --sync --push || true
-      else
-        echo "(vendored-skill sync skipped: no push access here - upstream bumps arrive via git pull)"
+    # grounded-build: fast-forward the submodule itself when it sits on a
+    # branch (maintainer checkout), then bump the pointer here. Users on a
+    # detached checkout simply receive the pinned commit from `git pull`.
+    if [ -e "$CANON/grounded-build/.git" ]; then
+      if branch=$(git -C "$CANON/grounded-build" symbolic-ref --short HEAD 2>/dev/null); then
+        if git -C "$CANON/grounded-build" fetch --quiet origin && \
+           git -C "$CANON/grounded-build" merge --quiet --ff-only "origin/$branch" 2>/dev/null; then
+          newsha=$(git -C "$CANON/grounded-build" rev-parse --short HEAD)
+          if ! git -C "$CANON" diff --quiet -- grounded-build; then
+            git -C "$CANON" add grounded-build
+            git -C "$CANON" commit -q -m "bump grounded-build submodule to ${newsha} (${branch})"
+            echo "grounded-build: updated to ${newsha}"
+          else
+            echo "grounded-build: already at ${newsha}"
+          fi
+        fi
       fi
+    fi
+    # vendored third-party skills (see upstreams.json): if a newer STABLE
+    # release exists upstream, mirror just the skill dir into the library
+    # (never the whole monorepo) and commit locally.
+    if [ -f "$CANON/upstreams.json" ] && command -v python3 >/dev/null 2>&1; then
+      python3 "$CANON/_scripts/check_upstreams.py" --sync || true
     fi
     exit 0 ;;
   sync-upstream)

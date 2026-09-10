@@ -145,7 +145,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-或仓库内 `bash install.sh update`（git pull + submodule 同步）。
+或仓库内 `bash install.sh update`（git pull；grounded-build 与 archify 等 vendored 技能会自动刷新到其最新正式版）。
 另有：`hidden`（列出未发布技能）· `enable <name>`（恢复启用）· `status`（安装状态）。
 
 ## API key

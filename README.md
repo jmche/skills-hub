@@ -148,7 +148,7 @@ One line, from any directory:
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-Or inside the repo: `bash install.sh update` (git pull + submodule sync).
+Or inside the repo: `bash install.sh update` (git pull; grounded-build and vendored skills like archify are refreshed to their latest stable releases).
 Also available: `hidden` (list non-published skills) · `enable <name>` (restore one) ·
 `status` (what's installed and where).
 

@@ -64,8 +64,6 @@ def main():
     ok = True
     for name, tag, _old in stale:
         args = [sys.executable, os.path.join(HERE, "sync_upstream.py"), name, "--ref", tag, "--commit"]
-        if push:
-            args.append("--push")
         r = subprocess_r(args)
         if r != 0:
             ok = False
