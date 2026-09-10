@@ -51,7 +51,7 @@ test('renderer-owned structure supplies truthful Semantic Passport context', () 
   const lifecycle = render('lifecycle', CASES.lifecycle);
 
   assert.match(architecture, /data-node-id="api"[^>]+data-node-kind="backend"[^>]+data-node-context="AWS Region: us-west-2 › sg-api :443\/:8000"/);
-  assert.match(workflow, /data-node-id="approval"[^>]+data-node-kind="security"[^>]+data-node-context="Policy Boundary › Plan \+ route"/);
+  assert.match(workflow, /data-node-id="approval"[^>]+data-node-kind="security"[^>]+data-node-context="Policy &amp; Recovery › Human or policy stop › Plan \+ route"/);
   assert.match(sequence, /data-node-id="redis"[^>]+data-node-kind="database"[^>]+data-node-context="Sequence participant"/);
   assert.match(dataflow, /data-node-id="warehouse"[^>]+data-node-kind="database"[^>]+data-node-context="04 \/ Store"/);
   assert.match(lifecycle, /data-node-id="executing"[^>]+data-node-kind="active"[^>]+data-node-context="Lifecycle phases"/);
@@ -65,6 +65,7 @@ test('Relationship Lens renders one Semantic Passport and copyable stable focus 
   assert.match(html, /id="focus-context" data-passport="context" hidden/);
   assert.match(html, /id="focus-tag" data-passport="tag" hidden/);
   assert.match(html, /id="focus-id" data-passport="id"/);
+  assert.match(html, /id="btn-focus-clear"[^>]+aria-label="Close semantic passport"[^>]+title="Close">&#215;<\/button>/);
   assert.match(html, /id="btn-focus-copy"[^>]+aria-label="Copy link to focused node"/);
   assert.match(html, /id="btn-focus-relations"[^>]+aria-expanded="false"[^>]+aria-controls="relationship-lens-list"/);
   assert.match(html, /function renderPassport\(id, node\)/);
@@ -77,6 +78,11 @@ test('Relationship Lens renders one Semantic Passport and copyable stable focus 
   assert.match(html, /compactOnMobile = mobile && chip\.getAttribute\('data-relations-expanded'\) !== 'true'/);
   assert.match(html, /nodeTop - chip\.offsetHeight - gap/);
   assert.match(html, /focus-chip:not\(\[data-relations-expanded="true"\]\) \.relationship-lens-list \{ display: none; \}/);
+  assert.match(html, /clearBtn\.addEventListener\('click', function \(\) \{ clear\(\{ restoreFocus: true \}\); \}\)/);
+  assert.match(html, /chip\.hidden \|\| !target \|\| typeof target\.closest !== 'function' \|\| chip\.contains\(target\)/);
+  assert.match(html, /target\.closest\('\[data-node-id\], \[data-relationship-hit-key\], \.overview-map'\)/);
+  assert.match(html, /document\.addEventListener\('click',[\s\S]+?clear\(\);\s+\}, true\);/);
+  assert.match(html, /Archify\.focus\.clear\(\{ restoreFocus: true \}\)/);
 });
 
 test('Node Finder searches and presents the same passport facts', () => {
@@ -85,8 +91,9 @@ test('Node Finder searches and presents the same passport facts', () => {
   assert.match(html, /var sublabel = node\.getAttribute\('data-node-sublabel'\) \|\| ''/);
   assert.match(html, /var context = node\.getAttribute\('data-node-context'\) \|\| ''/);
   assert.match(html, /var tag = node\.getAttribute\('data-node-tag'\) \|\| ''/);
-  assert.match(html, /search: \(id \+ ' ' \+ label \+ ' ' \+ type \+ ' ' \+ sublabel \+ ' ' \+ context \+ ' ' \+ tag \+ ' ' \+ text\)\.toLowerCase\(\)/);
-  assert.match(html, /\[item\.type, item\.context, item\.sublabel, item\.tag, item\.id\]\.filter\(Boolean\)\.join\(' \\u00b7 '\)/);
+  assert.match(html, /search: \(id \+ ' ' \+ label \+ ' ' \+ type \+ ' ' \+ sublabel \+ ' ' \+ context \+ ' ' \+ tag \+ ' ' \+ sourceSearch \+ ' ' \+ text\)\.toLowerCase\(\)/);
+  assert.match(html, /\[viewerKindLabel\(item\.type\), item\.id, item\.sublabel, item\.tag\]\.filter\(Boolean\)\.join\(' \\u00b7 '\)/);
+  assert.match(html, /meta\.title = \[viewerKindLabel\(item\.type\), item\.id, item\.context, item\.sublabel, item\.tag\]\.filter\(Boolean\)\.join\(' \\u00b7 '\)/);
 });
 
 process.on('exit', () => fs.rmSync(tmp, { recursive: true, force: true }));

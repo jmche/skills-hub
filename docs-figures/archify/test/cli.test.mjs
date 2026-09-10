@@ -1,11 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { extractSvgs, parseXml } from './helpers/xml.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const skillRoot = path.resolve(__dirname, '..');
@@ -29,8 +30,8 @@ function makeFakeOpeners(name, { exitCode = 0 } = {}) {
   const log = path.join(bin, 'open-log.json');
   fs.mkdirSync(bin, { recursive: true });
   const source = `#!/usr/bin/env node
-import fs from 'node:fs';
-const target = process.argv.at(-1);
+const fs = require('node:fs');
+const target = process.argv[process.argv.length - 1];
 fs.writeFileSync(process.env.ARCHIFY_TEST_OPEN_LOG, JSON.stringify({
   argv: process.argv.slice(2),
   target,
@@ -72,8 +73,12 @@ test('cli: help lists commands and diagram types', () => {
   const result = run(['--help']);
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /archify render <type>/);
+  assert.match(result.stdout, /archify compare architecture <base\.json> <head\.json>/);
   assert.match(result.stdout, /archify deliver <type>/);
+  assert.match(result.stdout, /archify preview <type>/);
+  assert.match(result.stdout, /archify visual-check <output\.html>/);
   assert.match(result.stdout, /--open/);
+  assert.match(result.stdout, /--repo-root path \(architecture only\)/);
   assert.match(result.stdout, /archify guide \[scenario or question\]/);
   assert.match(result.stdout, /archify doctor/);
   assert.match(result.stdout, /archify demo \[output-directory\]/);
@@ -86,7 +91,10 @@ test('cli: doctor reports a complete installation is ready', () => {
   assert.match(result.stdout, /\[ok\] Node\.js v\d+/);
   assert.match(result.stdout, /\[ok\] Core template/);
   assert.match(result.stdout, /\[ok\] Example renderer/);
+  assert.match(result.stdout, /\[ok\] Live preview runtime/);
   assert.match(result.stdout, /\[ok\] Scenario recipe guide/);
+  assert.match(result.stdout, /\[ok\] Progressive authoring references/);
+  assert.match(result.stdout, /\[ok\] Architecture compare runtime and proof fixtures/);
   assert.match(result.stdout, /\[ok\] Standalone schema validators/);
   assert.match(result.stdout, /\[ok\] architecture renderer, schema, and example/);
   assert.match(result.stdout, /\[ok\] lifecycle renderer, schema, and example/);
@@ -224,6 +232,22 @@ test('cli: render writes a diagram html file', () => {
   assert.match(fs.readFileSync(out, 'utf8'), /Agent Tool Call Workflow/);
 });
 
+test('cli: visual-check returns a skipped receipt with exit 2 when Chrome is unavailable', () => {
+  const out = path.join(tmp, 'visual-check-skipped.html');
+  fs.writeFileSync(out, '<!doctype html><html><body>delivered</body></html>');
+  const missingChrome = path.join(tmp, 'missing-chrome');
+  const result = run(['visual-check', out, '--json'], {
+    env: { ...process.env, ARCHIFY_CHROME: missingChrome },
+  });
+
+  assert.equal(result.status, 2, result.stderr);
+  const receipt = JSON.parse(result.stdout);
+  assert.equal(receipt.status, 'skipped');
+  assert.equal(receipt.visualReview, 'pending');
+  assert.equal(receipt.chrome.status, 'unavailable');
+  assert.equal(fs.existsSync(out.replace(/\.html$/, '.visual-check.json')), true);
+});
+
 test('cli: deliver atomically writes a checked artifact and structured receipt', () => {
   const out = path.join(tmp, 'delivered-workflow.html');
   const input = path.join(skillRoot, 'examples/agent-tool-call.workflow.json');
@@ -240,12 +264,16 @@ test('cli: deliver atomically writes a checked artifact and structured receipt',
   assert.equal(receipt.type, 'workflow');
   assert.equal(receipt.input, input);
   assert.equal(receipt.output, out);
+  assert.deepEqual(receipt.specification, {
+    sha256: sha256(input),
+    bytes: fs.statSync(input).size,
+  });
   assert.match(receipt.artifact.sha256, /^[a-f0-9]{64}$/);
   assert.equal(receipt.artifact.sha256, sha256(out));
   assert.equal(receipt.artifact.bytes, fs.statSync(out).size);
   assert.deepEqual(receipt.validation, {
-    checksPassed: 8,
-    checkCount: 8,
+    checksPassed: 9,
+    checkCount: 9,
     compositionProfile: 'showcase',
     compositionStatus: 'pass',
     errors: 0,
@@ -356,26 +384,91 @@ test('cli: deliver works from an installed skill without node_modules', () => {
   const installedRoot = path.join(tmp, 'installed-deliver-skill');
   copyInstalledSkill(installedRoot);
   const installedCli = path.join(installedRoot, 'bin/archify.mjs');
-  const cases = {
-    architecture: 'web-app.architecture.json',
-    workflow: 'agent-tool-call.workflow.json',
-    sequence: 'cache-miss-request.sequence.json',
-    dataflow: 'product-analytics.dataflow.json',
-    lifecycle: 'agent-run.lifecycle.json',
-  };
+  const cases = [
+    ['architecture-boundaries', 'architecture', 'production-deployment.architecture.json'],
+    ['architecture-issue-110', 'architecture', 'brand-aware-delivery.architecture.json'],
+    ['workflow', 'workflow', 'agent-tool-call.workflow.json'],
+    ['sequence', 'sequence', 'cache-miss-request.sequence.json'],
+    ['dataflow', 'dataflow', 'product-analytics.dataflow.json'],
+    ['lifecycle', 'lifecycle', 'agent-run.lifecycle.json'],
+  ];
 
-  for (const [type, example] of Object.entries(cases)) {
+  for (const [label, type, example] of cases) {
     const input = path.join(installedRoot, 'examples', example);
-    const out = path.join(tmp, `installed-${type}-delivery.html`);
+    const out = path.join(tmp, `installed-${label}-delivery.html`);
     const result = spawnSync(process.execPath, [installedCli, 'deliver', type, input, out, '--json'], {
       cwd: installedRoot,
       encoding: 'utf8',
     });
 
-    assert.equal(result.status, 0, `${type}: ${result.stderr}`);
-    assert.equal(JSON.parse(result.stdout).validation.checkCount, 8, type);
-    assert.equal(fs.existsSync(out), true, type);
+    assert.equal(result.status, 0, `${label}: ${result.stderr}`);
+    assert.equal(JSON.parse(result.stdout).validation.checkCount, 9, label);
+    assert.equal(fs.existsSync(out), true, label);
+    const extracted = extractSvgs(fs.readFileSync(out, 'utf8'));
+    assert.equal(extracted.direct.length, 1, `${label}: expected one delivered SVG`);
+    assert.doesNotThrow(
+      () => parseXml(extracted.direct[0]),
+      `${label}: delivered SVG must be well-formed XML`,
+    );
   }
+});
+
+test('cli: deliver XML guard parses markup instead of scanning attribute-like text', () => {
+  assert.doesNotThrow(() => parseXml(
+    '<svg xmlns="http://www.w3.org/2000/svg" aria-label="mentions data-node-label safely"/>',
+  ));
+  assert.throws(
+    () => parseXml('<svg xmlns="http://www.w3.org/2000/svg" data-node-label></svg>'),
+    /attribute without value/i,
+  );
+  assert.throws(
+    () => parseXml('<svg xmlns="http://www.w3.org/2000/svg"><g></svg>'),
+    /unexpected close tag/i,
+  );
+});
+
+test('cli: preview runs from an installed skill without node_modules and exits cleanly', { timeout: 30000 }, async () => {
+  const installedRoot = path.join(tmp, 'installed-preview-skill');
+  copyInstalledSkill(installedRoot);
+  const installedCli = path.join(installedRoot, 'bin/archify.mjs');
+  const input = path.join(installedRoot, 'examples/web-app.architecture.json');
+  const output = path.join(tmp, 'installed-preview.html');
+  const child = spawn(process.execPath, [installedCli, 'preview', 'architecture', input, output, '--quality', 'showcase', '--no-open'], {
+    cwd: installedRoot,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let stdout = '';
+  let stderr = '';
+  child.stdout.setEncoding('utf8');
+  child.stderr.setEncoding('utf8');
+  child.stdout.on('data', (chunk) => { stdout += chunk; });
+  child.stderr.on('data', (chunk) => { stderr += chunk; });
+
+  let previewUrl;
+  const started = Date.now();
+  while (!previewUrl && Date.now() - started < 8000) {
+    previewUrl = stdout.match(/preview (http:\/\/127\.0\.0\.1:\d+\/)/)?.[1];
+    if (!previewUrl) await new Promise((resolve) => setTimeout(resolve, 40));
+  }
+  assert.ok(previewUrl, `preview URL missing; stdout=${stdout}; stderr=${stderr}`);
+
+  let state;
+  while (Date.now() - started < 15000) {
+    state = await fetch(new URL('/state', previewUrl)).then((response) => response.json());
+    if (state.status === 'verified') break;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  assert.equal(state?.status, 'verified', `preview did not verify; stdout=${stdout}; stderr=${stderr}`);
+  assert.equal(state.revision, 1);
+  assert.equal(fs.existsSync(output), true);
+
+  child.kill('SIGTERM');
+  const exit = await new Promise((resolve) => child.once('close', (code, signal) => resolve({ code, signal })));
+  assert.deepEqual(exit, { code: 0, signal: null });
+  assert.match(stdout, /stopping preview/);
+  await assert.rejects(fetch(previewUrl));
+  assert.deepEqual(fs.readdirSync(path.dirname(output)).filter((name) => name.startsWith('.archify-preview-')), []);
 });
 
 test('cli: deliver preserves the previous artifact when the final check fails', () => {
@@ -400,6 +493,9 @@ test('cli: deliver preserves the previous artifact when the final check fails', 
   const failure = JSON.parse(result.stdout);
   assert.equal(failure.ok, false);
   assert.equal(failure.stage, 'check');
+  assert.equal(failure.diagnostics[0].code, 'artifact/single-svg');
+  assert.equal(failure.diagnostics[0].subject.check, 'single_svg');
+  assert.ok(failure.diagnostics[0].supportedFixes.some((fix) => fix.includes('exactly one diagram SVG')));
   assert.equal(failure.checker.checks.find((entry) => entry.name === 'single_svg').ok, false);
   assert.equal(fs.readFileSync(out, 'utf8'), trustedPriorArtifact);
   assert.deepEqual(
@@ -510,12 +606,60 @@ test('cli: validate emits structured json without keeping html output', () => {
   const parsed = JSON.parse(result.stdout);
   assert.equal(parsed.ok, true);
   assert.equal(parsed.type, 'workflow');
-  assert.equal(parsed.checks.length, 8);
+  assert.equal(parsed.checks.length, 9);
   assert.equal(parsed.composition.profile, 'showcase');
   assert.deepEqual(parsed.composition.summary, { errors: 0, warnings: 0 });
   assert.equal(parsed.composition.metrics.containerBorderRuns, 0);
   assert.equal(parsed.composition.metrics.ambiguousCorridors, 0);
   assert.deepEqual(new Set(fs.readdirSync(tmp)), before);
+});
+
+test('cli: validate JSON exposes only the primary v1 column-capacity diagnostic', () => {
+  const input = path.join(tmp, 'pinned-column-capacity.workflow.json');
+  fs.writeFileSync(input, `${JSON.stringify({
+    schema_version: 1,
+    diagram_type: 'workflow',
+    meta: {
+      title: 'Pinned issue 126 diagnostic boundary',
+      viewBox: [720, 400],
+      legend: { mode: 'hidden' },
+    },
+    lanes: [{ id: 'main', label: 'Main' }],
+    nodes: [
+      { id: 'a', lane: 'main', col: 1, type: 'backend', label: 'A' },
+      { id: 'b', lane: 'main', col: 2, type: 'backend', label: 'B' },
+    ],
+    edges: [{
+      id: 'ab',
+      from: 'a',
+      to: 'b',
+      fromSide: 'top',
+      toSide: 'top',
+      via: [[220, 60], [300, 60]],
+    }],
+  }, null, 2)}\n`);
+
+  const result = run(['validate', 'workflow', input, '--json'], {
+    env: { ...process.env, ARCHIFY_DIAGNOSTIC_FORMAT: 'json' },
+  });
+
+  assert.equal(result.status, 1, result.stderr || result.stdout);
+  assert.equal(result.stderr, '');
+  const failure = JSON.parse(result.stdout);
+  assert.equal(failure.ok, false);
+  assert.equal(failure.command, 'validate');
+  assert.equal(failure.stage, 'render');
+  assert.equal(failure.type, 'workflow');
+  assert.equal(failure.diagnostics.length, 1, JSON.stringify(failure.diagnostics, null, 2));
+  const [primary] = failure.diagnostics;
+  assert.equal(primary.code, 'workflow/column-capacity');
+  assert.equal(primary.subject.edge, 'ab');
+  assert.equal(primary.subject.fromCol, 1);
+  assert.equal(primary.subject.toCol, 2);
+  assert.ok(primary.supportedFixes.length > 0);
+  assert.ok(failure.diagnostics.every(({ code }) => (
+    code !== 'workflow/explicit-pin-conflict' && code !== 'workflow/viewbox-capacity'
+  )));
 });
 
 test('cli: --quality overrides the source profile for render, validate, and deliver', () => {
@@ -542,6 +686,48 @@ test('cli: rejects an unknown quality profile', () => {
   assert.match(result.stderr, /Expected standard or showcase/);
 });
 
+test('cli: rejects a quality flag without a value', () => {
+  const input = path.join(skillRoot, 'examples/agent-tool-call.workflow.json');
+  for (const args of [
+    ['validate', 'workflow', input, '--json', '--quality'],
+    ['validate', 'workflow', input, '--quality', '--json'],
+    ['validate', 'workflow', input, '--quality='],
+  ]) {
+    const result = run(args);
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /--quality requires standard or showcase/);
+  }
+});
+
+test('cli: validate rejects unknown flags, layout-json assignment typos, and extra positionals', () => {
+  const input = path.join(skillRoot, 'examples/agent-tool-call.workflow.json');
+  const cases = [
+    {
+      args: ['validate', 'workflow', input, '--layout-json', '--bogus'],
+      pattern: /Unknown validate option "--bogus"/,
+    },
+    {
+      args: ['validate', 'workflow', input, '--layout-json=true'],
+      pattern: /Unknown validate option "--layout-json=true"/,
+    },
+    {
+      args: ['validate', 'workflow', input, '--layout-json=true', '--json'],
+      pattern: /Unknown validate option "--layout-json=true"/,
+    },
+    {
+      args: ['validate', 'workflow', input, 'unexpected-output.html', '--layout-json'],
+      pattern: /Usage:/,
+    },
+  ];
+
+  for (const { args, pattern } of cases) {
+    const result = run(args);
+    assert.equal(result.status, 2, `${args.join(' ')}\n${result.stderr}\n${result.stdout}`);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, pattern);
+  }
+});
+
 test('cli: inspect emits architecture layout json', () => {
   const input = path.resolve(skillRoot, '../examples/archify-repo-grid.architecture.json');
   const result = run(['inspect', 'architecture', input]);
@@ -552,6 +738,14 @@ test('cli: inspect emits architecture layout json', () => {
   assert.equal(parsed.layout.mode, 'grid');
   assert.ok(parsed.components.length >= 5);
   assert.ok(parsed.connections.length >= 1);
+});
+
+test('cli: inspect remains architecture-only while workflow uses validate --layout-json', () => {
+  const input = path.join(skillRoot, 'examples', 'agent-tool-call.workflow.json');
+  const result = run(['inspect', 'workflow', input]);
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /inspect is currently supported for architecture diagrams only/);
+  assert.equal(result.stdout, '');
 });
 
 test('cli: validate returns renderer errors for bad input', () => {

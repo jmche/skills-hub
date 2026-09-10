@@ -1,0 +1,10 @@
+{
+  "archify": {
+    "repo": "tt-a1i/archify",
+    "subdir": "archify",
+    "vendored": "docs-figures/archify",
+    "rename": { "SKILL.md": "INSTRUCTIONS.md" },
+    "exclude": [".gitignore", ".github"],
+    "note": "skill package lives in the archify/ subdir of the upstream monorepo; sync to latest stable tag"
+  }
+}

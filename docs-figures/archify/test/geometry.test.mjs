@@ -10,6 +10,10 @@ import assert from 'node:assert/strict';
 import {
   rectsOverlap,
   segmentIntersectsRect,
+  segmentRectClearance,
+  segmentRectIntersectionLength,
+  collectLabelRouteClearance,
+  cleanEndpointSideProblems,
   cleanFlowProblems,
   cleanCrossingProblems,
   collectAmbiguousCorridors,
@@ -22,9 +26,11 @@ import {
   asArray,
   isFinitePoint,
   anchor,
+  automaticPortRhythmBridge,
   defaultFromSide,
   defaultToSide,
   chosenSide,
+  routeHonorsEndpointSides,
   polylinePath,
   roundedPath,
   labelPoint,
@@ -34,6 +40,27 @@ import {
 import { textUnits, applyTemplate, renderSemanticSigil } from '../renderers/shared/utils.mjs';
 
 const rect = (x, y, w, h) => ({ x, y, width: w, height: h, cx: x + w / 2, cy: y + h / 2 });
+
+test('automaticPortRhythmBridge: near parallel ports use readable outside runs', () => {
+  const points = automaticPortRhythmBridge(
+    [742, 300],
+    [735, 180],
+    'top',
+    'bottom',
+  );
+
+  assert.deepEqual(points, [
+    [742, 300],
+    [742, 276],
+    [758, 276],
+    [758, 204],
+    [735, 204],
+    [735, 180],
+  ]);
+  assert.deepEqual(collectRouteRhythmIssues({
+    routedRelations: [{ relation: { id: 'read' }, points }],
+  }), []);
+});
 
 test('rectsOverlap: separated rects do not overlap', () => {
   assert.equal(rectsOverlap(rect(0, 0, 10, 10), rect(20, 0, 10, 10)), false);
@@ -61,9 +88,103 @@ test('rectsOverlap: negative gap shrinks the hit box (label-collision convention
   assert.equal(rectsOverlap(rect(0, 0, 10, 10), rect(7, 0, 10, 10), -2), true);
 });
 
+test('rectsOverlap: non-finite geometry is not an overlap', () => {
+  // A component authored without pos lands here as NaN. Every comparison in the
+  // negated form is false for NaN, so the unguarded version reported a collision
+  // for every pair and buried the real "must include pos" diagnostic.
+  const nan = rect(Number.NaN, Number.NaN, 120, 60);
+  assert.equal(rectsOverlap(nan, nan, 8), false);
+  assert.equal(rectsOverlap(nan, rect(0, 0, 10, 10), 8), false);
+  assert.equal(rectsOverlap(rect(0, 0, 10, 10), nan, 8), false);
+  assert.equal(rectsOverlap(rect(0, 0, 10, 10), rect(20, 0, Number.NaN, 10)), false);
+  assert.equal(rectsOverlap(rect(0, 0, 10, 10), rect(5, 5, 10, Number.POSITIVE_INFINITY)), false);
+});
+
 test('segmentIntersectsRect: detects an edge crossing a node box', () => {
   assert.equal(segmentIntersectsRect({ start: [0, 5], end: [20, 5] }, rect(8, 0, 4, 10)), true);
   assert.equal(segmentIntersectsRect({ start: [0, 20], end: [20, 20] }, rect(8, 0, 4, 10)), false);
+});
+
+test('segmentRectClearance measures horizontal, vertical, and reversed diagonal segments', () => {
+  const box = rect(10, 10, 10, 10);
+  assert.equal(segmentRectClearance({ start: [0, 6], end: [30, 6] }, box), 4);
+  assert.equal(segmentRectClearance({ start: [6, 0], end: [6, 30] }, box), 4);
+  assert.equal(segmentRectClearance({ start: [0, 0], end: [8, 8] }, box), Math.sqrt(8));
+  assert.equal(segmentRectClearance({ start: [8, 8], end: [0, 0] }, box), Math.sqrt(8));
+  assert.equal(segmentRectClearance({ start: [0, 15], end: [30, 15] }, box), 0);
+});
+
+test('label-route clearance locks tangent, sub-threshold, boundary, and reversed coordinates', () => {
+  const box = rect(10, 10, 10, 10);
+  const cases = [
+    { segment: { start: [0, 10], end: [30, 10] }, clearance: 0, intersection: 10 },
+    { segment: { start: [10, 0], end: [10, 30] }, clearance: 0, intersection: 10 },
+    { segment: { start: [0, 0], end: [30, 30] }, clearance: 0, intersection: Math.sqrt(200) },
+    { segment: { start: [0, 0], end: [10, 10] }, clearance: 0, intersection: 0 },
+    { segment: { start: [0, 8.1], end: [30, 8.1] }, clearance: 1.9, intersection: 0 },
+    { segment: { start: [0, 8], end: [30, 8] }, clearance: 2, intersection: 0 },
+    { segment: { start: [0, 6.1], end: [30, 6.1] }, clearance: 3.9, intersection: 0 },
+    { segment: { start: [0, 6], end: [30, 6] }, clearance: 4, intersection: 0 },
+    { segment: { start: [0, 0], end: [5, 0] }, clearance: Math.sqrt(125), intersection: 0 },
+  ];
+  for (const { segment, clearance, intersection } of cases) {
+    assert.ok(Math.abs(segmentRectClearance(segment, box) - clearance) < 0.000001);
+    assert.ok(Math.abs(segmentRectIntersectionLength(segment, box) - intersection) < 0.000001);
+    const reversed = { start: segment.end, end: segment.start };
+    assert.ok(Math.abs(segmentRectClearance(reversed, box) - clearance) < 0.000001);
+    assert.ok(Math.abs(segmentRectIntersectionLength(reversed, box) - intersection) < 0.000001);
+  }
+});
+
+test('collectLabelRouteClearance exempts only the owning relationship at an exact threshold', () => {
+  const owner = { id: 'owner', from: 'a', to: 'b' };
+  const sharedSource = { id: 'other', from: 'a', to: 'c' };
+  const labels = [{ relation: owner, relationIndex: 0, label: 'handoff', ...rect(80, 48, 60, 14) }];
+  const routedRelations = [
+    { relation: owner, relationIndex: 0, points: [[20, 60], [200, 60]] },
+    { relation: sharedSource, relationIndex: 1, points: [[70, 64], [150, 64]] },
+  ];
+  assert.deepEqual(collectLabelRouteClearance({ labels, routedRelations, threshold: 2 }), []);
+  const hits = collectLabelRouteClearance({ labels, routedRelations, threshold: 4 });
+  assert.equal(hits.length, 1);
+  assert.equal(hits[0].clearance, 2);
+  assert.equal(hits[0].otherRelation, sharedSource);
+});
+
+test('endpoint-side direction distinguishes perpendicular entry from a tangent border run', () => {
+  const clean = [[350, 160], [350, 200], [150, 200], [150, 240]];
+  const tangent = [[350, 160], [350, 200], [100, 200], [100, 240], [150, 240]];
+  assert.equal(routeHonorsEndpointSides(clean, 'bottom', 'top'), true);
+  assert.equal(routeHonorsEndpointSides(tangent, 'bottom', 'top'), false);
+
+  const relation = { id: 'tasks-file', from: 'cli-agents', to: 'tasks-watch', fromSide: 'bottom', toSide: 'top' };
+  const problems = cleanEndpointSideProblems({
+    relations: [relation],
+    endpointIds: new Set(['cli-agents', 'tasks-watch']),
+    pathFor: () => ({ points: tangent }),
+    diagramType: 'architecture',
+    relationCollection: 'connections',
+  });
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /\[clean-flow\/endpoint-side-direction\] architecture connections\[0\] id "tasks-file"/);
+  assert.match(problems[0], /final segment 3 \[100, 240\] -> \[150, 240\]/);
+  assert.match(problems[0], /toSide "top".*vertical downward from above/);
+});
+
+test('endpoint-side direction can fail closed on renderer-inferred automatic sides', () => {
+  const relation = { id: 'terminal-return', from: 'stream-hub', to: 'workspace' };
+  const problems = cleanEndpointSideProblems({
+    relations: [relation],
+    endpointIds: new Set(['stream-hub', 'workspace']),
+    pathFor: () => ({ points: [[700, 130], [700, 230], [160, 230], [160, 330]] }),
+    diagramType: 'architecture',
+    relationCollection: 'connections',
+    fromSideFor: () => 'left',
+    toSideFor: () => 'right',
+  });
+  assert.equal(problems.length, 2);
+  assert.match(problems[0], /inferred fromSide "left"/);
+  assert.match(problems[1], /inferred toSide "right"/);
 });
 
 test('cleanFlowProblems reports collection index, ids, segment, clearance, and fix', () => {
@@ -96,8 +217,7 @@ test('cleanFlowProblems exempts endpoints and ignores missing endpoint geometry'
     pathFor: () => ({ points: [[20, 10], [80, 10]] }),
     diagramType: 'workflow',
     relationCollection: 'edges',
-    obstacleKind: 'node',
-    profile: 'standard'
+    obstacleKind: 'node'
   });
   assert.deepEqual(endpointOnly, []);
 
@@ -126,8 +246,7 @@ test('cleanFlowProblems uses clearance, reports the first segment, and deduplica
     pathFor: () => ({ points: [[0, -1], [20, -1], [0, 5], [20, 5]] }),
     diagramType: 'workflow',
     relationCollection: 'edges',
-    obstacleKind: 'node',
-    profile: 'standard'
+    obstacleKind: 'node'
   });
   assert.equal(problems.length, 1);
   assert.match(problems[0], /segment 0 \[0, -1\] -> \[20, -1\]/);
@@ -474,6 +593,57 @@ test('textUnits follows wide and halfwidth East Asian presentation boundaries', 
   assert.equal(textUnits('ㄱ'), 2); // Hangul compatibility letter is wide
   assert.equal(textUnits('︐︙'), 4); // vertical punctuation forms are wide
   assert.equal(textUnits('ｶﾀｶﾅ'), 4); // halfwidth Katakana stays one unit per glyph
+  assert.equal(textUnits('ꥠ'), 2); // Hangul Jamo Extended-A is wide
+});
+
+test('textUnits counts emoji-presentation symbols in the BMP as wide', () => {
+  // These render at the same square advance as the supplementary-plane emoji,
+  // so counting them as one unit under-measures a label and lets it overflow
+  // its node while the layout receipt still reads clean.
+  assert.equal(textUnits('✅'), 2);
+  assert.equal(textUnits('⭐'), 2);
+  assert.equal(textUnits('⚡'), 2);
+  assert.equal(textUnits('⌛'), 2);
+  assert.equal(textUnits('⏰'), 2);
+  assert.equal(textUnits('⛔'), 2);
+  assert.equal(textUnits('❗'), 2);
+  assert.equal(textUnits('⬛'), 2);
+  assert.equal(textUnits('☕'), 2);
+  assert.equal(textUnits('♿'), 2);
+  assert.equal(textUnits('✅ Done'), 7);
+  // Narrow and ambiguous neighbours in the same blocks stay one unit.
+  assert.equal(textUnits('→'), 1); // rightwards arrow
+  assert.equal(textUnits('☎'), 1); // black telephone
+  assert.equal(textUnits('①'), 1); // circled digit one
+  // Unicode 16.0 moved these from Neutral to Wide.
+  assert.equal(textUnits('☰'), 2); // trigram for heaven
+  assert.equal(textUnits('☷'), 2); // trigram for earth
+  assert.equal(textUnits('⚊'), 2); // monogram for yang
+  assert.equal(textUnits('⚏'), 2); // digram for greater yin
+  // Hangul Jamo Extended-A stops at its last assigned jamo; the unassigned
+  // tail of the block defaults to Neutral.
+  assert.equal(textUnits('ꥼ'), 2);
+  assert.equal(textUnits('꥽'), 1);
+});
+
+test('textUnits measures a variation-selector sequence from the selector', () => {
+  // VS16 asks for emoji presentation: the pair renders as one square, so it
+  // must stay two units even though the base is now counted wide on its own.
+  assert.equal(textUnits('⭐️'), 2); // star
+  assert.equal(textUnits('✅️'), 2); // check mark button
+  assert.equal(textUnits('☕️'), 2); // hot beverage
+  assert.equal(textUnits('⚡️'), 2); // high voltage
+  // Same rule the other way: a narrow base forced to emoji presentation
+  // renders as a square and is two units, not one.
+  assert.equal(textUnits('✈️'), 2); // airplane
+  assert.equal(textUnits('❤️'), 2); // red heart
+  // VS15 asks for text presentation, which renders narrow.
+  assert.equal(textUnits('⭐︎'), 1);
+  assert.equal(textUnits('✈︎'), 1);
+  // The selector never adds width of its own, alone or in a run.
+  assert.equal(textUnits('️'), 0);
+  assert.equal(textUnits('✅️ Done'), 7);
+  assert.equal(textUnits('⭐️⭐️'), 4);
 });
 
 test('semantic sigils cover every component and lifecycle kind without literal color', () => {
@@ -522,14 +692,48 @@ test('applyTemplate preserves dollar sequences in titles', () => {
 <p class="subtitle">[Subtitle description]</p>
 <!-- ARCHIFY:GUIDED_VIEWS_DATA -->
       <!-- ARCHIFY:SVG_SLOT_START --><svg></svg>      <!-- ARCHIFY:SVG_SLOT_END -->
-    <!-- ARCHIFY:CARDS_SLOT_START --><div></div>    <!-- ARCHIFY:CARDS_SLOT_END -->
-[Project Name] &bull; [Additional metadata]`;
+    <!-- ARCHIFY:CARDS_SLOT_START --><div></div>    <!-- ARCHIFY:CARDS_SLOT_END -->`;
   const html = applyTemplate(template, {
     title: 'Plan $$50 tier',
     subtitle: 'test',
-    footer: 'f',
     svg: '<svg/>',
     cards: '',
   });
   assert.match(html, /Plan \$\$50 tier/);
+  assert.match(html, /<p class="subtitle">test<\/p>/);
+});
+
+test('applyTemplate omits the subtitle row when no subtitle is authored', () => {
+  const template = `<html lang="en" data-theme="dark" data-preset="[VISUAL PRESET]">
+<title>[PROJECT NAME] Architecture Diagram</title>
+<h1>[PROJECT NAME] Architecture</h1>
+<p class="subtitle">[Subtitle description]</p>
+<!-- ARCHIFY:GUIDED_VIEWS_DATA -->
+      <!-- ARCHIFY:SVG_SLOT_START --><svg></svg>      <!-- ARCHIFY:SVG_SLOT_END -->
+    <!-- ARCHIFY:CARDS_SLOT_START --><div></div>    <!-- ARCHIFY:CARDS_SLOT_END -->`;
+  const html = applyTemplate(template, {
+    title: 'Focused title',
+    subtitle: '   ',
+    svg: '<svg/>',
+    cards: '',
+  });
+  assert.doesNotMatch(html, /class="subtitle"/);
+  assert.doesNotMatch(html, /Subtitle description/);
+});
+
+test('applyTemplate requires the new evidence slot only when evidence is present', () => {
+  const legacyTemplate = `<html lang="en" data-theme="dark" data-preset="[VISUAL PRESET]">
+<title>[PROJECT NAME] Architecture Diagram</title>
+<h1>[PROJECT NAME] Architecture</h1>
+<p class="subtitle">[Subtitle description]</p>
+<!-- ARCHIFY:GUIDED_VIEWS_DATA -->
+      <!-- ARCHIFY:SVG_SLOT_START --><svg></svg>      <!-- ARCHIFY:SVG_SLOT_END -->
+    <!-- ARCHIFY:CARDS_SLOT_START --><div></div>    <!-- ARCHIFY:CARDS_SLOT_END -->`;
+  assert.doesNotThrow(() => applyTemplate(legacyTemplate, {
+    title: 'Legacy', subtitle: '', svg: '<svg/>', cards: '',
+  }));
+  assert.throws(() => applyTemplate(legacyTemplate, {
+    title: 'Evidence', subtitle: '', svg: '<svg/>', cards: '',
+    sourceEvidence: { verified: true },
+  }), /repository evidence requires placeholder/);
 });

@@ -176,7 +176,7 @@ data-ml/transformers,data-ml,apache,apache-2.0 (header),inline,publish
 data-ml/umap-learn,data-ml,unknown,?,?,"publish (library content, user-curated)"
 data-ml/vaex,data-ml,mit,mit (header),inline,publish
 data-ml/zarr-python,data-ml,mit,mit (header),inline,publish
-docs-figures/archify,docs-figures,unknown,?,?,"publish (library content, user-curated)"
+docs-figures/archify,docs-figures,mit,"MIT (tt-a1i/archify, vendored; upstream-synced)",tt-a1i/archify,publish
 docs-figures/figure-style,docs-figures,apache,apache-2.0 (header),inline,publish
 docs-figures/infographics,docs-figures,unknown,?,?,"publish (library content, user-curated)"
 docs-figures/latex-posters,docs-figures,unknown,?,?,"publish (library content, user-curated)"

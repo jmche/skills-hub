@@ -27,14 +27,14 @@ test('generated proof gallery matches its sources, receipts, and checked-in arti
     path.join(repoRoot, 'scripts', 'build-gallery.mjs'),
     generatedRoot,
   ], { encoding: 'utf8' });
-  assert.match(output, /gallery 11 artifacts \/ 88 checks/);
+  assert.match(output, /gallery 11 artifacts \/ 99 checks/);
 
   const manifestPath = path.join(generatedRoot, 'gallery', 'manifest.json');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   assert.equal(manifest.schemaVersion, 1);
   assert.equal(manifest.archifyVersion, JSON.parse(fs.readFileSync(path.join(skillRoot, 'package.json'))).version);
   assert.equal(manifest.entryCount, 11);
-  assert.equal(manifest.checkCount, 88);
+  assert.equal(manifest.checkCount, 99);
   assert.deepEqual(new Set(manifest.entries.map((entry) => entry.type)), new Set([
     'architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle',
   ]));
@@ -56,6 +56,11 @@ test('generated proof gallery matches its sources, receipts, and checked-in arti
   assert.deepEqual(workflow.viewIds, ['happy-path', 'safety-gate', 'evidence-loop']);
   assert.equal(workflow.guidedPlayback, true);
 
+  const deployment = manifest.entries.find((entry) => entry.id === 'deployment-ownership');
+  assert.equal(deployment.engineeringProfile, 'deployment-ownership');
+  assert.ok(manifest.entries.filter((entry) => entry.id !== 'deployment-ownership')
+    .every((entry) => entry.engineeringProfile === null));
+
   for (const entry of manifest.entries) {
     const artifact = path.join(generatedRoot, entry.artifact.replace(/^gallery\//, 'gallery/'));
     const source = path.join(generatedRoot, entry.input.replace(/^gallery\//, 'gallery/'));
@@ -63,13 +68,14 @@ test('generated proof gallery matches its sources, receipts, and checked-in arti
     assert.ok(fs.existsSync(source), `${entry.id}: source missing`);
     assert.equal(sha256(artifact), entry.artifactSha256, `${entry.id}: artifact digest drift`);
     assert.equal(sha256(source), entry.sourceSha256, `${entry.id}: source digest drift`);
-    assert.equal(entry.checks.length, 8);
+    assert.equal(entry.checks.length, 9);
     assert.ok(entry.checks.every((check) => check.ok), `${entry.id}: validation receipt not green`);
     assert.equal(entry.composition.profile, 'showcase', `${entry.id}: expected showcase composition profile`);
     assert.equal(entry.composition.status, 'pass', `${entry.id}: showcase composition is not green`);
     assert.equal(entry.composition.metrics.properCrossings, 0, `${entry.id}: proper crossing debt remains`);
     assert.equal(entry.composition.metrics.ambiguousCorridors, 0, `${entry.id}: ambiguous corridor debt remains`);
     assert.equal(entry.composition.metrics.containerBorderRuns, 0, `${entry.id}: container border-run debt remains`);
+    assert.equal(entry.composition.metrics.labelRouteClearanceIssues, 0, `${entry.id}: label-route clearance debt remains`);
     assert.equal(entry.composition.metrics.shortInteriorSegmentCount, 0, `${entry.id}: cramped interior turn remains`);
     assert.equal(entry.composition.metrics.microSegmentCount, 0, `${entry.id}: micro segment remains`);
     assert.equal(entry.viewCount, 3, `${entry.id}: expected a three-step reader story`);
@@ -88,12 +94,28 @@ test('generated proof gallery matches its sources, receipts, and checked-in arti
   assert.match(html, /Proof,<br><em>not promises\.<\/em>/);
   assert.match(html, /Five lenses\. Eleven real stories\./);
   assert.match(html, /Composition<\/span><span class="receipt-value ok" title="0 crossings · 0 border runs · 0 micro segments · 0 cramped turns">SHOWCASE · PASS/);
-  assert.match(html, /\.brand \{ min-height: 44px;/);
+  assert.match(html, /Engineering profile/);
+  assert.match(html, /DEPLOYMENT OWNERSHIP · PASS/);
+  assert.match(html, /<link rel="stylesheet" href="assets\/site-navigation\.css">/);
+  assert.match(
+    fs.readFileSync(path.join(generatedRoot, 'assets/site-navigation.css'), 'utf8'),
+    /\.site-nav \.nav-logo \{[^}]*min-height: 44px;/,
+  );
   assert.match(html, /\.filter-button \{\s+min-height: 44px;/);
   assert.match(html, /\.card-link \{ min-height: 44px;/);
+  assert.equal((html.match(/class="card-link create-link"/g) || []).length, 11);
+  for (const type of ['architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle']) {
+    assert.match(html, new RegExp(`start\\.html\\?type=${type}&amp;source=gallery`), `${type}: gallery-to-start link missing`);
+  }
+  assert.match(html, /class="community-callout"/);
+  assert.match(html, /href="https:\/\/github\.com\/tt-a1i\/archify\/issues\/new\?template=showcase\.yml"[^>]+rel="noopener noreferrer"/);
+  assert.match(html, /Share a verified diagram/);
+  assert.match(html, /提交已验证成品/);
 
   for (const relative of [
     'gallery.html',
+    'assets/site-language.js',
+    'assets/site-navigation.css',
     'gallery/manifest.json',
     ...manifest.entries.flatMap((entry) => [entry.artifact, entry.input]),
   ]) {

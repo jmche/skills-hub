@@ -1,6 +1,6 @@
 // Golden-file harness for the archify renderers. No test framework needed:
-// renderers are deterministic, so fresh renders must match the checked-in
-// example HTML aside from platform checkout line endings. Also covers schema enforcement (negative cases),
+// renderers are deterministic, so fresh renders must match both checked-in
+// development and packaged example HTML aside from platform checkout line endings. Also covers schema enforcement (negative cases),
 // template freshness of the architecture-mode example, and version sync.
 //
 // Run from the skill folder: npm test
@@ -39,6 +39,37 @@ function normalizeNewlines(text) {
   return text.replace(/\r\n?/g, '\n');
 }
 
+function shieldsBadgeMessages(source, label) {
+  const marker = `/badge/${label}-`;
+  const messages = [];
+  let searchFrom = 0;
+  while (searchFrom < source.length) {
+    const start = source.indexOf(marker, searchFrom);
+    if (start === -1) break;
+    let cursor = start + marker.length;
+    let message = '';
+    while (cursor < source.length) {
+      const character = source[cursor];
+      const next = source[cursor + 1];
+      if (character === '-' && next === '-') {
+        message += '-';
+        cursor += 2;
+      } else if (character === '_' && next === '_') {
+        message += '_';
+        cursor += 2;
+      } else if (character === '-') {
+        break;
+      } else {
+        message += character;
+        cursor += 1;
+      }
+    }
+    try { messages.push(decodeURIComponent(message)); } catch { messages.push(message); }
+    searchFrom = cursor + 1;
+  }
+  return messages;
+}
+
 // ---------------------------------------------------------------------------
 console.log('golden renders (renderer output must match checked-in examples)');
 
@@ -56,8 +87,11 @@ for (const [mode, input, golden] of GOLDEN) {
     render(mode, path.join(skillRoot, 'examples', input), out);
     const fresh = fs.readFileSync(out, 'utf8');
     const checked = fs.readFileSync(path.join(repoRoot, 'examples', golden), 'utf8');
+    const packaged = fs.readFileSync(path.join(skillRoot, 'examples', golden), 'utf8');
     check(`${mode}: ${golden}`, normalizeNewlines(fresh) === normalizeNewlines(checked),
       `fresh render differs from examples/${golden}; if the change is intentional, re-render the examples and commit them`);
+    check(`${mode}: packaged ${golden}`, normalizeNewlines(fresh) === normalizeNewlines(packaged),
+      `fresh render differs from archify/examples/${golden}; re-render the packaged examples and rebuild archify.zip`);
   } catch (err) {
     check(`${mode}: ${golden}`, false, String(err.stderr || err.message).slice(0, 300));
   }
@@ -144,19 +178,22 @@ check('package-lock.json version matches package.json',
 
 const skillMd = fs.readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
 const skillVersion = (skillMd.match(/^\s*version:\s*"([^"]+)"/m) || [])[1];
+const packageMajorMinor = pkg.version.match(/^(\d+\.\d+)\./)?.[1];
 check('SKILL.md metadata version matches package.json major.minor',
-  !!skillVersion && pkg.version.startsWith(skillVersion),
+  !!packageMajorMinor && skillVersion === packageMajorMinor,
   `SKILL.md says ${skillVersion}, package.json says ${pkg.version}`);
 
 for (const readmeName of ['README.md', 'README_EN.md', 'README_ZH.md']) {
   const readme = fs.readFileSync(path.join(repoRoot, readmeName), 'utf8');
+  const badgeVersions = shieldsBadgeMessages(readme, 'version');
   check(`${readmeName} badge matches package.json version`,
-    readme.includes(`/badge/version-${pkg.version}-`),
-    `${readmeName} does not advertise ${pkg.version}`);
+    badgeVersions.length > 0 && badgeVersions.every((version) => version === pkg.version),
+    `${readmeName} badge says ${[...new Set(badgeVersions)].join(', ') || '(missing)'} instead of ${pkg.version}`);
 }
 
 const landingPage = fs.readFileSync(path.join(repoRoot, 'docs/index.html'), 'utf8');
-const landingVersions = [...landingPage.matchAll(/\bv\d+\.\d+\.\d+\b/g)].map((m) => m[0]);
+const landingVersions = [...landingPage.matchAll(/\bv\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?\b/g)]
+  .map((match) => match[0]);
 check('GitHub Pages version labels match package.json',
   landingVersions.length > 0 && landingVersions.every((v) => v === `v${pkg.version}`),
   `landing page says ${[...new Set(landingVersions)].join(', ') || '(no version)'}`);

@@ -82,6 +82,10 @@ case "$SUB" in
     git -C "$CANON" pull
     git -C "$CANON" submodule update --init --recursive
     exit 0 ;;
+  sync-upstream)
+    [ -n "$SUBARG" ] || { echo "usage: install.sh sync-upstream <name>   (see upstreams.json)"; exit 2; }
+    exec python3 "$CANON/_scripts/sync_upstream.py" "$SUBARG" ;;
+
   status)
     if [ -d "$CANON" ]; then echo "canonical:  $CANON (present)"; else echo "canonical:  $CANON (missing)"; fi
     if [ -d "$HIDDEN" ]; then n=$(ls "$HIDDEN" | wc -l | tr -d ' '); echo "hidden:     $HIDDEN ($n skills)"; else echo "hidden:     $HIDDEN (none)"; fi

@@ -11,9 +11,9 @@ const skillRoot = path.resolve(__dirname, '..');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'archify-output-checks-'));
 const checker = path.join(skillRoot, 'scripts/check-render-output.mjs');
 
-function checkHtml(name, svgBody, profile = 'standard') {
+function checkHtml(name, svgBody, profile = 'standard', viewBox = '0 0 240 160') {
   const htmlPath = path.join(tmp, `${name}.html`);
-  fs.writeFileSync(htmlPath, `<!doctype html><html><body><svg viewBox="0 0 240 160" data-quality-profile="${profile}">${svgBody}</svg></body></html>`);
+  fs.writeFileSync(htmlPath, `<!doctype html><html><body><svg viewBox="${viewBox}" data-quality-profile="${profile}">${svgBody}</svg></body></html>`);
   try {
     const stdout = execFileSync('node', [checker, htmlPath], { encoding: 'utf8' });
     return { code: 0, result: JSON.parse(stdout) };
@@ -21,6 +21,79 @@ function checkHtml(name, svgBody, profile = 'standard') {
     return { code: err.status ?? 1, result: JSON.parse(String(err.stdout || '{}')) };
   }
 }
+
+test('render output check: showcase rejects node copy that becomes illegible at 1440px', () => {
+  const { code, result } = checkHtml('showcase-desktop-readability', `
+    <g data-node-id="tool-runtime">
+      <rect x="1398" y="266" width="194" height="70" rx="6" class="c-mask"/>
+      <text data-detail-anchor x="1495" y="299" class="t-primary" font-size="11">ToolRuntime</text>
+      <text data-detail="context" x="1495" y="315" class="t-muted" font-size="8.1">permissions and recovery</text>
+    </g>
+  `, 'showcase', '0 0 1994 804');
+
+  assert.notEqual(code, 0);
+  const issue = result.composition.issues.find(
+    (item) => item.code === 'composition/desktop-readability',
+  );
+  assert.equal(issue?.severity, 'error');
+  assert.equal(issue?.viewportWidth, 1440);
+  assert.ok(issue?.projectedFontPx < issue?.minimumProjectedFontPx);
+});
+
+test('render output check: compares exact projected size before rounding diagnostics', () => {
+  const sourceFontPx = 8.1;
+  const viewBoxWidth = 1260;
+  assert.ok(sourceFontPx * 930 / viewBoxWidth < 6);
+
+  const { code, result } = checkHtml('showcase-desktop-readability-borderline', `
+    <g data-node-id="tool-runtime">
+      <rect x="100" y="100" width="194" height="70" rx="6" class="c-mask"/>
+      <text data-detail="context" x="197" y="140" class="t-muted" font-size="${sourceFontPx}">permissions and recovery</text>
+    </g>
+  `, 'showcase', `0 0 ${viewBoxWidth} 804`);
+
+  assert.notEqual(code, 0);
+  const issue = result.composition.issues.find(
+    (item) => item.code === 'composition/desktop-readability',
+  );
+  assert.equal(issue?.severity, 'error');
+  assert.ok(issue?.projectedFontPx < issue?.minimumProjectedFontPx);
+});
+
+test('render output check: includes primary node labels in desktop readability', () => {
+  const { code, result } = checkHtml('showcase-primary-desktop-readability', `
+    <g data-node-id="compact-node">
+      <rect x="100" y="100" width="120" height="48" rx="6" class="c-mask"/>
+      <text data-node-label x="160" y="126" class="t-primary" font-size="8">Compact node</text>
+    </g>
+  `, 'showcase', '0 0 1300 700');
+
+  assert.notEqual(code, 0);
+  const issue = result.composition.issues.find(
+    (item) => item.code === 'composition/desktop-readability',
+  );
+  assert.equal(issue?.text, 'Compact node');
+  assert.equal(issue?.detail, 'primary');
+  assert.equal(issue?.availableDiagramWidth, 930);
+  assert.ok(issue?.projectedFontPx < issue?.minimumProjectedFontPx);
+});
+
+test('render output check: includes semantic boundary labels in desktop readability', () => {
+  const { code, result } = checkHtml('showcase-boundary-desktop-readability', `
+    <g data-graph-role="structural-frame-label">
+      <rect data-graph-role="structural-frame-label-mask" x="100" y="100" width="180" height="16" class="c-mask"/>
+      <text x="104" y="113" class="t-cloud" font-size="8.4" data-boundary-label>Disaster recovery boundary</text>
+    </g>
+  `, 'showcase', '0 0 1376 728');
+
+  assert.notEqual(code, 0);
+  const issue = result.composition.issues.find(
+    (item) => item.code === 'composition/desktop-readability',
+  );
+  assert.equal(issue?.text, 'Disaster recovery boundary');
+  assert.equal(issue?.detail, 'boundary');
+  assert.ok(issue?.projectedFontPx < issue?.minimumProjectedFontPx);
+});
 
 test('render output check: accepts orthogonal arrows away from legend', () => {
   const { code, result } = checkHtml('clean', `
@@ -44,6 +117,19 @@ test('render output check: rejects two-point diagonal arrows', () => {
   const check = result.checks.find((item) => item.name === 'orthogonal_arrows');
   assert.equal(check.ok, false);
   assert.match(check.details[0], /path 1/);
+});
+
+test('render output check: rejects a diagonal segment inside a polyline', () => {
+  const { code, result } = checkHtml('polyline-diagonal', `
+    <path d="M 20 20 L 60 35 L 120 35" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+    <!-- Legend -->
+    <text x="40" y="120" class="t-primary" font-size="10">Legend</text>
+  `);
+  assert.notEqual(code, 0);
+  const check = result.checks.find((item) => item.name === 'orthogonal_arrows');
+  assert.equal(check.ok, false);
+  assert.match(check.details[0], /path 1/);
+  assert.match(check.details[0], /segment 1/);
 });
 
 test('render output check: rejects arrows crossing legend text', () => {
@@ -108,6 +194,126 @@ test('render output check: shared endpoints and endpoint touches pass showcase',
   assert.equal(code, 0);
   assert.equal(result.composition.metrics.properCrossings, 0);
   assert.equal(result.composition.metrics.ambiguousCorridors, 0);
+});
+
+test('render output check: relationship labels cannot hide another shared-source route', () => {
+  for (const profile of ['standard', 'showcase']) {
+    const { code, result } = checkHtml(`label-route-${profile}`, `
+      <path data-edge-key="0" data-edge-id="approved" data-edge-from="dlq" data-edge-to="replay" data-composition-points="20,60;200,60" d="M 20 60 L 200 60" class="a-default" marker-end="url(#arrowhead)"/>
+      <path data-edge-key="1" data-edge-id="sample" data-edge-from="dlq" data-edge-to="ops" data-composition-points="70,55;150,55" d="M 70 55 L 150 55" class="a-dashed" marker-end="url(#arrowhead-dashed)"/>
+      <g data-detail="context" data-edge-key="0" data-edge-id="approved" data-edge-from="dlq" data-edge-to="replay" data-edge-label="approved replay">
+        <rect x="80" y="48" width="60" height="14" rx="3" class="c-mask"/>
+        <text x="110" y="58">approved replay</text>
+      </g>
+    `, profile);
+
+    assert.equal(result.composition.metrics.labelRouteClearanceIssues, 1);
+    assert.equal(result.composition.metrics.minLabelRouteClearance, 0);
+    const issue = result.composition.issues.find((item) => item.code === 'composition/label-route-clearance');
+    assert.deepEqual(issue.labelRelationship, { id: 'approved', from: 'dlq', to: 'replay', label: 'approved replay', collectionIndex: 0, artifactIndex: 1 });
+    assert.deepEqual(issue.otherRelationship, { id: 'sample', from: 'dlq', to: 'ops', label: '', collectionIndex: 1, artifactIndex: 2 });
+    assert.equal(issue.segmentIndex, 0);
+    assert.deepEqual(issue.labelRect, { x: 80, y: 48, width: 60, height: 14 });
+    assert.equal(issue.clearance, 0);
+    assert.equal(issue.intersectionLength, 60);
+    assert.equal(issue.threshold, profile === 'showcase' ? 4 : 2);
+    const check = result.checks.find((item) => item.name === 'label_route_clearance');
+    if (profile === 'standard') {
+      assert.equal(code, 0);
+      assert.equal(check.ok, true);
+      assert.equal(issue.severity, 'warning');
+      assert.deepEqual(result.composition.summary, { errors: 0, warnings: 1 });
+    } else {
+      assert.notEqual(code, 0);
+      assert.equal(check.ok, false);
+      assert.match(check.details[0], /approved.*sample/);
+      assert.match(check.details[0], /labelAt.*labelDx.*labelDy.*labelSegment/);
+      assert.equal(issue.severity, 'error');
+      assert.deepEqual(result.composition.summary, { errors: 1, warnings: 0 });
+    }
+  }
+});
+
+test('render output check: repeated endpoint messages keep their own stable owner identity', () => {
+  const { code, result } = checkHtml('sequence-repeated-endpoints', `
+    <g data-edge-key="0" data-edge-from="client" data-edge-to="api" data-edge-label="first request">
+      <path data-composition-edge-from="client" data-composition-edge-to="api" data-composition-points="20,20;200,20" d="M 20 20 L 200 20" class="a-default" marker-end="url(#arrowhead)"/>
+      <g data-detail="context"><rect x="70" y="2" width="80" height="16" class="c-mask"/></g>
+    </g>
+    <g data-edge-key="1" data-edge-from="client" data-edge-to="api" data-edge-label="second request">
+      <path data-composition-edge-from="client" data-composition-edge-to="api" data-composition-points="20,60;200,60" d="M 20 60 L 200 60" class="a-default" marker-end="url(#arrowhead)"/>
+      <g data-detail="context"><rect x="70" y="72" width="80" height="16" class="c-mask"/></g>
+    </g>
+    <path data-edge-key="2" data-edge-from="worker" data-edge-to="store" data-composition-points="20,80;200,80" d="M 20 80 L 200 80" class="a-dashed" marker-end="url(#arrowhead-dashed)"/>
+  `, 'showcase');
+  assert.notEqual(code, 0);
+  const issues = result.composition.issues.filter((item) => item.code === 'composition/label-route-clearance');
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].label, 'second request');
+  assert.equal(issues[0].labelRelationship.collectionIndex, 1);
+  assert.equal(issues[0].otherRelationship.collectionIndex, 2);
+});
+
+test('render output check: duplicate fragments of the owning relationship stay exempt', () => {
+  const { code, result } = checkHtml('label-owner-fragments', `
+    <path data-edge-key="0" data-edge-id="approved" data-edge-from="dlq" data-edge-to="replay" data-composition-points="20,60;200,60" d="M 20 60 L 200 60" class="a-default" marker-end="url(#arrowhead)"/>
+    <path data-edge-key="0" data-edge-id="approved" data-edge-from="dlq" data-edge-to="replay" data-composition-points="20,60;200,60" d="M 20 60 L 200 60" class="a-default" marker-end="url(#arrowhead)"/>
+    <g data-detail="context" data-edge-key="0" data-edge-id="approved" data-edge-from="dlq" data-edge-to="replay" data-edge-label="approved replay">
+      <rect x="80" y="48" width="60" height="14" rx="3" class="c-mask"/>
+      <text x="110" y="58">approved replay</text>
+    </g>
+  `, 'showcase');
+  assert.equal(code, 0);
+  assert.equal(result.composition.metrics.labelRouteClearanceIssues, 0);
+  assert.equal(result.composition.metrics.minLabelRouteClearance, null);
+});
+
+test('render output check: duplicate fragments of another relationship count once', () => {
+  const { result } = checkHtml('label-other-fragments', `
+    <path data-edge-key="0" data-edge-id="approved" data-edge-from="dlq" data-edge-to="replay" data-composition-points="20,60;200,60" d="M 20 60 L 200 60" class="a-default" marker-end="url(#arrowhead)"/>
+    <path data-edge-key="1" data-edge-id="sample" data-edge-from="dlq" data-edge-to="ops" data-composition-points="70,55;150,55" d="M 70 55 L 150 55" class="a-dashed" marker-end="url(#arrowhead-dashed)"/>
+    <path data-edge-key="1" data-edge-id="sample" data-edge-from="dlq" data-edge-to="ops" data-composition-points="70,55;150,55" d="M 70 55 L 150 55" class="a-dashed" marker-end="url(#arrowhead-dashed)"/>
+    <g data-detail="context" data-edge-key="0" data-edge-id="approved" data-edge-from="dlq" data-edge-to="replay" data-edge-label="approved replay">
+      <rect x="80" y="48" width="60" height="14" rx="3" class="c-mask"/>
+      <text x="110" y="58">approved replay</text>
+    </g>
+  `, 'showcase');
+  assert.equal(result.composition.metrics.labelRouteClearanceIssues, 1);
+});
+
+test('render output check: label-route thresholds include exact 2px and 4px boundaries', () => {
+  const body = (otherY) => `
+    <path data-edge-key="0" data-edge-from="a" data-edge-to="b" data-composition-points="20,70;200,70" d="M 20 70 L 200 70" class="a-default" marker-end="url(#arrowhead)"/>
+    <path data-edge-key="1" data-edge-from="c" data-edge-to="d" data-composition-points="70,${otherY};150,${otherY}" d="M 70 ${otherY} L 150 ${otherY}" class="a-dashed" marker-end="url(#arrowhead-dashed)"/>
+    <g data-detail="context" data-edge-key="0" data-edge-from="a" data-edge-to="b" data-edge-label="handoff">
+      <rect x="80" y="48" width="60" height="14" rx="3" class="c-mask"/>
+      <text x="110" y="58">handoff</text>
+    </g>
+  `;
+  const standardAtTwo = checkHtml('label-standard-two', body(64), 'standard');
+  assert.equal(standardAtTwo.code, 0);
+  assert.equal(standardAtTwo.result.composition.metrics.labelRouteClearanceIssues, 0);
+  assert.equal(standardAtTwo.result.composition.metrics.minLabelRouteClearance, 2);
+
+  const standardBelowTwo = checkHtml('label-standard-one-nine', body(63.9), 'standard');
+  assert.equal(standardBelowTwo.code, 0);
+  assert.equal(standardBelowTwo.result.composition.metrics.labelRouteClearanceIssues, 1);
+  assert.equal(standardBelowTwo.result.composition.summary.warnings, 1);
+
+  const showcaseAtTwo = checkHtml('label-showcase-two', body(64), 'showcase');
+  assert.notEqual(showcaseAtTwo.code, 0);
+  assert.equal(showcaseAtTwo.result.composition.metrics.labelRouteClearanceIssues, 1);
+  assert.equal(showcaseAtTwo.result.composition.issues.find((item) => item.code === 'composition/label-route-clearance').threshold, 4);
+
+  const showcaseAtFour = checkHtml('label-showcase-four', body(66), 'showcase');
+  assert.equal(showcaseAtFour.code, 0);
+  assert.equal(showcaseAtFour.result.composition.metrics.labelRouteClearanceIssues, 0);
+  assert.equal(showcaseAtFour.result.composition.metrics.minLabelRouteClearance, 4);
+
+  const showcaseBelowFour = checkHtml('label-showcase-three-nine', body(65.9), 'showcase');
+  assert.notEqual(showcaseBelowFour.code, 0);
+  assert.equal(showcaseBelowFour.result.composition.metrics.labelRouteClearanceIssues, 1);
+  assert.equal(showcaseBelowFour.result.composition.summary.errors, 1);
 });
 
 test('render output check: unrelated shared corridors warn in standard and fail showcase', () => {

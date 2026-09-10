@@ -26,16 +26,18 @@ const proofs = [
   },
 ];
 
-test('landing metadata describes the full technical-diagram product without changing the hero', () => {
+test('landing metadata describes the full technical-diagram product and trusted hero promise', () => {
   assert.match(landing, /<title>Archify — Technical Diagrams from Plain English<\/title>/);
   assert.match(landing, /<meta property="og:title" content="Archify — Technical Diagrams from Plain English">/);
-  assert.match(landing, /From plain English<br>to architecture <em>in seconds\.<\/em>/);
+  assert.match(landing, /An agent skill for Cursor, Claude Code, Codex CLI, and OpenCode/);
+  assert.equal((landing.match(/npx -y skills add tt-a1i\/archify --skill archify --agent cursor --global --copy --yes/g) || []).length, 2);
+  assert.match(landing, /From plain English<br>to architecture <em>you can trust\.<\/em>/);
 });
 
 test('landing hero leads with three real generated proof artifacts', () => {
   assert.match(landing, /id="hero-proof-stage"/);
   assert.match(landing, /id="hero-proof-panel" role="tabpanel"/);
-  assert.equal((landing.match(/class="proof-tab"/g) || []).length, 3);
+  assert.equal((landing.match(/class="spec-card"/g) || []).length, 3);
   assert.equal((landing.match(/role="tab"/g) || []).length, 3);
   assert.doesNotMatch(landing, /class="hero-screenshot/);
 
@@ -64,9 +66,11 @@ test('landing proof switcher is bilingual and keyboard navigable', () => {
   assert.match(landing, /event\.key === 'Home'/);
   assert.match(landing, /event\.key === 'End'/);
   assert.match(landing, /proofFrame\.dataset\.proof !== key/);
-  assert.match(landing, /\?embed=1&amp;theme=dark#view=happy-path/);
+  assert.match(landing, /\?embed=1&amp;play=1&amp;theme=dark#view=happy-path/);
+  assert.match(landing, /sandbox="allow-scripts"/);
   assert.match(landing, /const playback = play \? '&play=1' : ''/);
   assert.match(landing, /proofEmbedUrl\(proof, \{ play: deliberate \}\)/);
+  assert.doesNotMatch(landing, /proofFrame\.contentWindow|proofFrame\.contentDocument/);
   assert.match(landing, /\?present=1&play=1#view=/);
   assert.match(landing, /#view=\$\{encodeURIComponent\(proof\.view\)\}/);
   assert.match(landing, /Pin one exact Story Moment, copy its stable link, and let someone else open the same authored node/);
