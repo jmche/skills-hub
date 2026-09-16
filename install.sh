@@ -25,8 +25,9 @@ set -euo pipefail
 #   --skip-hosts     do not create host symlinks
 #   --skip-env       do not offer API-key setup
 #   --no-pull        do not git-pull an existing local clone
-#   --commit         with update: commit the bumped grounded-build pointer
-#                    (maintainer use; users get the latest checkout without it)
+#   --commit         with update: commit the bumped grounded-build pointer and
+#                    sync vendored skills (maintainer use; without it users get
+#                    the latest grounded-build checkout and a report only)
 #   --repo URL       clone from a different repository
 #   -h, --help       print this help
 #
@@ -99,8 +100,10 @@ case "$SUB" in
     # with --commit, so ordinary clones never diverge from origin.
     if [ -e "$CANON/grounded-build/.git" ]; then
       branch=$(git -C "$CANON" config -f .gitmodules submodule.grounded-build.branch 2>/dev/null || echo main)
-      oldsha=$(git -C "$CANON" rev-parse "HEAD:grounded-build")
-      if git -C "$CANON/grounded-build" fetch --quiet origin "$branch" && \
+      oldsha=$(git -C "$CANON" rev-parse "HEAD:grounded-build" 2>/dev/null || echo "")
+      if [ -z "$oldsha" ]; then
+        echo "grounded-build: not a submodule of the current HEAD; skipping"
+      elif git -C "$CANON/grounded-build" fetch --quiet origin "$branch" && \
          git -C "$CANON" submodule update --remote --no-fetch --checkout --quiet -- grounded-build; then
         newsha=$(git -C "$CANON/grounded-build" rev-parse HEAD)
         old7=${oldsha:0:7}; new7=${newsha:0:7}
@@ -119,9 +122,16 @@ case "$SUB" in
     fi
     # vendored third-party skills (see upstreams.json): if a newer STABLE
     # release exists upstream, mirror just the skill dir into the library
-    # (never the whole monorepo) and commit locally.
+    # (never the whole monorepo) and commit locally. Syncing is a maintainer
+    # step (the result is reviewed once, then reaches users through the
+    # commits `git pull` brings in), so it only runs with --commit; otherwise
+    # just report what is available.
     if [ -f "$CANON/upstreams.json" ] && command -v python3 >/dev/null 2>&1; then
-      python3 "$CANON/_scripts/check_upstreams.py" --sync || true
+      if [ "$COMMIT_BUMP" -eq 1 ]; then
+        python3 "$CANON/_scripts/check_upstreams.py" --sync || true
+      else
+        python3 "$CANON/_scripts/check_upstreams.py" || true
+      fi
     fi
     exit 0 ;;
   sync-upstream)

@@ -148,7 +148,7 @@ One line, from any directory:
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-Or inside the repo: `bash install.sh update` (git pull; grounded-build and vendored skills like archify are refreshed to their latest stable releases).
+Or inside the repo: `bash install.sh update` (git pull; grounded-build is checked out at its upstream latest, and vendored skills like archify arrive through the maintainer's sync commits — `update --commit` performs that sync and bumps the grounded-build pointer).
 Also available: `hidden` (list non-published skills) · `enable <name>` (restore one) ·
 `status` (what's installed and where).
 

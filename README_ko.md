@@ -148,7 +148,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-또는 리포 안에서 `bash install.sh update`(git pull; grounded-build와 archify 등 vendored 스킬은 최신 안정판으로 자동 갱신).
+또는 리포 안에서 `bash install.sh update`(git pull; grounded-build는 업스트림 최신 커밋으로 체크아웃되고, archify 등 vendored 스킬은 메인테이너의 동기화 커밋을 통해 전달됨 — `update --commit`이 그 동기화와 grounded-build 포인터 갱신을 수행).
 기타: `hidden`(미공개 스킬 목록) · `enable <name>`(복원) · `status`(설치 상태).
 
 ## API 키
