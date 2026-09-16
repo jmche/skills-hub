@@ -34,8 +34,9 @@ set -euo pipefail
 # Subcommands:
 #   install.sh enable <name>   restore a hidden skill into ~/.agents/skills
 #   install.sh hidden          list hidden (unpublished) skills
-#   install.sh update          git pull the local clone; grounded-build and
-#                              vendored skills are refreshed to upstream latest
+#   install.sh update          git pull the local clone; grounded-build is
+#                              checked out at upstream latest (vendored skills
+#                              sync only with --commit)
 #   install.sh status          show install state
 # Usage: one-command installer for the skills-hub library.
 # ============================================================================
@@ -100,7 +101,7 @@ case "$SUB" in
     # with --commit, so ordinary clones never diverge from origin.
     if [ -e "$CANON/grounded-build/.git" ]; then
       branch=$(git -C "$CANON" config -f .gitmodules submodule.grounded-build.branch 2>/dev/null || echo main)
-      oldsha=$(git -C "$CANON" rev-parse "HEAD:grounded-build" 2>/dev/null || echo "")
+      oldsha=$(git -C "$CANON" rev-parse --verify --quiet "HEAD:grounded-build" || echo "")
       if [ -z "$oldsha" ]; then
         echo "grounded-build: not a submodule of the current HEAD; skipping"
       elif git -C "$CANON/grounded-build" fetch --quiet origin "$branch" && \

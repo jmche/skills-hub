@@ -57,8 +57,9 @@ def main():
 
     if not sync:
         if stale:
-            print(f"{len(stale)} upstream update(s) available - run: "
-                  f"bash install.sh sync-upstream <name>")
+            print(f"{len(stale)} upstream update(s) available - the maintainer "
+                  f"syncs them (bash install.sh update --commit); users receive "
+                  f"the result through the next update's git pull")
         return 0
 
     ok = True
