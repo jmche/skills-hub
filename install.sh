@@ -82,22 +82,25 @@ case "$SUB" in
     [ -d "$CANON/.git" ] || { echo "no git repo at $CANON"; exit 1; }
     git -C "$CANON" pull
     git -C "$CANON" submodule update --init --recursive
-    # grounded-build: fast-forward the submodule itself when it sits on a
-    # branch (maintainer checkout), then bump the pointer here. Users on a
-    # detached checkout simply receive the pinned commit from `git pull`.
+    # grounded-build: follow the branch declared in .gitmodules (branch = main)
+    # instead of the commit pinned here. `--remote` fetches that branch and
+    # `--merge` fast-forwards onto it, which works on the detached HEAD that
+    # `submodule update` always produces as well as on a maintainer branch.
+    # Then bump the pointer so a later plain `submodule update` cannot roll
+    # the checkout back to the old commit.
     if [ -e "$CANON/grounded-build/.git" ]; then
-      if branch=$(git -C "$CANON/grounded-build" symbolic-ref --short HEAD 2>/dev/null); then
-        if git -C "$CANON/grounded-build" fetch --quiet origin && \
-           git -C "$CANON/grounded-build" merge --quiet --ff-only "origin/$branch" 2>/dev/null; then
-          newsha=$(git -C "$CANON/grounded-build" rev-parse --short HEAD)
-          if ! git -C "$CANON" diff --quiet -- grounded-build; then
-            git -C "$CANON" add grounded-build
-            git -C "$CANON" commit -q -m "bump grounded-build submodule to ${newsha} (${branch})"
-            echo "grounded-build: updated to ${newsha}"
-          else
-            echo "grounded-build: already at ${newsha}"
-          fi
+      branch=$(git -C "$CANON" config -f .gitmodules submodule.grounded-build.branch 2>/dev/null || echo main)
+      if git -C "$CANON" submodule update --remote --merge --quiet -- grounded-build; then
+        newsha=$(git -C "$CANON/grounded-build" rev-parse --short HEAD)
+        if ! git -C "$CANON" diff --quiet -- grounded-build; then
+          git -C "$CANON" add grounded-build
+          git -C "$CANON" commit -q -m "bump grounded-build submodule to ${newsha} (${branch})"
+          echo "grounded-build: updated to ${newsha}"
+        else
+          echo "grounded-build: already at ${newsha}"
         fi
+      else
+        echo "grounded-build: remote update failed; keeping pinned $(git -C "$CANON/grounded-build" rev-parse --short HEAD)"
       fi
     fi
     # vendored third-party skills (see upstreams.json): if a newer STABLE
