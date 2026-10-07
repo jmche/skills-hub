@@ -25,8 +25,8 @@ set -euo pipefail
 #   --select         interactive skill selection (all / by-hub / individual)
 #   --skip-hosts     do not create host symlinks
 #   --skip-env       do not offer API-key setup
-#   --no-pull        do not git-pull an existing local clone or fetch
-#                    grounded-build; use the local state as it is
+#   --no-pull        do not git-pull an existing local clone or move its
+#                    grounded-build checkout
 #   --commit         with update: commit the bumped grounded-build pointer and
 #                    sync vendored skills (maintainer use; without it users get
 #                    the latest grounded-build checkout and a report only)
@@ -169,15 +169,15 @@ else
   echo "[1/4] local clone at $CANON"
   if [ -d "$CANON/.git" ]; then
     if [ "$NOPULL" -eq 0 ]; then
-      # reset submodules to the pinned commits so the detached-at-upstream
-      # grounded-build checkout never makes the pull refuse to run
-      git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
       git -C "$CANON" pull --quiet && echo "      updated" || echo "      pull skipped/failed; using local state"
+    fi
+    # only check out a missing submodule; an existing grounded-build checkout
+    # stays where it is until follow_grounded_build moves it to the upstream tip
+    if [ ! -e "$CANON/grounded-build/.git" ]; then
       git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
+    fi
+    if [ "$NOPULL" -eq 0 ]; then
       follow_grounded_build 0 | sed 's/^/      /'
-    elif [ ! -e "$CANON/grounded-build/.git" ]; then
-      # --no-pull: only check out a missing submodule; an existing checkout stays as it is
-      git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
     fi
   fi
 fi
