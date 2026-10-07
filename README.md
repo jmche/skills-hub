@@ -81,7 +81,7 @@ A few of the 188, to make it concrete:
 
 ## Install
 
-One command (clones to `~/.agents/skills`, asks which hosts to link, checks API keys):
+One command (clones to `~/.agents/skills`, checks out grounded-build at its upstream latest, asks which hosts to link, checks API keys):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash

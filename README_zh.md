@@ -79,7 +79,7 @@ Hub。agent 看到的是极小的目录（23 个条目而非 221 个），只在
 
 ## 安装
 
-一条命令（克隆到 `~/.agents/skills`，询问链接哪些宿主，检查 API key）：
+一条命令（克隆到 `~/.agents/skills`，将 grounded-build 检出到上游最新提交，询问链接哪些宿主，检查 API key）：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash

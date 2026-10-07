@@ -81,7 +81,7 @@ skills-hub은 코딩 에이전트를 위한 큐레이션된 스킬 라이브러�
 
 ## 설치
 
-한 줄 설치(`~/.agents/skills`에 클론, 링크할 호스트 질문, API 키 확인):
+한 줄 설치(`~/.agents/skills`에 클론, grounded-build를 업스트림 최신 커밋으로 체크아웃, 링크할 호스트 질문, API 키 확인):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash

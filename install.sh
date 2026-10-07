@@ -9,7 +9,8 @@ set -euo pipefail
 #
 # What it does (idempotent, safe to re-run):
 #   1. Ensure a canonical library at ~/.agents/skills (this repo; clone if missing,
-#      otherwise git pull unless --no-pull).
+#      otherwise git pull unless --no-pull). grounded-build is checked out at
+#      its upstream latest.
 #   2. Apply the publish whitelist (publish.json). Entries that are NOT
 #      whitelisted (e.g. private project skills) are moved to
 #      ~/.agents/skills-hidden (never deleted). Restore with: install.sh enable <name>
@@ -24,7 +25,8 @@ set -euo pipefail
 #   --select         interactive skill selection (all / by-hub / individual)
 #   --skip-hosts     do not create host symlinks
 #   --skip-env       do not offer API-key setup
-#   --no-pull        do not git-pull an existing local clone
+#   --no-pull        do not git-pull an existing local clone or fetch
+#                    grounded-build; use the local state as it is
 #   --commit         with update: commit the bumped grounded-build pointer and
 #                    sync vendored skills (maintainer use; without it users get
 #                    the latest grounded-build checkout and a report only)
@@ -71,6 +73,36 @@ H="$HOME/.agents"
 CANON="$H/skills"
 HIDDEN="$H/skills-hidden"
 
+# grounded-build: follow the branch declared in .gitmodules (branch = main)
+# instead of the commit pinned here. `--remote --checkout` lands exactly on
+# the upstream tip (no local merge commits, works on the detached HEAD that
+# `submodule update` always produces). The pointer bump is only committed
+# when $1 is 1 (update --commit), so ordinary clones never diverge from origin.
+follow_grounded_build() {
+  local commit_bump="$1" branch oldsha newsha old7 new7
+  [ -e "$CANON/grounded-build/.git" ] || return 0
+  branch=$(git -C "$CANON" config -f .gitmodules submodule.grounded-build.branch 2>/dev/null || echo main)
+  oldsha=$(git -C "$CANON" rev-parse --verify --quiet "HEAD:grounded-build" || echo "")
+  if [ -z "$oldsha" ]; then
+    echo "grounded-build: not a submodule of the current HEAD; skipping"
+  elif git -C "$CANON/grounded-build" fetch --quiet origin "$branch" && \
+     git -C "$CANON" submodule update --remote --no-fetch --checkout --quiet -- grounded-build; then
+    newsha=$(git -C "$CANON/grounded-build" rev-parse HEAD)
+    old7=${oldsha:0:7}; new7=${newsha:0:7}
+    if [ "$oldsha" = "$newsha" ]; then
+      echo "grounded-build: already at ${new7}"
+    elif [ "$commit_bump" -eq 1 ]; then
+      git -C "$CANON" add -- grounded-build
+      git -C "$CANON" commit -q -m "bump grounded-build submodule to ${new7} (${branch})" -- grounded-build
+      echo "grounded-build: updated ${old7} -> ${new7} (pointer committed)"
+    else
+      echo "grounded-build: updated ${old7} -> ${new7} (checkout only; pointer stays ${old7}, use update --commit to bump)"
+    fi
+  else
+    echo "grounded-build: could not update (offline, or local changes inside grounded-build/); keeping $(git -C "$CANON/grounded-build" rev-parse --short HEAD)"
+  fi
+}
+
 # ---- subcommands -----------------------------------------------------------
 case "$SUB" in
   enable)
@@ -94,33 +126,7 @@ case "$SUB" in
       || echo "submodules: local changes prevent reset to the pinned commit; leaving them as they are"
     git -C "$CANON" pull --ff-only || echo "pull skipped/failed (local commits or divergence); using local state"
     git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
-    # grounded-build: follow the branch declared in .gitmodules (branch = main)
-    # instead of the commit pinned here. `--remote --checkout` lands exactly on
-    # the upstream tip (no local merge commits, works on the detached HEAD that
-    # `submodule update` always produces). The pointer bump is only committed
-    # with --commit, so ordinary clones never diverge from origin.
-    if [ -e "$CANON/grounded-build/.git" ]; then
-      branch=$(git -C "$CANON" config -f .gitmodules submodule.grounded-build.branch 2>/dev/null || echo main)
-      oldsha=$(git -C "$CANON" rev-parse --verify --quiet "HEAD:grounded-build" || echo "")
-      if [ -z "$oldsha" ]; then
-        echo "grounded-build: not a submodule of the current HEAD; skipping"
-      elif git -C "$CANON/grounded-build" fetch --quiet origin "$branch" && \
-         git -C "$CANON" submodule update --remote --no-fetch --checkout --quiet -- grounded-build; then
-        newsha=$(git -C "$CANON/grounded-build" rev-parse HEAD)
-        old7=${oldsha:0:7}; new7=${newsha:0:7}
-        if [ "$oldsha" = "$newsha" ]; then
-          echo "grounded-build: already at ${new7}"
-        elif [ "$COMMIT_BUMP" -eq 1 ]; then
-          git -C "$CANON" add -- grounded-build
-          git -C "$CANON" commit -q -m "bump grounded-build submodule to ${new7} (${branch})" -- grounded-build
-          echo "grounded-build: updated ${old7} -> ${new7} (pointer committed)"
-        else
-          echo "grounded-build: updated ${old7} -> ${new7} (checkout only; pointer stays ${old7}, use --commit to bump)"
-        fi
-      else
-        echo "grounded-build: could not update (offline, or local changes inside grounded-build/); keeping $(git -C "$CANON/grounded-build" rev-parse --short HEAD)"
-      fi
-    fi
+    follow_grounded_build "$COMMIT_BUMP"
     # vendored third-party skills (see upstreams.json): if a newer STABLE
     # release exists upstream, mirror just the skill dir into the library
     # (never the whole monorepo) and commit locally. Syncing is a maintainer
@@ -158,13 +164,22 @@ if [ ! -f "$CANON/install.sh" ]; then
   echo "[1/4] no local clone found — cloning $REPO"
   mkdir -p "$H"
   git clone --depth 1 --recurse-submodules "$REPO" "$CANON"
+  follow_grounded_build 0 | sed 's/^/      /'
 else
   echo "[1/4] local clone at $CANON"
-  if [ -d "$CANON/.git" ] && [ "$NOPULL" -eq 0 ]; then
-    git -C "$CANON" pull --quiet && echo "      updated" || echo "      pull skipped/failed; using local state"
+  if [ -d "$CANON/.git" ]; then
+    if [ "$NOPULL" -eq 0 ]; then
+      # reset submodules to the pinned commits so the detached-at-upstream
+      # grounded-build checkout never makes the pull refuse to run
+      git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
+      git -C "$CANON" pull --quiet && echo "      updated" || echo "      pull skipped/failed; using local state"
+      git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
+      follow_grounded_build 0 | sed 's/^/      /'
+    elif [ ! -e "$CANON/grounded-build/.git" ]; then
+      # --no-pull: only check out a missing submodule; an existing checkout stays as it is
+      git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
+    fi
   fi
-  # ensure submodules (grounded-build) are checked out
-  [ -d "$CANON/.git" ] && git -C "$CANON" submodule update --init --recursive --quiet 2>/dev/null || true
 fi
 cd "$CANON"
 
