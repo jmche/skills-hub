@@ -79,24 +79,32 @@ HIDDEN="$H/skills-hidden"
 # `submodule update` always produces). The pointer bump is only committed
 # when $1 is 1 (update --commit), so ordinary clones never diverge from origin.
 follow_grounded_build() {
-  local commit_bump="$1" branch oldsha newsha old7 new7
+  local commit_bump="$1" branch oldsha prevsha newsha old7 new7 moved
   [ -e "$CANON/grounded-build/.git" ] || return 0
   branch=$(git -C "$CANON" config -f .gitmodules submodule.grounded-build.branch 2>/dev/null || echo main)
   oldsha=$(git -C "$CANON" rev-parse --verify --quiet "HEAD:grounded-build" || echo "")
+  prevsha=$(git -C "$CANON/grounded-build" rev-parse --verify --quiet HEAD 2>/dev/null || echo "")
   if [ -z "$oldsha" ]; then
     echo "grounded-build: not a submodule of the current HEAD; skipping"
   elif git -C "$CANON/grounded-build" fetch --quiet origin "$branch" && \
      git -C "$CANON" submodule update --remote --no-fetch --checkout --quiet -- grounded-build; then
     newsha=$(git -C "$CANON/grounded-build" rev-parse HEAD)
     old7=${oldsha:0:7}; new7=${newsha:0:7}
+    # the checkout is reported against the commit it had before this run,
+    # the pointer against the commit pinned in HEAD
+    if [ "$prevsha" = "$newsha" ]; then
+      moved="already at ${new7}"
+    else
+      moved="updated ${prevsha:0:7} -> ${new7}"
+    fi
     if [ "$oldsha" = "$newsha" ]; then
-      echo "grounded-build: already at ${new7}"
+      echo "grounded-build: ${moved}"
     elif [ "$commit_bump" -eq 1 ]; then
       git -C "$CANON" add -- grounded-build
       git -C "$CANON" commit -q -m "bump grounded-build submodule to ${new7} (${branch})" -- grounded-build
-      echo "grounded-build: updated ${old7} -> ${new7} (pointer committed)"
+      echo "grounded-build: ${moved} (pointer committed)"
     else
-      echo "grounded-build: updated ${old7} -> ${new7} (checkout only; pointer stays ${old7}, use update --commit to bump)"
+      echo "grounded-build: ${moved} (pointer stays ${old7}, use update --commit to bump)"
     fi
   else
     echo "grounded-build: could not update (offline, or local changes inside grounded-build/); keeping $(git -C "$CANON/grounded-build" rev-parse --short HEAD)"
