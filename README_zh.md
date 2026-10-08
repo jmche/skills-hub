@@ -188,7 +188,7 @@ curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | 
 - **C1 门禁**：子技能目录内只有 `INSTRUCTIONS.md`、绝无多余 `SKILL.md`——防止深度
   扫描器（如 `npx skills`）把 188 个子技能重复注册成顶层技能。
 - **增量宿主软链**：安装器绝不覆盖宿主已有技能，只为缺失的补链。
-- **私有内容保持私有**：个人技能可与库同目录共存且不进版本控制（我们的 `gov-*`）——
+- **私有内容保持私有**：个人技能可与库同目录共存且不进版本控制——
   新克隆永远不会带上它们。
 
 ## 许可

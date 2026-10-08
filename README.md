@@ -197,7 +197,7 @@ The installer offers to set this up and verifies that keys are visible under `ba
 - **Additive host links**: the installer never overwrites a host-local skill; it only adds
   links for skills the host is missing.
 - **Private content stays private**: personal skills can sit next to the library and stay
-  out of version control (our `gov-*` case) — a fresh clone never contains them.
+  out of version control — a fresh clone never contains them.
 
 ## License
 
