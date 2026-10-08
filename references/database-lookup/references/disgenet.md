@@ -30,10 +30,10 @@ https://api.disgenet.com/api/v1
 `disgenet.org` redirects to the `disgenet.com` web app; the API is served from
 the `api.disgenet.com` subdomain. An unauthenticated request there returns a JSON
 auth error (`"Missing or invalid API Key"`, HTTP 401). The OpenAPI spec is
-readable without login at `https://api.disgenet.com/v2/api-docs`. The endpoint
-shapes below come from that spec; authenticated responses were not exercised.
+readable without login at `https://api.disgenet.com/v2/api-docs`.
 
-Pass the key as `Authorization: Bearer <token>`; load it from `.env` as
+The spec declares the key as an `apiKey` in the `Authorization` header, with no
+`Bearer` prefix: pass `Authorization: <key>`; load it from `.env` as
 `DISGENET_API_KEY`. Identifiers are query parameters, not path segments.
 
 | Endpoint | Description |
@@ -43,7 +43,7 @@ Pass the key as `Authorization: Bearer <token>`; load it from `.env` as
 | `/vda/summary` | Variant-disease associations |
 | `/vda/evidence` | Evidence-level VDA data |
 | `/entity/gene`, `/entity/disease`, `/entity/variant` | Entity lookup/resolution |
-| `/enrichment/gene` | Gene set disease-enrichment |
+| `/enrichment/gene` | Gene set disease-enrichment (`POST`; the other endpoints are `GET`) |
 
 Parameters on `/gda/summary` and `/vda/summary`:
 - `gene_ncbi_id`, `gene_ensembl_id`, `gene_symbol` — up to 100 comma-separated
@@ -51,14 +51,14 @@ Parameters on `/gda/summary` and `/vda/summary`:
 - `variant` — dbSNP rsID (on `/vda/summary`)
 - `source` — e.g. `CURATED`, `CLINVAR`, `CLINGEN`, `ALL`
 - `min_score` / `max_score`, `min_ei` / `max_ei` — score and evidence-index bounds
-- `page_number` — pagination
+- `page_number` — zero-based page, 100 results per page
 
 ```bash
 # Gene-disease for TP53 (NCBI gene ID 7157)
-curl -H "Authorization: Bearer ${DISGENET_API_KEY}" \
+curl -H "Authorization: ${DISGENET_API_KEY}" \
   "https://api.disgenet.com/api/v1/gda/summary?gene_ncbi_id=7157&source=CURATED"
 
 # Variant-disease for rs1042522
-curl -H "Authorization: Bearer ${DISGENET_API_KEY}" \
+curl -H "Authorization: ${DISGENET_API_KEY}" \
   "https://api.disgenet.com/api/v1/vda/summary?variant=rs1042522"
 ```
