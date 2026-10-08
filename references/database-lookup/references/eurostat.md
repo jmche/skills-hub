@@ -39,7 +39,7 @@ GET /data/{datasetCode}/{filter}
 **Query parameters:**
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `format` | No | `JSON` (default), `SDMX-CSV`, `sdmx+xml`, `TSV`. The values `sdmx+json` and `sdmx+csv` return HTTP 406 `UNSUPPORTED_FORMAT`. |
+| `format` | No | `JSON`, `SDMX-CSV`, `TSV`, `SDMX_2.1_STRUCTURED`, `SDMX_2.1_GENERIC`. Omitting it returns SDMX-ML Generic XML. The values `sdmx+json`, `sdmx+csv` and `sdmx+xml` return HTTP 406 `UNSUPPORTED_FORMAT`. |
 | `startPeriod` | No | Start year/quarter/month: `2015`, `2020-Q1`, `2020-01` |
 | `endPeriod` | No | End year/quarter/month |
 | `detail` | No | `full` (default), `dataonly`, `serieskeysonly`, `nodata` |

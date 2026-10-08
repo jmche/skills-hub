@@ -6,10 +6,10 @@ email/password login recipes are not the current integration contract.
 
 Access is plan-dependent: the [Academic plan](https://www.disgenet.com/Plans)
 exposes the curated subset; full-dataset API access requires an appropriate
-subscription. Obtain a key and the current base URL, authorization-header
-syntax and endpoint schema from the account's API documentation before running
-requests. These authenticated details could not be independently verified in
-this review, so no speculative URL or token exchange is provided.
+subscription. Obtain a key from the account dashboard before running requests.
+The base URL and endpoint shapes are listed under "API base and endpoints"
+below; they come from the public OpenAPI spec, and authenticated responses were
+not exercised.
 
 For a reproducible retrieval, choose gene–disease (GDA) or variant–disease (VDA),
 resolve the input identifier, and save source filters, release, evidence rows,
