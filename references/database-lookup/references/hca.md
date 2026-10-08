@@ -8,23 +8,16 @@ https://service.azul.data.humancellatlas.org/
 ## Auth
 No auth required.
 
-## Catalog Discovery (do this first)
+## Select the catalogue
 
-Catalog names are renamed periodically (e.g. `dcp2` was retired) and hardcoding
-one will eventually break. Discover the current default catalog at request time:
-
-```bash
-curl -s "https://service.azul.data.humancellatlas.org/index/catalogs" | python3 -c "import json,sys; print(json.load(sys.stdin)['default_catalog'])"
-```
-
-As of 2026-07-15 this returns `dcp60` — use that if the discovery call is
-skipped, but prefer the live lookup since it changes over time.
+GET `/index/catalogs` and choose `default_catalog` or an explicitly required
+catalogue from `catalogs`. The live default on 2026-09-30 was `dcp60`; pin the
+returned name for the entire retrieval. Do not hard-code the old `dcp2` catalogue.
 
 ## Key Endpoints
 
 | Endpoint | Description |
 |----------|-------------|
-| `/index/catalogs` | List valid catalog names + current default (no `catalog` param needed) |
 | `/index/projects?size={n}&catalog={catalog}` | List/search projects |
 | `/index/samples?size={n}&catalog={catalog}` | List/search samples |
 | `/index/files?size={n}&catalog={catalog}` | List/search files |
@@ -32,19 +25,17 @@ skipped, but prefer the live lookup since it changes over time.
 
 ## Example Calls
 ```
-# List projects (verified 2026-07-15, catalog=dcp60)
-https://service.azul.data.humancellatlas.org/index/projects?size=5&catalog=dcp60
+# List projects
+https://service.azul.data.humancellatlas.org/index/projects?size=5&catalog={catalog}
 
 # Summary stats
-https://service.azul.data.humancellatlas.org/index/summary?catalog=dcp60
+https://service.azul.data.humancellatlas.org/index/summary?catalog={catalog}
 ```
 
-Supports JSON filter parameters for organ, species, library construction, etc.
-
-**Verified 2026-07-15:** `catalog=dcp2` returns 404 ("Catalog name 'dcp2' does
-not exist") — that catalog was retired. The current default catalog is
-`dcp60` (532 projects, 592K files as of this check). Always resolve the
-catalog via `/index/catalogs` rather than hardcoding a name.
+Encode `filters` as JSON, for example `{"organ":{"is":["lung"]}}`.
+Follow `pagination.next` for continuation; the API uses search-after tokens,
+not a general numeric offset. Query parameters and filter names are defined in
+the [OpenAPI schema](https://service.azul.data.humancellatlas.org/openapi.json).
 
 ## Response Format
 JSON. `hits` array with project/sample/file metadata + pagination.

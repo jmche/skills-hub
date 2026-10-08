@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.11"
 # dependencies = []
 # ///
 """OneKGPd — sample & population metadata (offline) over the 1000 Genomes Project.
@@ -265,7 +265,7 @@ def cmd_list_populations(args) -> None:
             f"{p['superpopulation_code']}  {p['sample_count']}"
         )
     if len(populations) > PREVIEW_ROWS:
-        summary.append(f"  … {len(populations) - PREVIEW_ROWS} more (see file)")
+        summary.append(f"  ... {len(populations) - PREVIEW_ROWS} more (see file)")
     _emit(data, "list_populations", summary, args.output)
 
 

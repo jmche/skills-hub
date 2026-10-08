@@ -14,27 +14,27 @@ description: Generic data / ML / scientific-compute hub: large-memory DataFrames
 
 | skill | description |
 |---|---|
-| dask | Distributed computing for larger-than-RAM pandas/NumPy workflows. Use when you need to scale existing… |
-| polars | High-performance DataFrame library for Python ETL, analytics, and pandas migration. Use for expression-based… |
-| vaex | Use this skill for processing and analyzing large tabular datasets (billions of rows) that exceed available… |
-| zarr-python | Chunked N-D arrays for cloud storage (Zarr-Python 3). Compressed arrays, parallel I/O, S3/GCS via fsspec,… |
-| lamindb | Use when working with LaminDB, the open-source lineage-native lakehouse for biological datasets and models.… |
-| exploratory-data-analysis | Perform comprehensive exploratory data analysis on scientific data files across 200+ file formats. This skill… |
-| scikit-learn | Machine learning in Python with scikit-learn. Use when working with supervised learning (classification,… |
-| shap | Model interpretability and explainability using SHAP (SHapley Additive exPlanations). Use this skill when… |
-| statsmodels | Statistical models library for Python. Use when you need specific model classes (OLS, GLM, mixed models,… |
-| scikit-survival | Comprehensive toolkit for survival analysis and time-to-event modeling in Python using scikit-survival. Use… |
+| dask | Scales pandas, NumPy, and custom Python research workflows beyond memory or across clusters with Dask. Covers… |
+| polars | High-performance DataFrame library for Python ETL, analytics, and pandas migration. It supports… |
+| vaex | Processes large tabular scientific datasets with Vaex expressions, filtered views, streamed statistics,… |
+| zarr-python | Stores and queries chunked N-D scientific arrays with Zarr-Python 3, including codecs, sharding, S3/GCS… |
+| lamindb | Manages biological datasets and models with LaminDB, including artifact registration, lineage tracking,… |
+| exploratory-data-analysis | "Performs bounded, local exploratory analysis of explicitly supported scientific files. Supports redacted… |
+| scikit-learn | Supports machine learning in Python with scikit-learn. Applies when working with supervised learning… |
+| shap | Explain and audit machine-learning predictions with SHAP. Use for selecting SHAP explainers and maskers,… |
+| statsmodels | Fits and diagnoses Python statistical models including OLS, GLM, discrete and mixed models, ARIMA and… |
+| scikit-survival | Builds, evaluates, and audits right-censored or competing-risk survival workflows with scikit-survival,… |
 | aeon | This skill should be used for time series machine learning tasks including classification, regression,… |
-| timesfm-forecasting | Zero-shot time series forecasting with Google's TimesFM foundation model. Use for any univariate time series… |
+| timesfm-forecasting | Performs zero-shot time-series forecasting with Google's TimesFM, including regular-grid CSV preparation,… |
 | transformers | Hugging Face Transformers for loading Hub models, running pipeline inference, text generation, and Trainer… |
 | pytorch-lightning | Deep learning framework (PyTorch Lightning / lightning package). Organize PyTorch code into LightningModules,… |
-| torch-geometric | PyTorch Geometric (PyG) for graph neural networks — node/link/graph classification, message passing (GCN,… |
-| stable-baselines3 | Production-ready reinforcement learning algorithms (PPO, SAC, DQN, TD3, DDPG, A2C) with scikit-learn-like… |
-| networkx | Create, analyze, and visualize complex networks and graphs in Python with NetworkX. Use when working with… |
-| geopandas | Python library for working with geospatial vector data including shapefiles, GeoJSON, and GeoPackage files.… |
-| geomaster | Comprehensive geospatial science skill covering remote sensing, GIS, spatial analysis, machine learning for… |
-| umap-learn | Use UMAP-learn for nonlinear dimensionality reduction, 2D/3D embeddings, clustering preprocessing, supervised… |
-| get-available-resources | This skill should be used at the start of any computationally intensive scientific task to detect and report… |
+| torch-geometric | Supports PyTorch Geometric (PyG) graph neural networks — node/link/graph classification, message passing… |
+| stable-baselines3 | Trains and evaluates single-agent reinforcement learning with Stable Baselines3 (PPO, SAC, DQN, TD3, DDPG,… |
+| networkx | Creates, analyzes, and visualizes complex networks and graphs in Python with NetworkX. Use when working with… |
+| geopandas | Guidance and local audit tools for Python workflows that directly use GeoPandas GeoSeries, GeoDataFrame,… |
+| geomaster | Supports geospatial research workflows for remote sensing, vector and raster GIS, spatial statistics, terrain… |
+| umap-learn | Applies UMAP-learn to nonlinear dimensionality reduction, 2D/3D embeddings, clustering preprocessing,… |
+| get-available-resources | Detects host inventory and effective CPU, memory, disk, scheduler, container, and accelerator limits when a… |
 
 ## Cross-hub handoff
 - Domain (single-cell / protein / genomics) work -> scientific

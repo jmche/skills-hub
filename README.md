@@ -140,6 +140,32 @@ Plus 16 other top-level skills: `pdf`, `docx`, `xlsx`, `pptx`, `grill-me`,
 Each hub's `SKILL.md` carries the full sub-skill index with one-line descriptions and
 routing rules (when to use this hub vs. a neighboring one).
 
+## Upstream sources
+
+Most skills are vendored from two upstream collections. Their files are kept identical
+to upstream; the only structural change is that a sub-skill's `SKILL.md` is stored as
+`INSTRUCTIONS.md`.
+
+| Upstream | Skills here | Synced to |
+|---|---|---|
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 140 | `92ace75` (2026-10-05) |
+| [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`, v1.2.1 (2026-09-14) |
+
+Four skills carry local changes on top of the upstream version. Each change was checked
+against the live service:
+
+| Skill | Local difference |
+|---|---|
+| `references/literature-review` | adds `kernel.py` (OpenAlex search, citation-graph expansion, DOI and retraction checks, prose lint) and the citation-integrity rules that use it |
+| `references/database-lookup` | ZINC is not offered (its endpoints redirect automated requests to a CAPTCHA page); DisGeNET documents the current API base and endpoints; Eurostat lists the accepted `format` values; gnomAD, GTEx and UCSC warn that a build or version mismatch returns wrong or empty data without an error; Open Targets points genetics queries to `opentargets-database` |
+| `references/citation-management` | the Google Scholar install command pins `bibtexparser<2`, which `scholarly` needs in order to import |
+| `references/pyzotero` | the example group library is a public one (`151202`) |
+
+`docx`, `pdf`, `pptx` and `xlsx` come from
+[anthropics/skills](https://github.com/anthropics/skills); attribution for the
+remaining skills is in [`LICENSE-NOTES.md`](LICENSE-NOTES.md) and
+[`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv).
+
 ## Updating
 
 One line, from any directory:

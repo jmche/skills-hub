@@ -14,17 +14,17 @@ description: Publication-grade visual deliverables hub: publication figures (fig
 
 | skill | description |
 |---|---|
-| scientific-visualization | Meta-skill for publication-ready figures. Use when creating journal submission figures requiring multi-panel… |
+| scientific-visualization | Creates and audits truthful, accessible, publication-ready scientific figures with Matplotlib, Seaborn, or… |
 | figure-style | "Publication-grade figure correctness and legibility rules for final-deliverable figures — not every plot.… |
-| scientific-schematics | Create publication-quality scientific diagrams using Nano Banana 2 AI with smart iterative refinement. Uses… |
-| scientific-slides | Build slide decks and presentations for research talks. Use this for making PowerPoint slides, conference… |
-| infographics | "Create professional infographics using Nano Banana Pro AI with smart iterative refinement. Uses Gemini 3 Pro… |
-| latex-posters | "Create professional research posters in LaTeX using beamerposter, tikzposter, or baposter. Support for… |
-| pptx-posters | Create research posters using HTML/CSS that can be exported to PDF or PPTX. Use this skill ONLY when the user… |
-| markdown-mermaid-writing | Comprehensive markdown and Mermaid diagram writing skill. Use when creating any scientific document, report,… |
+| scientific-schematics | Generates scientific diagram drafts using Nano Banana 2 AI with smart iterative refinement. Uses Gemini 3.7… |
+| scientific-slides | Builds slide decks and presentations for research talks. Used for making PowerPoint slides, conference… |
+| infographics | "Creates and reviews infographics with Nano Banana 2 via OpenRouter. Use for statistical summaries,… |
+| latex-posters | "Creates research posters in LaTeX using beamerposter, tikzposter, or baposter. Use for conference posters,… |
+| pptx-posters | Creates and audits editable scientific posters in macro-free PowerPoint (.pptx) from author-approved local… |
+| markdown-mermaid-writing | Writes scientific Markdown documentation and Mermaid diagrams for workflows, relationships, timelines, and… |
 | archify | Create polished, validated architecture, workflow, sequence, data-flow, and lifecycle/state diagrams as… |
-| seaborn | Statistical visualization with pandas integration. Use for quick exploration of distributions, relationships,… |
-| matplotlib | Low-level plotting library for full customization. Use when you need fine-grained control over every plot… |
+| seaborn | Creates Seaborn statistical visualizations with pandas integration for distributions, relationships,… |
+| matplotlib | Creates and customizes scientific plots with Matplotlib. Used for fine-grained control over plot elements,… |
 
 ## Cross-hub handoff
 - Quick exploratory plot -> plain seaborn/matplotlib, skip the checklist

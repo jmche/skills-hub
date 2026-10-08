@@ -48,18 +48,15 @@ Parameters:
 - `track` -- track name (required)
 - `chrom` -- chromosome (optional, limits to one chrom)
 - `start`, `end` -- 0-based half-open coordinates (optional, requires chrom)
-- `maxItemsOutput` -- limit number of items returned (default 1000 for some tracks)
+- `maxItemsOutput` -- limit number of items returned (default and maximum 1,000,000; still request a smaller bounded result)
 
-**Warning:** Coordinates are only meaningful relative to a specific genome build --
-the same `chrom:start-end` means a *different* physical locus in `hg38` vs `hg19`
-vs `hg18`. Querying real coordinates against the wrong build does **not** error or
-return empty -- it silently returns HTTP 200 with real-looking, well-formed
-annotations for whatever *other* gene happens to sit at that position in that build
-(verified live: BRCA1's hg38 coordinates `chr17:43044295-43125483`, queried with
-`genome=hg19` instead of `hg38`, return valid records for unrelated genes `C1QL1`
-and `DCAKD`, not an error and not BRCA1). Always confirm the build matches the
-coordinate source, and sanity-check a new build/coordinate pairing against a
-known-positive-control gene before trusting the result.
+**Warning:** coordinates are only meaningful relative to one genome build. Querying
+coordinates against the wrong build does not error or return empty: it returns
+HTTP 200 with well-formed annotations for whatever other gene sits at that
+position in that build (BRCA1's hg38 coordinates `chr17:43044295-43125483`
+queried with `genome=hg19` return records for `C1QL1` and `DCAKD`). Confirm the
+build matches the coordinate source, and check a new build/coordinate pairing
+against a known gene before trusting the result.
 
 ### Get sequence
 ```
@@ -137,8 +134,6 @@ All coordinates are **0-based, half-open** (standard BED format). This means
 - Requests returning very large result sets may be truncated via `maxItemsOutput`
 
 ## Common genome values
-(See warning above on `getData/track` -- mismatched build + coordinates silently
-return plausible-but-wrong data, not an error.)
 - `hg38` -- Human GRCh38 (current)
 - `hg19` -- Human GRCh37
 - `mm39` -- Mouse GRCm39

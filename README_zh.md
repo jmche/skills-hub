@@ -137,6 +137,29 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 每个 Hub 的 `SKILL.md` 都带完整子技能索引（一行简介 + 与相邻 Hub 的路由规则）。
 
+## 上游来源
+
+大部分技能取自两个上游仓库，文件内容与上游保持一致；结构上唯一的变化是子技能的
+`SKILL.md` 以 `INSTRUCTIONS.md` 为名存放。
+
+| 上游 | 本库中的技能数 | 同步到 |
+|---|---|---|
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 140 | `92ace75`（2026-10-05） |
+| [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`，v1.2.1（2026-09-14） |
+
+有四个技能在上游版本之上带有本地改动，每处改动都对照实际服务核对过：
+
+| 技能 | 本地差异 |
+|---|---|
+| `references/literature-review` | 增加 `kernel.py`（OpenAlex 检索、引用图扩展、DOI 与撤稿核验、文字检查）以及配套的引用完整性规则 |
+| `references/database-lookup` | 不提供 ZINC（其接口会把自动请求跳转到验证码页面）；DisGeNET 写明当前的 API 地址和接口；Eurostat 列出可用的 `format` 取值；gnomAD、GTEx、UCSC 增加警告：基因组版本或基因版本号不匹配时会返回错误或空的数据而不报错；Open Targets 的遗传学查询指向 `opentargets-database` |
+| `references/citation-management` | Google Scholar 的安装命令限定 `bibtexparser<2`，`scholarly` 需要这个版本才能导入 |
+| `references/pyzotero` | 示例群组文献库换成公开的 `151202` |
+
+`docx`、`pdf`、`pptx`、`xlsx` 来自
+[anthropics/skills](https://github.com/anthropics/skills)；其余技能的来源说明见
+[`LICENSE-NOTES.md`](LICENSE-NOTES.md) 和 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)。
+
 ## 更新
 
 任意目录一行命令：

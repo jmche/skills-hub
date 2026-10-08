@@ -1,125 +1,85 @@
 # USPTO Public APIs
 
-## 1. USPTO Open Data Portal — Patent Search (Primary Patent Search)
+## 1. PatentsView → Open Data Portal (ODP)
 
-**Verified 2026-07-15:** PatentsView was absorbed into USPTO's own Open Data
-Portal (ODP). Both previously-documented PatentsView hosts are dead:
-`api.patentsview.org` returns 410 Gone (already known), and
-`search.patentsview.org` now fails DNS resolution entirely (`NXDOMAIN`) —
-`patentsview.org` itself redirects to
-`https://data.uspto.gov/support/transition-guide/patentsview`. Patent search
-now lives directly under USPTO's own API host, `api.uspto.gov`. Confirmed
-live via curl: an unauthenticated request to the endpoint below returns
-`{"message":"Unauthorized"}` (HTTP 401), and a request with a bogus key
-returns `{"message":"Forbidden"}` (HTTP 403) — i.e. the `X-API-KEY` header is
-recognized and validated by a real, current endpoint (not a dead domain).
+**Status (checked 2026-08-30):** The PatentsView PatentSearch API that lived at
+`https://search.patentsview.org/api/v1/` is **unavailable**. The host no longer
+resolves (NXDOMAIN). USPTO migrated PatentsView onto the Open Data Portal on
+2026-03-20; PatentSearch and related interactive features are paused with no
+published relaunch date. Do **not** call `search.patentsview.org`, do **not**
+register at the old `patentsview.org/apis/keyrequest` flow, and do **not** treat
+legacy `api.patentsview.org` query URLs as live search endpoints (they redirect
+to the transition guide).
 
-### Base URL
+### Current access path
 
-```
-https://api.uspto.gov/api/v1/patent
-```
+Use ODP for PatentsView **bulk datasets** and data dictionaries:
 
-**API key required** — register and generate a key ("My Api Key") at
-`https://data.uspto.gov` (the Open Data Portal). Docs/getting started:
-`https://data.uspto.gov/apis/getting-started`, query syntax reference:
-`https://data.uspto.gov/apis/api-syntax-examples`.
+- Transition guide: https://data.uspto.gov/support/transition-guide/patentsview
+- PatentsView program page: https://www.uspto.gov/ip-policy/economic-research/patentsview
+- ODP home / bulk directory: https://data.uspto.gov/
 
-Pass as header: `X-API-KEY: YOUR_KEY` (not a query parameter — this is a
-change from the old PatentsView `?api_key=` convention).
+| Category | Example tables | ODP bulk dataset page |
+|---|---|---|
+| Granted patents — baseline / disambiguated | `g_patent`, `g_cpc_current`, `g_assignee_disambiguated` | https://data.uspto.gov/bulkdata/datasets/pvgpatdis |
+| Granted patents — long text | `g_brf_sum_text_*`, `g_claims_*`, `g_detail_desc_text_*` | https://data.uspto.gov/bulkdata/datasets/pvgpattxt |
+| Pre-grant publications — baseline / disambiguated | `pg_published_application`, `pg_cpc_current` | https://data.uspto.gov/bulkdata/datasets/pvpgpubdis |
+| Pre-grant publications — long text | `pg_brf_sum_text_*`, `pg_claims_*` | https://data.uspto.gov/bulkdata/datasets/pvpgpubtxt |
+| Sorted (beta) | `g_sorted_applicant`, `pg_sorted_individual` | https://data.uspto.gov/bulkdata/datasets/pvsorted |
+| Annualized | yearly CSV tables | https://data.uspto.gov/bulkdata/datasets/pvannual |
 
-### Key Endpoints
+Data dictionaries (when published) are linked from the “Documents and Resources”
+sidebar on each ODP dataset page above.
 
-#### Search patent applications (free-text or field-specific)
-```
-GET /applications/search?q={query}
-```
+### Auth for ODP bulk / API access
 
-`q` accepts either a free-text term (searched across all fields) or an
-Elasticsearch-style simple query string for field-specific search, e.g.
-`applicationMetaData.applicationTypeLabelName:Design`. Spaces and quotes in
-`q` must be percent-encoded. Full query DSL: see
-`https://data.uspto.gov/documents/documents/ODP-API-Query-Spec.pdf`.
+ODP access requires a USPTO.gov account (MFA). Obtain an **ODP** API key from
+https://data.uspto.gov/apikey — previously issued PatentsView PatentSearch keys
+are **not** compatible. Prefer loading the key from `.env` as `USPTO_ODP_API_KEY`
+and sending it with the header ODP documents for its Bulk Datasets API
+(commonly `X-API-KEY`). Never print the key in provenance.
 
-#### Lookup by application number
-```
-GET /applications/{applicationNumberText}
-```
+If the user needs interactive keyword / inventor / assignee **search** rather
+than bulk tables, say clearly that PatentSearch is paused during the ODP
+transition and point them at the transition guide — do not invent a replacement
+search URL.
 
-Returns prosecution/status metadata for a specific application — this also
-replaces the legacy PEDS use case (see note below).
+### Historical note
 
-### Example Calls
-```bash
-# Keyword search
-curl -H "X-API-KEY: ${PATENTSVIEW_API_KEY}" \
-  "https://api.uspto.gov/api/v1/patent/applications/search?q=autonomous%20vehicle"
+- Legacy PatentsView REST host `api.patentsview.org` is decommissioned for search;
+  requests redirect to the ODP transition guide.
+- The Elasticsearch PatentSearch base URL `https://search.patentsview.org/api/v1/`
+  must not be used until USPTO republishes an ODP-hosted replacement.
 
-# Field-specific search
-curl -H "X-API-KEY: ${PATENTSVIEW_API_KEY}" \
-  "https://api.uspto.gov/api/v1/patent/applications/search?q=applicationMetaData.inventorNameText:Tesla"
+## 2. Patent File Wrapper (replacement for PEDS)
 
-# Lookup by application number
-curl -H "X-API-KEY: ${PATENTSVIEW_API_KEY}" \
-  "https://api.uspto.gov/api/v1/patent/applications/16123456"
-```
+PEDS has migrated to ODP. Use the current
+[transition guide](https://data.uspto.gov/support/transition-guide/peds) and
+[Patent File Wrapper search documentation](https://data.uspto.gov/apis/patent-file-wrapper/search).
+The search endpoint is `https://api.uspto.gov/api/v1/patent/applications/search`;
+obtain an ODP API key and use the current documented request schema. This is a
+patent-application/file-wrapper service, distinct from the paused PatentsView
+PatentSearch API. The former unauthenticated `ped.uspto.gov/api/queries` recipe
+is not a current integration. ODP's stated coverage begins in 2001, unlike PEDS.
+Authenticated calls were not executed in this review.
 
-### Rate Limits
+## 3. TSDR — Trademark Status & Document Retrieval
 
-Not published for the new ODP API as of this verification; treat conservatively (a few requests/second) and back off on 429s.
+Use TSDR by application serial or registration number. The official
+[TSDR FAQ](https://tsdr.uspto.gov/faqview) now shows the API host
+`https://tsdrapi.uspto.gov`, for example
+`/ts/cd/casestatus/sn78787878/content.html` for an HTML status report.
 
-### Important Note
+TSDR API access is key-based, with a documented 60 requests/minute per key and
+4 PDF/ZIP downloads/minute per key. Obtain the current key/header instructions
+from USPTO's ODP documentation before automating; the older Developer Hub links
+redirected during this review. The former no-key `/documentxml/status/...`
+recipe has been removed. Do not assume that the example HTML URL returns XML.
 
-The user must have a USPTO ODP API key for this endpoint. If they don't have
-one, let them know to register at `https://data.uspto.gov`. Continue loading
-the key from `.env` as `PATENTSVIEW_API_KEY` (env var name kept for
-continuity even though the issuing system changed).
+## 4. Limitations
 
-## 3. PEDS — Patent Examination Data System
-
-**BROKEN as of 2026-07-15 — verified via testing.** `ped.uspto.gov` no
-longer resolves (DNS `NXDOMAIN`); this was not a rate-limit/availability
-issue, the host is gone. Use the ODP endpoint in section 1 instead —
-`GET https://api.uspto.gov/api/v1/patent/applications/{applicationNumberText}`
-(same base/auth as the search endpoint above) now covers prosecution
-status/filing-date lookups by application number.
-
-**URL** (dead): `https://ped.uspto.gov/api/queries`
-
-**Method**: POST
-
-For patent prosecution data (application status, filing dates, examiner info).
-
-```json
-{
-  "searchText": "applicationNumberText:16123456",
-  "fl": "*",
-  "mm": "100%",
-  "df": "patentTitle",
-  "facet": "false",
-  "sort": "applId asc",
-  "start": 0
-}
-```
-
-No API key required but heavily rate limited. Availability can be unreliable.
-
-## 4. TSDR — Trademark Status & Document Retrieval
-
-For trademark lookup by serial or registration number (not full-text search).
-
-```
-GET https://tsdr.uspto.gov/documentxml/status/{serial_number}
-GET https://tsdr.uspto.gov/documentxml/status/rn{registration_number}
-```
-
-Returns XML with mark details, status, owner, goods/services, prosecution history.
-
-No API key. Rate limited. No JSON endpoint — responses are XML.
-
-## 5. Limitations
-
-- **No public REST API for trademark full-text search** (TESS is web-only)
-- USPTO ODP API requires registration for an API key
-- PEDS is dead (see section 3) — use the ODP application-data endpoint instead
+- Use current USPTO Trademark Search for interactive trademark searching; TESS is retired.
+- **PatentsView PatentSearch API is paused** during the ODP migration; use ODP
+  bulk datasets for PatentsView tables until USPTO republishes search APIs
+- PEDS has migrated to ODP Patent File Wrapper; authentication and coverage differ.
 - TSDR requires knowing the serial/registration number already

@@ -18,8 +18,8 @@ description: Engineering / UI / cloud / GPU hub: frontend design (frontend-desig
 | ui-ux-pro-max | "UI/UX design intelligence for web and mobile. Searchable local database with 84 styles, 192 color palettes,… |
 | web-design-guidelines | Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check… |
 | modal | Modal is a serverless cloud platform for running Python on demand, including on-demand GPUs. Use when… |
-| optimize-for-gpu | "GPU-accelerate Python code using CuPy, Numba CUDA, Warp, cuDF, cuML, cuGraph, KvikIO, cuCIM, cuxfilter,… |
-| pi-agent | Build with and use Pi, the minimal terminal coding harness. Use for installing Pi, configuring… |
+| optimize-for-gpu | GPU-accelerates scientific Python on NVIDIA hardware and verifies that the result is correct and faster. Use… |
+| pi-agent | Builds with and operates Pi, the minimal terminal coding harness. Use for installing Pi, configuring… |
 
 ## Cross-hub handoff
 - UI design system -> this hub (ui-ux-pro-max); publication-grade figures -> docs-figures

@@ -13,32 +13,25 @@ and variant annotations across diverse populations.
 ## Key Queries
 
 ### Variant lookup by variant ID
-Variant IDs use format: `{chrom}-{pos}-{ref}-{alt}`, and the coordinates are
-build-specific: GRCh38 for `gnomad_r4`/`gnomad_r3`, GRCh37 for `gnomad_r2_1`.
+Variant IDs use format: `{chrom}-{pos}-{ref}-{alt}` with **1-based positions in the build of the selected dataset**. An rsID can identify multiple alleles; resolve the exact reference/alternate allele before querying. The example below is the GRCh38 G>A allele at rs11591147, not the more common G>T allele.
 
 ```
 POST https://gnomad.broadinstitute.org/api
 Content-Type: application/json
 
 {
-  "query": "{ variant(variantId: \"1-55516090-C-A\", dataset: gnomad_r4) { variant_id rsids chrom pos ref alt exome { ac an af } genome { ac an af } } }"
+  "query": "{ variant(variantId: \"1-55039974-G-A\", dataset: gnomad_r4) { variant_id rsids chrom pos ref alt exome { ac an af } genome { ac an af } } }"
 }
 ```
 
-**Warning:** the same `variantId` string means different physical positions
-depending on genome build, and gnomAD does **not** reject a build/dataset
-mismatch. Querying a GRCh38 variant ID against `gnomad_r2_1` (GRCh37) usually
-returns `"data": {"variant": null}` with an `errors: [{"message": "Variant not
-found"}]` note -- easy to misread as "this gene/variant has no data" rather
-than "you queried the wrong build." Worse, if the raw numeric position happens
-to coincide with a *real, different* variant under the other build, gnomAD
-returns that unrelated variant's real allele counts with **no error at all**
-(verified live: `1-55516888-G-A` against `dataset: gnomad_r4` returns "Variant
-not found", but the identical string against `dataset: gnomad_r2_1` silently
-returns a real, unrelated GRCh37 variant, `rs527413419`, with populated
-`exome` frequencies). Always confirm `chrom`/`pos` in the response match your
-intended build, and prefer `gnomad_r4` (GRCh38) or `gnomad_r3` (GRCh38) unless
-you specifically need the legacy GRCh37 exome data in `gnomad_r2_1`.
+**Warning:** gnomAD does not reject a build/dataset mismatch. A GRCh38 variant ID
+queried against `gnomad_r2_1` (GRCh37), or the reverse, usually returns
+`"variant": null` with a "Variant not found" error, which is easy to misread as
+"no data for this variant". If the numeric position happens to coincide with a
+different real variant in the other build, gnomAD returns that unrelated
+variant's allele counts with no error (`1-55516888-G-A` is not found in
+`gnomad_r4` but returns `rs527413419` in `gnomad_r2_1`). Confirm that `chrom`
+and `pos` in the response match the intended build.
 
 ### Gene lookup
 ```json
@@ -57,7 +50,7 @@ you specifically need the legacy GRCh37 exome data in `gnomad_r2_1`.
 ### Variants in a region
 ```json
 {
-  "query": "{ region(chrom: \"1\", start: 55505222, stop: 55530526, reference_genome: GRCh38) { variants(dataset: gnomad_r4) { variant_id rsids consequence exome { ac af } genome { ac af } } } }"
+  "query": "{ region(chrom: \"1\", start: 55039447, stop: 55064852, reference_genome: GRCh38) { variants(dataset: gnomad_r4) { variant_id rsids consequence exome { ac af } genome { ac af } } } }"
 }
 ```
 
@@ -75,22 +68,22 @@ you specifically need the legacy GRCh37 exome data in `gnomad_r2_1`.
 
 ## Population frequency fields
 Within `exome` or `genome` objects, population-specific frequencies are available via
-`populations { id ac an af }` where `id` values include: `afr`, `amr`, `asj`, `eas`,
-`fin`, `mid`, `nfe`, `oth`, `sas`.
+`populations { id ac an }` (compute AF as AC/AN only when AN is positive). Ancestry-group IDs and availability vary by dataset;
+read the returned IDs rather than applying a fixed cross-release list.
 
-## Response example (variant, verified live)
+## Response example (illustrative counts, not a current frequency estimate)
 ```json
 {
   "data": {
     "variant": {
-      "variant_id": "1-55516090-C-A",
-      "rsids": ["rs1695955"],
+      "variant_id": "1-55039974-G-A",
+      "rsids": ["rs11591147"],
       "chrom": "1",
-      "pos": 55516090,
-      "ref": "C",
+      "pos": 55039974,
+      "ref": "G",
       "alt": "A",
-      "exome": null,
-      "genome": { "ac": 36454, "an": 152076, "af": 0.2397090928220101 }
+      "exome": { "ac": 1234, "an": 250000, "af": 0.004936 },
+      "genome": { "ac": 456, "an": 150000, "af": 0.00304 }
     }
   }
 }
@@ -106,4 +99,5 @@ Within `exome` or `genome` objects, population-specific frequencies are availabl
 - Use the browser's network inspector on gnomad.broadinstitute.org to discover
   additional query fields and structures
 - Structural variants (SV) have a separate query structure (`structural_variant`)
-- Constraint metrics (pLI, LOEUF) are available on gene queries via `gnomad_constraint`
+- Constraint metrics (pLI, LOEUF) are available on gene queries via `gnomad_constraint`.
+- A null exome/genome result is unavailable data, not zero frequency. Even AC=0 must be interpreted with AN, coverage, filters, dataset and ancestry. Population frequency alone does not classify clinical pathogenicity.

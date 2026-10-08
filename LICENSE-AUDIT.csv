@@ -64,7 +64,7 @@ scientific/human-protein-atlas-database,scientific,unknown,?,?,"publish (library
 scientific/imaging-data-commons,scientific,mit,mit,ImagingDataCommons/IDC-Tutorials,publish
 scientific/indication-dossier,scientific,apache,apache-2.0 (header),inline,publish
 scientific/interpro-database,scientific,unknown,?,?,"publish (library content, user-curated)"
-scientific/iso-13485-certification,scientific,mit,mit (header),inline,publish
+scientific/iso-standards-readiness,scientific,mit,mit (header),inline,publish
 scientific/jaspar-database,scientific,unknown,?,?,"publish (library content, user-curated)"
 scientific/labarchive-integration,scientific,mit,mit,mcmero/labarchives-py,publish
 scientific/latchbio-integration,scientific,unknown,?,?,"publish (library content, user-curated)"

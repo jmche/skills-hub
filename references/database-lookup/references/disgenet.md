@@ -1,73 +1,64 @@
-# DisGeNET (Gene-Disease Associations)
+# DISGENET — Gene/variant–disease associations
 
-## Base URL
+Use the current [DISGENET documentation](https://www.disgenet.com/docs) and
+[API/tools page](https://www.disgenet.com/Tools). The old disgenet.org API and
+email/password login recipes are not the current integration contract.
+
+Access is plan-dependent: the [Academic plan](https://www.disgenet.com/Plans)
+exposes the curated subset; full-dataset API access requires an appropriate
+subscription. Obtain a key and the current base URL, authorization-header
+syntax and endpoint schema from the account's API documentation before running
+requests. These authenticated details could not be independently verified in
+this review, so no speculative URL or token exchange is provided.
+
+For a reproducible retrieval, choose gene–disease (GDA) or variant–disease (VDA),
+resolve the input identifier, and save source filters, release, evidence rows,
+PMIDs, score fields and pagination metadata. Summary rows aggregate evidence;
+inspect supporting evidence before making a mechanistic claim.
+
+[Current score guidance](https://support.disgenet.com/support/solutions/articles/202000100283-what-are-the-gda-score-vda-score-disgenet-score-)
+removes the former cap at 1. Do not treat the raw DISGENET score as a probability,
+clamp it to [0,1], or confuse it with a normalized score. DSI measures disease
+specificity and DPI pleiotropy; neither is causal evidence.
+
+## API base and endpoints
+
 ```
 https://api.disgenet.com/api/v1
 ```
 
-**Verified 2026-07-15:** `disgenet.org` now 308-redirects to `disgenet.com`,
-which serves the React web app (HTML) at its root — not the API. The real API
-lives on a dedicated subdomain, `api.disgenet.com`, confirmed live via curl:
-unauthenticated requests return a clean JSON auth error
-(`{"status":"BAD_REQUEST","payload":{"details":"UNAUTHORIZED","message":"Missing or invalid API Key"},"httpStatus":400}`),
-not a 404 or an HTML page — i.e. this is a normal auth wall on a real,
-current endpoint. Live OpenAPI spec: `https://api.disgenet.com/v2/api-docs`
-(no login required to fetch the spec itself, despite the human-readable
-Swagger UI at `api.disgenet.com/doc/swagger` requiring account login).
+`disgenet.org` redirects to the `disgenet.com` web app; the API is served from
+the `api.disgenet.com` subdomain. An unauthenticated request there returns a JSON
+auth error (`"Missing or invalid API Key"`, HTTP 401). The OpenAPI spec is
+readable without login at `https://api.disgenet.com/v2/api-docs`. The endpoint
+shapes below come from that spec; authenticated responses were not exercised.
 
-Path structure also changed: there is no more `/gda/gene/{id}` /
-`/gda/disease/{id}` REST-path style. Identifiers are now **query parameters**
-on a smaller set of endpoints (`/gda/summary`, `/vda/summary`, etc.).
-
-## Auth
-**API key required.** The old email/password → token POST flow
-(`disgenet.org/api/auth/`) is gone; that path now 401s. Keys are now issued
-from your account dashboard at `https://disgenet.com` (no self-serve POST
-auth endpoint found). Pass the key as:
-```
-Authorization: Bearer <token>
-```
-Load token from `.env` as `DISGENET_API_KEY`.
-
-## Key Endpoints
+Pass the key as `Authorization: Bearer <token>`; load it from `.env` as
+`DISGENET_API_KEY`. Identifiers are query parameters, not path segments.
 
 | Endpoint | Description |
 |----------|-------------|
-| `/gda/summary` | Gene-disease associations (query params, not path segments) |
+| `/gda/summary` | Gene-disease associations |
 | `/gda/evidence` | Evidence-level GDA data |
 | `/vda/summary` | Variant-disease associations |
 | `/vda/evidence` | Evidence-level VDA data |
-| `/entity/gene` | Gene entity lookup/resolution |
-| `/entity/disease` | Disease entity lookup/resolution |
-| `/entity/variant` | Variant entity lookup/resolution |
+| `/entity/gene`, `/entity/disease`, `/entity/variant` | Entity lookup/resolution |
 | `/enrichment/gene` | Gene set disease-enrichment |
 
-## Parameters (on `/gda/summary`, `/vda/summary`)
+Parameters on `/gda/summary` and `/vda/summary`:
 - `gene_ncbi_id`, `gene_ensembl_id`, `gene_symbol` — up to 100 comma-separated
-- `disease` — vocabulary-prefixed ID, e.g. `UMLS_C0006142`, `MONDO_...`, `OMIM_...`, `HPO_HP:...` (see full prefix list in the spec)
+- `disease` — vocabulary-prefixed ID, e.g. `UMLS_C0006142`, `MONDO_...`, `OMIM_...`
 - `variant` — dbSNP rsID (on `/vda/summary`)
-- `source` — array, e.g. `CURATED`, `CLINVAR`, `CLINGEN`, `ALL`
-- `min_score` / `max_score` — GDA/VDA score threshold (0-1)
-- `min_ei` / `max_ei` — evidence index threshold
+- `source` — e.g. `CURATED`, `CLINVAR`, `CLINGEN`, `ALL`
+- `min_score` / `max_score`, `min_ei` / `max_ei` — score and evidence-index bounds
 - `page_number` — pagination
 
-## Example Calls
 ```bash
 # Gene-disease for TP53 (NCBI gene ID 7157)
 curl -H "Authorization: Bearer ${DISGENET_API_KEY}" \
-  "https://api.disgenet.com/api/v1/gda/summary?gene_ncbi_id=7157&source=CURATED&min_score=0.3"
-
-# Disease-gene for Breast Cancer (UMLS CUI C0006142)
-curl -H "Authorization: Bearer ${DISGENET_API_KEY}" \
-  "https://api.disgenet.com/api/v1/gda/summary?disease=UMLS_C0006142"
+  "https://api.disgenet.com/api/v1/gda/summary?gene_ncbi_id=7157&source=CURATED"
 
 # Variant-disease for rs1042522
 curl -H "Authorization: Bearer ${DISGENET_API_KEY}" \
   "https://api.disgenet.com/api/v1/vda/summary?variant=rs1042522"
 ```
-
-## Rate Limits
-Free academic tier: ~few hundred requests/day. Paid tiers available.
-
-## Free alternative
-If no API key: use **Open Targets** for disease-gene associations.

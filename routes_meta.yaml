@@ -144,7 +144,7 @@ hubs:
         - clinical-decision-support
         - clinical-reports
         - indication-dossier
-        - iso-13485-certification
+        - iso-standards-readiness
         - treatment-plans
         - pyhealth
         - neurokit2

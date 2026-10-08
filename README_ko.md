@@ -140,6 +140,32 @@ npx skills add jmche/skills-hub -s scientific -a claude
 각 허브의 `SKILL.md`에는 한 줄 설명과 인접 허브와의 라우팅 규칙이 담긴 전체
 서브스킬 인덱스가 들어 있습니다.
 
+## 업스트림 출처
+
+대부분의 스킬은 두 업스트림 컬렉션에서 가져오며, 파일 내용은 업스트림과 동일하게
+유지됩니다. 구조상 유일한 차이는 서브스킬의 `SKILL.md`가 `INSTRUCTIONS.md`라는
+이름으로 저장된다는 점입니다.
+
+| 업스트림 | 이 라이브러리의 스킬 수 | 동기화 기준 |
+|---|---|---|
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 140 | `92ace75` (2026-10-05) |
+| [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`, v1.2.1 (2026-09-14) |
+
+네 개의 스킬은 업스트림 버전 위에 로컬 변경을 담고 있으며, 각 변경은 실제 서비스에
+대해 확인되었습니다.
+
+| 스킬 | 로컬 차이 |
+|---|---|
+| `references/literature-review` | `kernel.py`(OpenAlex 검색, 인용 그래프 확장, DOI 및 철회 확인, 문장 점검)와 이를 사용하는 인용 무결성 규칙 추가 |
+| `references/database-lookup` | ZINC는 제공하지 않음(엔드포인트가 자동 요청을 CAPTCHA 페이지로 리다이렉트함). DisGeNET은 현재 API 주소와 엔드포인트를 명시. Eurostat은 허용되는 `format` 값을 명시. gnomAD, GTEx, UCSC는 게놈 빌드나 유전자 버전이 맞지 않으면 오류 없이 잘못되거나 빈 데이터가 반환된다는 경고 추가. Open Targets의 유전학 질의는 `opentargets-database`로 안내 |
+| `references/citation-management` | Google Scholar 설치 명령에 `bibtexparser<2` 지정(`scholarly`를 임포트하려면 필요) |
+| `references/pyzotero` | 예시 그룹 라이브러리를 공개 그룹 `151202`로 변경 |
+
+`docx`, `pdf`, `pptx`, `xlsx`는
+[anthropics/skills](https://github.com/anthropics/skills)에서 가져왔고, 나머지 스킬의
+출처 표기는 [`LICENSE-NOTES.md`](LICENSE-NOTES.md)와
+[`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)에 있습니다.
+
 ## 업데이트
 
 어느 디렉터리에서든 한 줄:

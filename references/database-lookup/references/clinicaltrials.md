@@ -31,7 +31,7 @@ Key parameters:
 - `query.spons` — sponsor
 - `query.id` — NCT ID
 - `filter.overallStatus` — pipe-delimited: `RECRUITING|COMPLETED|ACTIVE_NOT_RECRUITING|...`
-- `filter.advanced` — Essie query-syntax filter, used for phase (and other fields not covered by a dedicated `filter.*` param). There is no plain `filter.phase` param — it returns HTTP 400 "unknown parameter" (verified). Use `AREA[Phase]PHASE3` etc.
+- `filter.advanced` — Essie expression, e.g. `AREA[Phase]PHASE3`; there is no `filter.phase` parameter
 - `filter.geo` — `distance(lat,lon,dist)` e.g. `distance(38.89,-77.03,50mi)`
 - `fields` — comma-separated field list to reduce payload
 - `sort` — e.g. `LastUpdatePostDate:desc`
@@ -41,9 +41,8 @@ Key parameters:
 
 Example — recruiting Phase 3 breast cancer trials:
 ```
-/studies?query.cond=breast+cancer&filter.overallStatus=RECRUITING&filter.advanced=AREA[Phase]PHASE3&pageSize=5&countTotal=true
+/studies?query.cond=breast+cancer&filter.overallStatus=RECRUITING&filter.advanced=AREA%5BPhase%5DPHASE3&pageSize=5&countTotal=true
 ```
-(verified live: HTTP 200, 206 matching studies, e.g. NCT05952557)
 
 Response structure:
 ```json
@@ -72,8 +71,10 @@ Example: `/studies/NCT05123456`
 
 ### Study count
 ```
-GET /stats/size?query.cond={condition}&filter.overallStatus=RECRUITING
+GET /studies?query.cond={condition}&filter.overallStatus=RECRUITING&pageSize=1&countTotal=true
 ```
+
+Read `totalCount` from the first response. `/stats/size` accepts no search parameters and reports registry-wide statistics, not a filtered count.
 
 ### Field metadata
 ```
@@ -84,4 +85,22 @@ GET /studies/metadata
 Uses cursor-based pagination via `pageToken` (NOT numeric offsets). Include `countTotal=true` on first request to get total.
 
 ## Rate Limits
-No API key. Be reasonable — a few requests per second. Bulk: https://clinicaltrials.gov/AllAPIJSON.zip
+No API key. Be reasonable — a few requests per second.
+
+## Bulk download
+
+Prefer the v2 `/studies` API with `pageToken` pagination for programmatic
+retrieval. The former bulk URL `https://clinicaltrials.gov/AllAPIJSON.zip`
+returns **404** and must not be used.
+
+For a full-registry **XML** dump, use:
+
+```
+https://clinicaltrials.gov/AllPublicXML.zip
+```
+
+That path redirects to `https://clinicaltrials.gov/api/legacy/public-xml?format=zip`
+and returns `Content-Type: application/zip` (`ctg-public-xml.zip`). Confirm the
+redirect still yields a zip before large downloads; CSV / pipe-delimited export
+options are documented under ClinicalTrials.gov Data API “Download” pages when
+XML is not appropriate.

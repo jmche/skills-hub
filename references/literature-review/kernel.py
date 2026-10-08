@@ -18,6 +18,8 @@ replaced with local equivalents — see `litrev_contact` and
 `litrev_openalex_key` below.
 """
 
+from __future__ import annotations
+
 import json
 import os
 import re

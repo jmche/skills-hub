@@ -16,19 +16,19 @@ description: Research methodology hub: experimental design, statistical tests an
 | skill | description |
 |---|---|
 | statistical-analysis | Guided statistical analysis for research data - test selection, assumption checking, effect sizes, power… |
-| statistical-power | Sample-size and statistical power calculations for planning studies. Use whenever someone asks "how many… |
-| experimental-design | Design experiments and studies BEFORE data is collected — choosing a design, randomizing, blocking, and… |
-| hypothesis-generation | Structured hypothesis formulation from observations. Use when you have experimental observations or data and… |
-| scientific-brainstorming | Creative research ideation and exploration. Use for open-ended brainstorming sessions, exploring… |
-| scientific-critical-thinking | Evaluate scientific claims and evidence quality. Use for assessing experimental design validity, identifying… |
-| peer-review | Structured manuscript/grant review with checklist-based evaluation. Use when writing formal peer reviews with… |
-| scholar-evaluation | Systematically evaluate scholarly work using the ScholarEval framework, providing structured assessment… |
-| scientific-writing | Core skill for the deep research and writing tool. Write scientific manuscripts in full paragraphs (never… |
-| arbor | Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an… |
-| research-grants | Write competitive research proposals for NSF, NIH, DOE, DARPA, and Taiwan NSTC. Agency-specific formatting,… |
-| hypogenic | Automated LLM-driven hypothesis generation and testing on tabular datasets. Use when you want to… |
+| statistical-power | Calculates sample sizes and statistical power for study planning. Applies when someone asks "how many… |
+| experimental-design | Designs experiments and studies BEFORE data is collected — choosing a design, randomizing, blocking, and… |
+| hypothesis-generation | Formulates evidence-bounded scientific questions, candidate hypotheses, rival explanations, causal or… |
+| scientific-brainstorming | Facilitates evidence-aware scientific ideation with independent generation, structured discussion, explicit… |
+| scientific-critical-thinking | Evaluates scientific claims and evidence quality. Applies to experimental design validity, biases and… |
+| peer-review | Prepares evidence-bounded, constructive peer-review drafts and structured manuscript assessments. Supports… |
+| scholar-evaluation | Provides qualitative-first, evidence-traceable developmental review of scholarly works and audit low-stakes… |
+| scientific-writing | Drafts, revises, and audits scientific manuscripts or reports with explicit evidence provenance,… |
+| arbor | Applies Arbor Hypothesis Tree Refinement to research artifacts with repeatable evaluators, including model… |
+| research-grants | Supports research proposal preparation and review for NSF, NIH, DOE, DARPA, and Taiwan NSTC, including… |
+| hypogenic | Plans and audits use of ChicagoHAI HypoGeniC/HypoRefine for LLM-assisted hypothesis generation from labeled… |
 | predictingthepast | Ancient text restoration, attribution, dating, contextualization, and embedding via Aeneas (Latin) / Ithaca… |
-| market-research-reports | Generate comprehensive market research reports (50+ pages) in the style of top consulting firms (McKinsey,… |
+| market-research-reports | Builds evidence-traceable market research reports and assumption-driven market sizing or forecast scenarios.… |
 
 ## Cross-hub handoff
 - Choosing a statistical method -> this hub; RUNNING the stats code on data -> data-ml (statsmodels/scikit-learn/pymc)
