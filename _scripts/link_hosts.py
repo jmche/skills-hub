@@ -13,7 +13,7 @@ Policy (purely additive / idempotent / never destroys host-local versions):
 """
 import os, sys, pathlib
 
-ROOT = pathlib.Path('/home/jmche/.agents/skills').resolve()
+ROOT = pathlib.Path(__file__).resolve().parent.parent
 DRY = '--dry-run' in sys.argv
 
 HOSTS = {

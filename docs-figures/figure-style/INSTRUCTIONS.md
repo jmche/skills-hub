@@ -17,7 +17,8 @@ The helpers live in `kernel.py` next to this file and are **not** auto-injected.
 Load them once at the top of your plotting script:
 
 ```python
-exec(open("/home/jmche/.agents/skills/figure-style/kernel.py").read())
+import os
+exec(open(os.path.expanduser("~/.agents/skills/docs-figures/figure-style/kernel.py")).read())
 apply_figure_style()
 ```
 

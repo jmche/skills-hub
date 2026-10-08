@@ -1,7 +1,8 @@
 """
 Literature-review helpers. Load once at the top of your script:
 
-    exec(open("/home/jmche/.agents/skills/literature-review/kernel.py").read())
+    import os
+    exec(open(os.path.expanduser("~/.agents/skills/references/literature-review/kernel.py")).read())
 
 Public surface:
 

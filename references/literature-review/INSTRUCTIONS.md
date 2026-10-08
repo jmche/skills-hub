@@ -20,7 +20,8 @@ This skill uses the **parallel-web skill** (`parallel-cli search`) as the primar
 Load once at the top of any script that touches the literature:
 
 ```python
-exec(open("/home/jmche/.agents/skills/literature-review/kernel.py").read())
+import os
+exec(open(os.path.expanduser("~/.agents/skills/references/literature-review/kernel.py")).read())
 ```
 
 | Function | What it does |
@@ -181,7 +182,8 @@ Literature reviews follow a structured, multi-phase workflow:
 0. **Structured sweep first — `kernel.py`** (do this before any web search):
 
    ```python
-   exec(open("/home/jmche/.agents/skills/literature-review/kernel.py").read())
+   import os
+   exec(open(os.path.expanduser("~/.agents/skills/references/literature-review/kernel.py")).read())
    hits = search_openalex("your research topic", 25)
    # then walk one step each way from the 2-3 most relevant hits
    graph = expand_citations(hits[0]["doi"], n_backward=50, n_forward=15)
@@ -360,7 +362,8 @@ Literature reviews follow a structured, multi-phase workflow:
 
 1. **Verify All DOIs** — `kernel.py` (preferred; also flags retractions):
    ```python
-   exec(open("/home/jmche/.agents/skills/literature-review/kernel.py").read())
+   import os
+   exec(open(os.path.expanduser("~/.agents/skills/references/literature-review/kernel.py")).read())
    draft = open("my_literature_review.md").read()
    report = verify_dois(extract_dois(draft))
    for doi, m in report.items():
