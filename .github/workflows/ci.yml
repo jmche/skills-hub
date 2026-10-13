@@ -26,11 +26,11 @@ jobs:
         run: |
           pattern='sk-[A-Za-z0-9]{30,}|ghp_[A-Za-z0-9]{30,}|gho_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16}'
           status=0
-          matches=$(git grep -ahoE -e "$pattern") || status=$?
+          matches=$(git grep --cached -ahoE -e "$pattern") || status=$?
           if [ "$status" -eq 1 ]; then exit 0; fi
           if [ "$status" -ne 0 ]; then exit "$status"; fi
           if printf '%s\n' "$matches" | grep -qv '^sk-abcdefghijklmnopqrstuvwxyz'; then
             echo "files containing key-shaped strings:"
-            git grep -alE -e "$pattern"
+            git grep --cached -alE -e "$pattern"
             exit 1
           fi
