@@ -25,10 +25,12 @@ jobs:
       - name: No secrets in tracked files
         run: |
           pattern='sk-[A-Za-z0-9]{30,}|ghp_[A-Za-z0-9]{30,}|gho_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16}'
-          real=$(git ls-files -z | xargs -0 grep -ahoE -e "$pattern" -- 2>/dev/null \
-            | grep -vc '^sk-abcdefghijklmnopqrstuvwxyz' || true)
-          if [ "$real" -gt 0 ]; then
+          status=0
+          matches=$(git grep -ahoE -e "$pattern") || status=$?
+          if [ "$status" -eq 1 ]; then exit 0; fi
+          if [ "$status" -ne 0 ]; then exit "$status"; fi
+          if printf '%s\n' "$matches" | grep -qv '^sk-abcdefghijklmnopqrstuvwxyz'; then
             echo "files containing key-shaped strings:"
-            git ls-files -z | xargs -0 grep -alE -e "$pattern" -- 2>/dev/null || true
+            git grep -alE -e "$pattern"
             exit 1
           fi
