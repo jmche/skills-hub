@@ -12,6 +12,9 @@ license: Proprietary. LICENSE.txt has complete terms
 | **Bulk data** in or out | `pandas` (`read_excel`, `to_excel`) |
 | **Quick look** at a sheet | `markitdown file.xlsx` — `## SheetName` per sheet; reads `.xlsm` too. No cell coordinates, so don't plan edits from it |
 | **Read** a model (formulas *and* values) | two `load_workbook` passes — see gotchas |
+| **Insert or delete rows/columns** in a sheet with formulas, merges, tables or filters | `scripts/xlsx_restructure.py` — rewrites every reference; see Helper scripts |
+| **Inspect** sheets, formulas with cached values, notes, defined names, tables as JSON | `scripts/xlsx_read.py` |
+| **CSV/TSV ⇄ xlsx** with type inference and explicit encodings | `scripts/csv_to_xlsx.py`, `scripts/xlsx_to_csv.py` |
 
 > `openpyxl`, `pandas`, and `markitdown` are preinstalled — do not run `pip install` first; write the script and import directly. Only if an import fails (or the `markitdown` command is missing): `pip install` the missing package.
 
@@ -77,6 +80,35 @@ literal `#NAME?` baked into the file you deliver.
 - **`.xlsm` loses its macros unless you pass `keep_vba=True`** to `load_workbook`.
 - **A sheet name containing a space must be quoted** in a cross-sheet reference: `='Assumptions Inputs'!$B$5`. Unquoted, it evaluates to `#VALUE!`.
 
+## Helper scripts
+
+Tested CLIs in `scripts/` (Python 3.10+, `openpyxl` only). Each supports `--help`, prints JSON, and edits in place unless given `--out` — copy the file first if you need the original. They do not replace the rules above: run `recalc.py` after writing formulas, and keep fonts and financial-model conventions.
+
+| Task | Command |
+|---|---|
+| Sheet inventory (names, dimensions, merges, charts, tables, protection, defined names) | `python scripts/xlsx_read.py f.xlsx --sheets` |
+| Dump a sheet as JSON / CSV | `python scripts/xlsx_read.py f.xlsx --json --sheet S` · `--csv --out d.csv` |
+| Every formula next to its cached value | `python scripts/xlsx_read.py f.xlsx --formulas` |
+| Cell notes / defined names | `python scripts/xlsx_read.py f.xlsx --notes` · `--names` |
+| Insert or delete rows/columns, shifting references on all sheets | `python scripts/xlsx_restructure.py f.xlsx --sheet Data --insert-rows 3:2` · `--delete-rows 5` · `--insert-cols C:1` · `--delete-cols B` |
+| Set a cell or formula / append a row | `python scripts/xlsx_edit.py f.xlsx --sheet S --set "C1==SUM(A:A)"` · `--append '[1,"x",true]'` |
+| Native Excel table: create, append inside it, list | `python scripts/xlsx_edit.py f.xlsx --add-table Sales:A1:C9` · `--table-append 'Sales=["West",5]'` · `--list-tables` |
+| Defined name, hyperlink, cell note | `--define-name "Rates=Data!\$B\$2:\$B\$9"` · `--delete-name Rates` · `--hyperlink "A1=https://example.com\|Docs"` · `--note "B2=Check this\|Reviewer"` |
+| Copy or rename a sheet | `--copy-sheet Src:New` · `--rename-sheet Old:New` |
+| Sheet protection | `--protect "$SHEET_PW" --unlock B2:B9` |
+| Whole workbook from a JSON spec (rows, sparse cell overrides, number formats, widths, merges, freeze panes, autofilter, conditional formats, bar/line/pie charts, list validations, native tables, defined names, protection; schema at the top of the script) | `python scripts/xlsx_create.py spec.json out.xlsx` |
+| CSV → styled xlsx (infers int/float/bool/ISO date) | `python scripts/csv_to_xlsx.py in.csv out.xlsx --encoding utf-8 [--delimiter ';']` |
+| xlsx → CSV (ISO dates, blanks for empty cells) | `python scripts/xlsx_to_csv.py f.xlsx out.csv --sheet Data --encoding utf-8-sig` |
+
+Pitfalls:
+
+- **`xlsx_edit.py --insert-rows/--delete-rows` does not shift references** (plain openpyxl behaviour). Use `xlsx_restructure.py` for any sheet that formulas, merges, tables or filters point at. It handles one operation per run, prints the formulas, merges, tables and names it changed, and lists in `not_shifted` what it cannot move: chart anchors, images, and conditional-format rule formulas. Rules and limits: `references/restructuring.md`.
+- **Loading and saving a workbook drops its charts and images** (openpyxl does not round-trip them). Re-add charts after editing, or leave charted files alone.
+- **Sheet protection is not security.** It tells well-behaved apps "don't edit"; anyone can remove it from the XML. It encrypts nothing.
+- **`xlsx_create.py` sets no font family**, so cells use the default font; apply the professional font with openpyxl afterwards. Its `full_calc_on_load` flag and `xlsx_edit.py --recalc` only ask Excel to recompute on open — they are no substitute for `recalc.py`.
+- **CSV locale:** European files often use `;` and decimal commas; pass `--delimiter ';'` and expect `"12,5"` to stay a string. Use `--encoding cp1252` for legacy Windows exports and `utf-8-sig` when Excel must detect UTF-8.
+- Sheet names are capped at 31 characters and reject `[ ] : * ? / \`.
+
 ## Financial models
 
 Unless the user says otherwise, or the existing file already does something else.
@@ -96,4 +128,8 @@ lone edited cell mid-row is the commonest silent error · guard denominators tha
 
 ## Dependencies
 
-`openpyxl`, `pandas`, `markitdown` (pip, preinstalled — install only if an import fails or the command is missing) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`)
+`openpyxl`, `pandas`, `markitdown` (pip, preinstalled — install only if an import fails or the command is missing) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`) · Python 3.10+
+
+## Sources
+
+`scripts/xlsx_*.py`, `scripts/csv_to_xlsx.py`, `references/` and `tests/` come from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) under the MIT License (`LICENSE-HERMES.txt`). The rest of this skill is covered by `LICENSE.txt`.

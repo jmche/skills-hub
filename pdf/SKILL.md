@@ -10,6 +10,50 @@ license: Proprietary. LICENSE.txt has complete terms
 
 This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see reference.md. If you need to fill out a PDF form, read forms.md and follow its instructions.
 
+## Ready-made scripts
+
+Most tasks have a tested CLI in `scripts/`. Prefer it over writing new code; drop to the library examples further down only for what the scripts do not cover. Every script supports `--help`, reads and writes JSON as UTF-8, prints JSON results to stdout, and exits non-zero on failure. Paths are relative to this skill's directory. Page arguments are 1-based (`1-3,5,9-`).
+
+Requirements: Python 3.10+ with `pypdf`, `reportlab`, `pdfplumber`. Page rendering (`pdf_page_image.py`, form overlays) also needs `pypdfium2` or Poppler's `pdftoppm`; without either it reports `{"rendered": false, "missing": [...]}` and exits 0.
+
+| Task | Command |
+|---|---|
+| Inspect first: page count, sizes, encrypted, likely-scanned pages | `python scripts/pdf_read.py f.pdf --meta` |
+| Per-page text | `python scripts/pdf_read.py f.pdf --text` |
+| Tables to JSON (+ CSV files) | `python scripts/pdf_read.py f.pdf --tables --csv-dir tables/` |
+| List form fields with types and values | `python scripts/pdf_read.py f.pdf --fields` |
+| Create a document (headings, paragraphs, tables, images, page breaks; page numbers added) | `python scripts/pdf_create.py spec.json -o out.pdf` |
+| Merge, one bookmark per source | `python scripts/pdf_merge.py a.pdf b.pdf -o merged.pdf --bookmarks` |
+| Extract pages, rotate, compress | `python scripts/pdf_split.py f.pdf --pages 1-3,7 -o part.pdf --rotate 90 --compress` |
+| Overlay a one-page stamp PDF on every page | `python scripts/pdf_watermark.py f.pdf --stamp mark.pdf -o out.pdf [--under]` |
+| Stamp text or an image at coordinates | `python scripts/pdf_stamp.py f.pdf -o out.pdf --text "DRAFT" --x 150 --y 400 --font-size 60 --rotation 45 --opacity 0.3 --color "#cc0000" [--pages 1-3]` · `--image sig.png --x 400 --y 60 --width 120` |
+| Pages to PNG | `python scripts/pdf_page_image.py f.pdf --pages 1-3 --dpi 150 --out-dir imgs/` |
+| Set or clear DocInfo metadata | `python scripts/pdf_meta.py f.pdf --set-meta --title "T" --author "A" -o out.pdf` · `--clear-meta` |
+| Embedded file attachments | `python scripts/pdf_meta.py f.pdf --attach data.csv -o out.pdf` · `--list-attachments` · `--extract-attachments dir/` |
+| Encrypt (AES-256) / decrypt | `python scripts/pdf_secure.py f.pdf --encrypt -o enc.pdf --user-password "$PDF_PW"` · `--decrypt -o dec.pdf --password "$PDF_PW"` |
+| Build a new fillable form | lint `python scripts/pdf_form_layout.py spec.json`, then `python scripts/pdf_make_form.py spec.json -o form.pdf` — see `references/form-building.md` |
+| Fill an existing form | follow forms.md (fillable fields and forms without fields) |
+| Fill and flatten an AcroForm | `python scripts/pdf_fill_form.py form.pdf --fields-json values.json -o filled.pdf --flatten` |
+| Scanned / image-only pages, OCR | `references/ocr-extraction.md` (`scripts/extract_pymupdf.py` fast path, `scripts/extract_marker.py` quality path) |
+| Change text inside an existing PDF by instruction | `references/nano-pdf-editing.md` (external `nano-pdf` CLI, needs an LLM API key) |
+
+Procedure:
+
+1. Run `pdf_read.py --meta` first. If `encrypted` is true, decrypt before anything else. If `likely_scanned_pages` is non-empty, those pages have no text layer: render them with `pdf_page_image.py --dpi 300` and follow `references/ocr-extraction.md`. Never report empty extracted text as "no content".
+2. After any change, re-run `pdf_read.py --meta` (page count, rotation) or `--fields` (filled values, compared exactly, including non-ASCII). For anything visual — stamps, watermarks, flattened forms, form layout — render the page with `pdf_page_image.py` and look at it.
+3. Pass passwords through an environment variable, as in the table, so they stay out of shell history.
+
+Pitfalls:
+
+- **Permission flags are not security.** Owner-password bits (no-print, no-copy) are requests that any library can strip; only the user password encrypts content.
+- **`--compress` only deflates content streams** (typically 0–20%). It does not downsample images; that needs Ghostscript.
+- **Flattening** converts widget appearances to page content. Plain text fields and checkboxes are reliable; rich-text fields, custom appearance streams and radio groups can drop or misrender — check the rendered page.
+- **Non-Latin form values** are stored correctly, but the field's font may lack the glyphs, so a viewer can show blanks. Verify with `--fields`, not only by eye.
+- **Rotated stamp text** extracts as scrambled letters through pdfplumber; check it with pypdf `extract_text()` or a rendered image.
+- **`pdf_meta.py` writes the DocInfo dictionary only**; XMP metadata stays untouched and some viewers show it instead.
+- **PDF/A** cannot be produced or validated with pypdf/reportlab. Use Ghostscript (`-dPDFA=2`) and validate with veraPDF.
+- Table extraction is heuristic: borderless or merged-cell tables may need `table_settings` tuning in pdfplumber.
+
 ## Quick Start
 
 ```python
@@ -312,3 +356,7 @@ with open("encrypted.pdf", "wb") as output:
 - For JavaScript libraries (pdf-lib), see reference.md
 - If you need to fill out a PDF form, follow the instructions in forms.md
 - For troubleshooting guides, see reference.md
+
+## Sources
+
+`scripts/pdf_*.py`, `scripts/extract_*.py`, `scripts/_raster.py`, `references/` and `tests/` come from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) under the MIT License (`LICENSE-HERMES.txt`). The rest of this skill is covered by `LICENSE.txt`.

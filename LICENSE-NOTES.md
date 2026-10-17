@@ -18,7 +18,9 @@ content (full machine-readable breakdown in `LICENSE-AUDIT.csv`):
 | `msitarzewski/agency-agents` | MIT | `roles/` (33 personas) |
 | `SuperiorByteWorks-LLC/agent-project` | Apache-2.0 | several docs-figures templates |
 | `google-deepmind/science-skills` | Apache-2.0 | hypothesis-generation related |
-| Anthropic ecosystem skills (`anthropics/skills`) | MIT (inferred) | `pdf`, `docx`, `xlsx`, `pptx`, `generate-image` |
+| `anthropics/skills` | Proprietary (Anthropic; `LICENSE.txt` in each skill) | `pdf`, `docx`, `xlsx`, `pptx` |
+| `NousResearch/hermes-agent` | MIT (`LICENSE-HERMES.txt` in each skill) | scripts, references and tests bundled in `pdf`, `docx`, `xlsx` |
+| Anthropic ecosystem skills | MIT (inferred) | `generate-image` |
 | Tooling docs (Biohub/esm, sokrypton/ColabFold, dauparas/ProteinMPNN, ...) | MIT / other | scientific sub-skill references |
 
 ## Upstream tooling called by some sub-skills (all permissive; tools installed separately by users)

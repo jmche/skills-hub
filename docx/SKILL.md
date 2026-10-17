@@ -11,8 +11,12 @@ A `.docx` is a ZIP archive of XML files. Choose your approach by task:
 | Task | Approach |
 |---|---|
 | **Create** a new document | Write a `docx` (npm) script — see gotchas below |
+| **Create** from a JSON spec, or when Node's `docx` is unavailable | `scripts/docx_create.py` — see Python helpers |
+| **Fill** a template with `{{tokens}}` | `scripts/docx_template.py` |
 | **Edit** an existing document | `unzip` → edit `word/document.xml` → `zip` (docx-js cannot open existing files) |
+| **Small edits** (find/replace keeping formatting, a table cell, insert/delete/restyle a paragraph, TOC or "Page X of Y" fields) | `scripts/docx_edit.py` |
 | **Read** content | `pandoc -t markdown file.docx` |
+| **Read** as JSON (text incl. tables and headers/footers, heading outline, styles used, embedded images, revision/comment inventory) | `scripts/docx_read.py` |
 
 > Script paths below are relative to this skill's directory.
 
@@ -86,6 +90,43 @@ python scripts/comment.py contract.docx "This cap is too low" -o annotated.docx
 
 The script writes `comments.xml`, `commentsExtended.xml`, `commentsIds.xml`, `commentsExtensible.xml`, the relationships, and the content-type overrides. Comment IDs are auto-assigned. It then prints the `<w:commentRangeStart>`/`<w:commentRangeEnd>`/`<w:commentReference>` snippet to add to `word/document.xml` so the comment anchors to specific text — until you place those markers, the comment exists but is not visible.
 
+## Python helpers (python-docx)
+
+CLIs for the tasks above that need no Node and no LibreOffice. Each supports `--help` and prints JSON to stdout. Editing commands write in place unless given `-o out.docx`. Paragraph indices refer to body order as reported by `docx_read.py --structure`.
+
+| Task | Command |
+|---|---|
+| Create from a JSON spec (page size/margins, header/footer, "Page X of Y" footer, custom styles, headings, paragraphs with runs, bullet/numbered lists, tables, images, TOC, page breaks; format at the top of the script) | `python scripts/docx_create.py spec.json out.docx` |
+| Full text / heading outline + table shapes / styles used / revisions and comments present | `python scripts/docx_read.py f.docx --text` · `--structure` · `--styles` · `--revisions` |
+| Extract embedded images | `python scripts/docx_read.py f.docx --images outdir/` |
+| Find/replace across body, nested tables, headers and footers, keeping run formatting | `python scripts/docx_edit.py replace f.docx --find A --replace B -o out.docx [--body-only]` |
+| Merge adjacent runs with identical formatting | `python scripts/docx_edit.py normalize f.docx -o out.docx` |
+| Set a table cell (resets that cell's formatting) | `python scripts/docx_edit.py set-cell f.docx --table 0 --row 1 --col 2 --text X` |
+| Insert / delete / restyle paragraph N | `python scripts/docx_edit.py insert f.docx --index N --text X --style Normal` · `delete --index N` · `style --index N --style "Heading 1"` |
+| TOC field before paragraph N / "Page X of Y" footer | `python scripts/docx_edit.py toc f.docx --index N -o out.docx` · `page-numbers f.docx` |
+| Fill `{{tokens}}`; fail if any remain | `python scripts/docx_template.py tpl.docx values.json out.docx --strict` |
+| List tracked changes (id, author, date, text) | `python scripts/docx_revisions.py list f.docx` |
+| Accept or reject one revision, or all | `python scripts/docx_revisions.py accept f.docx --id 3 -o out.docx` · `reject --id 3` · `accept-all` · `reject-all` |
+| List comments with their anchored text / delete one | `python scripts/docx_comments.py list f.docx` · `delete f.docx --id 0` |
+| Quick package health check (zip, required parts, relationship targets, image bytes, referenced styles) | `python scripts/docx_validate.py f.docx` |
+
+Which tool when both exist:
+
+- **Comments:** add with `scripts/comment.py` (anchors, replies, all six parts); list and delete with `docx_comments.py`.
+- **Accepting changes:** `docx_revisions.py` needs no LibreOffice and can accept or reject a single revision, but resolves run-level `<w:ins>`/`<w:del>` only. Paragraph-mark and table-row revisions, format changes and moves are listed by `docx_read.py --revisions` and left in place; for those use `accept_changes.py` or Word. Details: `references/revisions-and-comments.md`.
+- **Validation:** `scripts/office/validate.py` is the schema check and the only one that verifies tracked edits (`--author`). `docx_validate.py` is a quick structural check; a file can pass it and still contain XML Word rejects.
+- **Template tokens and find/replace** survive Word's run fragmentation: matched runs are collapsed and the replacement takes the first run's formatting. Run `normalize` first on heavily edited documents.
+
+Pitfalls:
+
+- Field codes (TOC, page numbers) are computed by Word or LibreOffice when the file opens; placeholder text shows until then.
+- A style must exist in the document before it is applied (`KeyError` otherwise). Built-ins such as `Heading 1`, `List Bullet`, `List Number` and `Table Grid` exist; declare custom styles in the create spec.
+- Separate `List Number` lists in one document may continue numbering instead of restarting.
+
 ## Dependencies
 
-`docx` (npm, preinstalled — install only if `require('docx')` fails) · `pandoc` · LibreOffice (`soffice`) · `pdftoppm` (Poppler)
+`docx` (npm, preinstalled — install only if `require('docx')` fails) · `pandoc` · LibreOffice (`soffice`) · `pdftoppm` (Poppler) · Python 3.10+ with `defusedxml` and `lxml` for the scripts, plus `python-docx` for `scripts/docx_*.py`
+
+## Sources
+
+`scripts/docx_*.py`, `references/` and `tests/` come from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) under the MIT License (`LICENSE-HERMES.txt`). The rest of this skill is covered by `LICENSE.txt`.

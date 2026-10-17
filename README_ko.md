@@ -162,7 +162,14 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | `references/pyzotero` | 예시 그룹 라이브러리를 공개 그룹 `151202`로 변경 |
 
 `docx`, `pdf`, `pptx`, `xlsx`는
-[anthropics/skills](https://github.com/anthropics/skills)에서 가져왔고, 나머지 스킬의
+[anthropics/skills](https://github.com/anthropics/skills)에서 가져왔고, 각 스킬의
+`LICENSE.txt`에 있는 Anthropic 독점 조건을 따릅니다. `docx`, `pdf`, `xlsx`는 `dbd4588`에
+동기화되어 있고,
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) 문서 스킬의
+스크립트(MIT, `LICENSE-HERMES.txt`)도 함께 들어 있습니다: python-docx 보조 스크립트와
+`{{토큰}}` 템플릿, PDF 생성·양식 제작·스탬프·메타데이터·첨부 파일·암호화·페이지 이미지·OCR,
+스프레드시트 행/열 삽입·삭제 시 참조 자동 갱신과 CSV 변환. 각 `SKILL.md`에 작업별로 사용할
+스크립트가 적혀 있습니다. 나머지 스킬의
 출처 표기는 [`LICENSE-NOTES.md`](LICENSE-NOTES.md)와
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)에 있습니다.
 

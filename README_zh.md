@@ -157,7 +157,12 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | `references/pyzotero` | 示例群组文献库换成公开的 `151202` |
 
 `docx`、`pdf`、`pptx`、`xlsx` 来自
-[anthropics/skills](https://github.com/anthropics/skills)；其余技能的来源说明见
+[anthropics/skills](https://github.com/anthropics/skills)，适用各技能 `LICENSE.txt` 中
+Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另外收录了
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) 文档技能的脚本
+（MIT，见 `LICENSE-HERMES.txt`）：python-docx 辅助脚本和 `{{占位符}}` 模板；PDF 的生成、
+表单制作、盖章、元数据、附件、加密、页面导出图片和 OCR；表格插入或删除行列时同步改写引用，
+以及 CSV 转换。各技能的 `SKILL.md` 写明了每类任务用哪个脚本。其余技能的来源说明见
 [`LICENSE-NOTES.md`](LICENSE-NOTES.md) 和 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)。
 
 ## 更新

@@ -162,8 +162,15 @@ against the live service:
 | `references/pyzotero` | the example group library is a public one (`151202`) |
 
 `docx`, `pdf`, `pptx` and `xlsx` come from
-[anthropics/skills](https://github.com/anthropics/skills); attribution for the
-remaining skills is in [`LICENSE-NOTES.md`](LICENSE-NOTES.md) and
+[anthropics/skills](https://github.com/anthropics/skills) under Anthropic's
+proprietary terms in each skill's `LICENSE.txt`. `docx`, `pdf` and `xlsx` are synced
+to `dbd4588` and also bundle the document scripts of
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) (MIT,
+`LICENSE-HERMES.txt`): python-docx helpers and `{{token}}` templates; PDF creation,
+form building, stamping, metadata, attachments, encryption, page images and OCR;
+reference-aware row/column restructuring and CSV conversion for spreadsheets. Each
+`SKILL.md` says which script to use for which task. Attribution for the remaining
+skills is in [`LICENSE-NOTES.md`](LICENSE-NOTES.md) and
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv).
 
 ## Updating
