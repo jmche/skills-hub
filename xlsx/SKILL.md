@@ -111,9 +111,9 @@ python scripts/xlsx_edit.py f.xlsx --sheet Data --note "B2=Check this|Reviewer"
 Format conversion with LibreOffice:
 
 ```bash
-soffice --headless --convert-to xlsx old.xls          # legacy .xls first; the scripts read .xlsx only
-soffice --headless --convert-to pdf report.xlsx --outdir out/
-soffice --headless --convert-to csv report.xlsx --outdir out/   # first sheet only; use xlsx_to_csv.py --sheet for others
+python scripts/office/soffice.py --headless --convert-to xlsx old.xls          # legacy .xls first; the scripts read .xlsx only
+python scripts/office/soffice.py --headless --convert-to pdf report.xlsx --outdir out/
+python scripts/office/soffice.py --headless --convert-to csv report.xlsx --outdir out/   # first sheet only; use xlsx_to_csv.py --sheet for others
 ```
 
 Pitfalls:
