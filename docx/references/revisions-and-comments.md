@@ -40,12 +40,21 @@ Key facts the script relies on:
   session may produce several elements. `accept`/`reject --id` acts on
   exactly the element(s) carrying that id.
 
-Not handled by the script (detected by `docx_read.py --revisions` but
-left alone): paragraph-mark revisions (`w:rPr/w:ins` on `w:pPr`), table
-row insertions/deletions (`w:trPr/w:ins`), format-change records
-(`w:rPrChange`, `w:pPrChange`), and moves (`w:moveFrom`/`w:moveTo`).
-Moves are rare from typical editors; if present, treat the file with
-Word itself rather than guessing.
+Not handled correctly by the script:
+
+- Paragraph-mark revisions (`w:pPr/w:rPr/w:ins|w:del`) and table-row
+  revisions (`w:trPr/w:ins|w:del`) are matched by the same
+  `root.iter(...)` and resolved as if they were run wrappers: the marker
+  is removed, but the paragraphs are not joined and the row is not
+  inserted or removed. Afterwards `list` reports nothing left.
+- Format-change records (`w:rPrChange`, `w:pPrChange`) and moves
+  (`w:moveFrom`/`w:moveTo`) are left untouched and are not reported by
+  `list`. `docx_read.py --revisions` returns only yes/no flags for
+  insertions, deletions, format changes and comments; it does not
+  detect moves.
+
+When any of these are present, accept with `scripts/accept_changes.py`
+(LibreOffice) or resolve the document in Word.
 
 ## Comments
 

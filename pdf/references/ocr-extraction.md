@@ -12,16 +12,9 @@ This file covers **text extraction from PDFs and scanned documents**.
 
 ## Step 1: Remote URL Available?
 
-If the document has a URL, **always try `web_extract` first**:
+If the document has a URL and a web-fetch tool that converts PDFs to text or Markdown is available, try it first: it needs no local dependencies.
 
-```
-web_extract(urls=["https://arxiv.org/pdf/2402.03300"])
-web_extract(urls=["https://example.com/report.pdf"])
-```
-
-This handles PDF-to-markdown conversion via Firecrawl with no local dependencies.
-
-Only use local extraction when: the file is local, web_extract fails, or you need batch processing.
+Use local extraction when the file is local, the fetch fails or returns no text, or you need batch processing.
 
 ## Step 2: Choose Local Extractor
 
@@ -45,7 +38,7 @@ Only use local extraction when: the file is local, web_extract fails, or you nee
 **Decision**: Use pymupdf unless you need OCR, equations, forms, or complex layout analysis.
 
 If the user needs marker capabilities but the system lacks ~5GB free disk:
-> "This document needs OCR/advanced extraction (marker-pdf), which requires ~5GB for PyTorch and models. Your system has [X]GB free. Options: free up space, provide a URL so I can use web_extract, or I can try pymupdf which works for text-based PDFs but not scanned documents or equations."
+> "This document needs OCR/advanced extraction (marker-pdf), which requires ~5GB for PyTorch and models. Your system has [X]GB free. Options: free up space, provide a URL I can fetch, or I can try pymupdf which works for text-based PDFs but not scanned documents or equations."
 
 ---
 
@@ -105,20 +98,11 @@ marker /path/to/folder --workers 4    # Batch
 
 ## Arxiv Papers
 
-```
-# Abstract only (fast)
-web_extract(urls=["https://arxiv.org/abs/2402.03300"])
+The abstract page (`https://arxiv.org/abs/<id>`) is fastest to fetch; the full paper is at `https://arxiv.org/pdf/<id>`. To find papers, use the `references` hub.
 
-# Full paper
-web_extract(urls=["https://arxiv.org/pdf/2402.03300"])
+## Search, and pymupdf split/merge
 
-# Search
-web_search(query="arxiv GRPO reinforcement learning 2026")
-```
-
-## Split, Merge & Search
-
-pymupdf handles these natively — use `execute_code` or inline Python:
+For merging and splitting, prefer `scripts/pdf_merge.py` and `scripts/pdf_split.py` (see `SKILL.md`). pymupdf can do both too, and searches text, with inline Python:
 
 ```python
 # Split: extract pages 1-5 to a new PDF
@@ -156,7 +140,8 @@ No extra dependencies needed — pymupdf covers split, merge, search, and text e
 
 ## Notes
 
-- `web_extract` is always first choice for URLs
+- For URLs, a PDF-aware web-fetch tool is the first choice when one is available
+- `extract_pymupdf.py --pages` is 0-based (`0-4` is the first five pages)
 - pymupdf is the safe default — instant, no models, works everywhere
 - marker-pdf is for OCR, scanned docs, equations, complex layouts — install only when needed
 - Both helper scripts accept `--help` for full usage

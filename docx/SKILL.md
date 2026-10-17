@@ -92,7 +92,7 @@ The script writes `comments.xml`, `commentsExtended.xml`, `commentsIds.xml`, `co
 
 ## Python helpers (python-docx)
 
-CLIs for the tasks above that need no Node and no LibreOffice. Each supports `--help` and prints JSON to stdout. Editing commands write in place unless given `-o out.docx`. Paragraph indices refer to body order as reported by `docx_read.py --structure`.
+CLIs for the tasks above that need no Node and no LibreOffice. Each supports `--help` and prints JSON to stdout. Editing commands write in place unless given `-o out.docx`. A paragraph index is the position in the `body` list printed by `docx_read.py --text` (`--structure` gives the index of headings only).
 
 | Task | Command |
 |---|---|
@@ -105,17 +105,20 @@ CLIs for the tasks above that need no Node and no LibreOffice. Each supports `--
 | Insert / delete / restyle paragraph N | `python scripts/docx_edit.py insert f.docx --index N --text X --style Normal` · `delete --index N` · `style --index N --style "Heading 1"` |
 | TOC field before paragraph N / "Page X of Y" footer | `python scripts/docx_edit.py toc f.docx --index N -o out.docx` · `page-numbers f.docx` |
 | Fill `{{tokens}}`; fail if any remain | `python scripts/docx_template.py tpl.docx values.json out.docx --strict` |
-| List tracked changes (id, author, date, text) | `python scripts/docx_revisions.py list f.docx` |
-| Accept or reject one revision, or all | `python scripts/docx_revisions.py accept f.docx --id 3 -o out.docx` · `reject --id 3` · `accept-all` · `reject-all` |
+| List `<w:ins>`/`<w:del>` revisions (id, author, date, text) | `python scripts/docx_revisions.py list f.docx` |
+| Accept or reject one revision, or all (see the rule below first) | `python scripts/docx_revisions.py accept f.docx --id 3 -o out.docx` · `reject --id 3` · `accept-all` · `reject-all` |
+| Add a plain top-level comment anchored to the first occurrence of a phrase | `python scripts/docx_comments.py add f.docx --target "phrase" --text "note" --author "Name"` |
 | List comments with their anchored text / delete one | `python scripts/docx_comments.py list f.docx` · `delete f.docx --id 0` |
 | Quick package health check (zip, required parts, relationship targets, image bytes, referenced styles) | `python scripts/docx_validate.py f.docx` |
 
 Which tool when both exist:
 
-- **Comments:** add with `scripts/comment.py` (anchors, replies, all six parts); list and delete with `docx_comments.py`.
-- **Accepting changes:** `docx_revisions.py` needs no LibreOffice and can accept or reject a single revision, but resolves run-level `<w:ins>`/`<w:del>` only. Paragraph-mark and table-row revisions, format changes and moves are listed by `docx_read.py --revisions` and left in place; for those use `accept_changes.py` or Word. Details: `references/revisions-and-comments.md`.
+- **Adding comments:** `docx_comments.py add --target` places a plain top-level comment on a phrase in one step (it splits runs and inserts the markers itself). Use `scripts/comment.py` for replies (`--parent`), or when the comment must carry all six comment parts.
+- **Deleting comments:** `docx_comments.py delete` removes the comment from `comments.xml` and its markers from the text only. It leaves the entries in `commentsExtended.xml`, `commentsIds.xml` and `commentsExtensible.xml` and does not delete replies, so a deleted comment that had replies leaves orphans behind. For comments written by `comment.py`, delete the replies too and remove the matching entries from those three files.
+- **Accepting or rejecting changes:** first search `word/document.xml` for revisions on paragraph marks (`<w:pPr>` → `<w:rPr>` → `<w:ins>`/`<w:del>`), on table rows (`<w:trPr>` → `<w:ins>`/`<w:del>`), moves (`<w:moveFrom>`, `<w:moveTo>`) and format changes (`<w:rPrChange>`, `<w:pPrChange>`). If none are present, `docx_revisions.py` works without LibreOffice and can also handle a single revision. If any are present, do not use it: it strips paragraph-mark and row markers without joining the paragraphs or removing the rows, leaves moves and format changes untouched, and its `list` then reports nothing left. Accept such documents with `accept_changes.py`; reject them in Word.
 - **Validation:** `scripts/office/validate.py` is the schema check and the only one that verifies tracked edits (`--author`). `docx_validate.py` is a quick structural check; a file can pass it and still contain XML Word rejects.
-- **Template tokens and find/replace** survive Word's run fragmentation: matched runs are collapsed and the replacement takes the first run's formatting. Run `normalize` first on heavily edited documents.
+- **Merging fragmented runs:** before editing `word/document.xml` by hand, use `merge_runs.py` (it also strips rsid attributes and `<w:proofErr>` markers, and never merges across a revision). Before `docx_edit.py replace` or `docx_template.py` on headers and footers, use `docx_edit.py normalize`, which covers them but stops at markers such as `<w:proofErr>`.
+- **Template tokens and find/replace** survive Word's run fragmentation: matched runs are collapsed and the replacement takes the first run's formatting.
 
 Pitfalls:
 

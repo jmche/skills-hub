@@ -12,9 +12,9 @@ This guide covers essential PDF processing operations using Python libraries and
 
 ## Ready-made scripts
 
-Most tasks have a tested CLI in `scripts/`. Prefer it over writing new code; drop to the library examples further down only for what the scripts do not cover. Every script supports `--help`, reads and writes JSON as UTF-8, prints JSON results to stdout, and exits non-zero on failure. Paths are relative to this skill's directory. Page arguments are 1-based (`1-3,5,9-`).
+Most tasks have a tested CLI in `scripts/`. Prefer it over writing new code; drop to the library examples further down only for what the scripts do not cover. The `pdf_*.py` scripts support `--help`, read and write JSON as UTF-8, print JSON results to stdout, and exit non-zero on failure; their page arguments are 1-based (`1-3,5,9-`). Paths are relative to this skill's directory.
 
-Requirements: Python 3.10+ with `pypdf`, `reportlab`, `pdfplumber`. Page rendering (`pdf_page_image.py`, form overlays) also needs `pypdfium2` or Poppler's `pdftoppm`; without either it reports `{"rendered": false, "missing": [...]}` and exits 0.
+Requirements: Python 3.10+ with `pypdf`, `reportlab`, `pdfplumber` and `Pillow`. Rendering a real page (`pdf_page_image.py`, form overlays with `--pdf`) also needs `pypdfium2` or Poppler's `pdftoppm`; without either it reports `{"rendered": false, "missing": [...]}` and exits 0. A form overlay without `--pdf` is drawn on a blank page and needs Pillow only.
 
 | Task | Command |
 |---|---|
@@ -30,18 +30,20 @@ Requirements: Python 3.10+ with `pypdf`, `reportlab`, `pdfplumber`. Page renderi
 | Pages to PNG | `python scripts/pdf_page_image.py f.pdf --pages 1-3 --dpi 150 --out-dir imgs/` |
 | Set or clear DocInfo metadata | `python scripts/pdf_meta.py f.pdf --set-meta --title "T" --author "A" -o out.pdf` · `--clear-meta` |
 | Embedded file attachments | `python scripts/pdf_meta.py f.pdf --attach data.csv -o out.pdf` · `--list-attachments` · `--extract-attachments dir/` |
-| Encrypt (AES-256) / decrypt | `python scripts/pdf_secure.py f.pdf --encrypt -o enc.pdf --user-password "$PDF_PW"` · `--decrypt -o dec.pdf --password "$PDF_PW"` |
+| Encrypt (AES-256) with distinct open and owner passwords / decrypt | `python scripts/pdf_secure.py f.pdf --encrypt -o enc.pdf --user-password "$PDF_PW" --owner-password "$PDF_OWNER_PW"` · `--decrypt -o dec.pdf --password "$PDF_PW"` |
 | Build a new fillable form | lint `python scripts/pdf_form_layout.py spec.json`, then `python scripts/pdf_make_form.py spec.json -o form.pdf` — see `references/form-building.md` |
 | Fill an existing form | follow forms.md (fillable fields and forms without fields) |
-| Fill and flatten an AcroForm | `python scripts/pdf_fill_form.py form.pdf --fields-json values.json -o filled.pdf --flatten` |
-| Scanned / image-only pages, OCR | `references/ocr-extraction.md` (`scripts/extract_pymupdf.py` fast path, `scripts/extract_marker.py` quality path) |
+| Fill an AcroForm and flatten it | `python scripts/pdf_fill_form.py form.pdf --fields-json values.json -o filled.pdf --flatten` |
+| Text extraction to Markdown, tables, images (text layer only) | `references/ocr-extraction.md` → `scripts/extract_pymupdf.py` |
+| Scanned / image-only pages, OCR, equations, complex layout | `references/ocr-extraction.md` → `scripts/extract_marker.py` |
 | Change text inside an existing PDF by instruction | `references/nano-pdf-editing.md` (external `nano-pdf` CLI, needs an LLM API key) |
 
 Procedure:
 
 1. Run `pdf_read.py --meta` first. If `encrypted` is true, decrypt before anything else. If `likely_scanned_pages` is non-empty, those pages have no text layer: render them with `pdf_page_image.py --dpi 300` and follow `references/ocr-extraction.md`. Never report empty extracted text as "no content".
 2. After any change, re-run `pdf_read.py --meta` (page count, rotation) or `--fields` (filled values, compared exactly, including non-ASCII). For anything visual — stamps, watermarks, flattened forms, form layout — render the page with `pdf_page_image.py` and look at it.
-3. Pass passwords through an environment variable, as in the table, so they stay out of shell history.
+3. Pass passwords through environment variables, as in the table, so they stay out of shell history. Without `--owner-password` the owner password equals the open password.
+4. Filling forms: forms.md is the route for every existing form. Use `pdf_fill_form.py` only when the result must be flattened; its values follow the table in `references/form-building.md` (checkboxes `true`/`false`, radio values with the leading slash such as `"/red"`), which differs from the `checked_value` format in forms.md. It sets the AcroForm `NeedAppearances` flag so viewers regenerate field appearances; some minimal viewers ignore it, so flatten when the display must be exact.
 
 Pitfalls:
 
@@ -359,4 +361,4 @@ with open("encrypted.pdf", "wb") as output:
 
 ## Sources
 
-`scripts/pdf_*.py`, `scripts/extract_*.py`, `scripts/_raster.py`, `references/` and `tests/` come from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) under the MIT License (`LICENSE-HERMES.txt`). The rest of this skill is covered by `LICENSE.txt`.
+`scripts/pdf_*.py`, `scripts/extract_pymupdf.py`, `scripts/extract_marker.py`, `scripts/_raster.py`, `references/` and `tests/` come from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) under the MIT License (`LICENSE-HERMES.txt`). The rest of this skill is covered by `LICENSE.txt`.

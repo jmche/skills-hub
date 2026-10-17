@@ -93,17 +93,34 @@ Tested CLIs in `scripts/` (Python 3.10+, `openpyxl` only). Each supports `--help
 | Insert or delete rows/columns, shifting references on all sheets | `python scripts/xlsx_restructure.py f.xlsx --sheet Data --insert-rows 3:2` · `--delete-rows 5` · `--insert-cols C:1` · `--delete-cols B` |
 | Set a cell or formula / append a row | `python scripts/xlsx_edit.py f.xlsx --sheet S --set "C1==SUM(A:A)"` · `--append '[1,"x",true]'` |
 | Native Excel table: create, append inside it, list | `python scripts/xlsx_edit.py f.xlsx --add-table Sales:A1:C9` · `--table-append 'Sales=["West",5]'` · `--list-tables` |
-| Defined name, hyperlink, cell note | `--define-name "Rates=Data!\$B\$2:\$B\$9"` · `--delete-name Rates` · `--hyperlink "A1=https://example.com\|Docs"` · `--note "B2=Check this\|Reviewer"` |
+| Defined name | `python scripts/xlsx_edit.py f.xlsx --define-name "Rates=Data!\$B\$2:\$B\$9"` · `--delete-name Rates` |
+| Hyperlink, cell note (commands below the table) | `--hyperlink CELL=URL` with an optional display text, `--note CELL=TEXT` with an optional author |
 | Copy or rename a sheet | `--copy-sheet Src:New` · `--rename-sheet Old:New` |
 | Sheet protection | `--protect "$SHEET_PW" --unlock B2:B9` |
 | Whole workbook from a JSON spec (rows, sparse cell overrides, number formats, widths, merges, freeze panes, autofilter, conditional formats, bar/line/pie charts, list validations, native tables, defined names, protection; schema at the top of the script) | `python scripts/xlsx_create.py spec.json out.xlsx` |
 | CSV → styled xlsx (infers int/float/bool/ISO date) | `python scripts/csv_to_xlsx.py in.csv out.xlsx --encoding utf-8 [--delimiter ';']` |
 | xlsx → CSV (ISO dates, blanks for empty cells) | `python scripts/xlsx_to_csv.py f.xlsx out.csv --sheet Data --encoding utf-8-sig` |
 
+The display text and the note author follow a `|`:
+
+```bash
+python scripts/xlsx_edit.py f.xlsx --sheet Data --hyperlink "A1=https://example.com|Docs"
+python scripts/xlsx_edit.py f.xlsx --sheet Data --note "B2=Check this|Reviewer"
+```
+
+Format conversion with LibreOffice:
+
+```bash
+soffice --headless --convert-to xlsx old.xls          # legacy .xls first; the scripts read .xlsx only
+soffice --headless --convert-to pdf report.xlsx --outdir out/
+soffice --headless --convert-to csv report.xlsx --outdir out/   # first sheet only; use xlsx_to_csv.py --sheet for others
+```
+
 Pitfalls:
 
+- **`xlsx_edit.py` and `xlsx_restructure.py` drop VBA macros.** They load workbooks without `keep_vba=True` and save, so running them on an `.xlsm` file removes its macros. Edit `.xlsm` files with openpyxl and `keep_vba=True`.
 - **`xlsx_edit.py --insert-rows/--delete-rows` does not shift references** (plain openpyxl behaviour). Use `xlsx_restructure.py` for any sheet that formulas, merges, tables or filters point at. It handles one operation per run, prints the formulas, merges, tables and names it changed, and lists in `not_shifted` what it cannot move: chart anchors, images, and conditional-format rule formulas. Rules and limits: `references/restructuring.md`.
-- **Loading and saving a workbook drops its charts and images** (openpyxl does not round-trip them). Re-add charts after editing, or leave charted files alone.
+- **Charts and images survive only as far as openpyxl models them.** openpyxl reads charts and images back and writes them again on save, but drops shapes and any chart or drawing features it does not model. After saving a charted workbook, compare its charts with the original instead of re-adding them.
 - **Sheet protection is not security.** It tells well-behaved apps "don't edit"; anyone can remove it from the XML. It encrypts nothing.
 - **`xlsx_create.py` sets no font family**, so cells use the default font; apply the professional font with openpyxl afterwards. Its `full_calc_on_load` flag and `xlsx_edit.py --recalc` only ask Excel to recompute on open — they are no substitute for `recalc.py`.
 - **CSV locale:** European files often use `;` and decimal commas; pass `--delimiter ';'` and expect `"12,5"` to stay a string. Use `--encoding cp1252` for legacy Windows exports and `utf-8-sig` when Excel must detect UTF-8.
