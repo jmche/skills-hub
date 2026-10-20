@@ -187,6 +187,27 @@ docs-figures/scientific-schematics,docs-figures,mit,mit (header),inline,publish
 docs-figures/scientific-slides,docs-figures,mit,mit (header),inline,publish
 docs-figures/scientific-visualization,docs-figures,mit,mit (header),inline,publish
 docs-figures/seaborn,docs-figures,unknown,?,?,"publish (library content, user-curated)"
+docs-figures/embedded-captions,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/faceless-explainer,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/figma,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/general-video,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-animation,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-audio,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-cli,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-core,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-creative,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-keyframes,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-registry,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/hyperframes-studio,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/media-use,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/motion-graphics,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/music-to-video,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/pr-to-video,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/product-launch-video,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/remotion-to-hyperframes,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/slideshow,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/talking-head-recut,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
 autoskill,top,mit,mit,screenpipe/screenpipe,publish
 credentials,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
 docx,top,docx,proprietary+mit,"anthropics/skills (proprietary, LICENSE.txt); NousResearch/hermes-agent (MIT, LICENSE-HERMES.txt)",publish

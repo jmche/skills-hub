@@ -4,5 +4,31 @@
       "docs-figures/archify"
     ],
     "ref": "v3.2.0"
+  },
+  "hyperframes": {
+    "dirs": [
+      "docs-figures/embedded-captions",
+      "docs-figures/faceless-explainer",
+      "docs-figures/figma",
+      "docs-figures/general-video",
+      "docs-figures/hyperframes",
+      "docs-figures/hyperframes-animation",
+      "docs-figures/hyperframes-audio",
+      "docs-figures/hyperframes-cli",
+      "docs-figures/hyperframes-core",
+      "docs-figures/hyperframes-creative",
+      "docs-figures/hyperframes-keyframes",
+      "docs-figures/hyperframes-registry",
+      "docs-figures/hyperframes-studio",
+      "docs-figures/media-use",
+      "docs-figures/motion-graphics",
+      "docs-figures/music-to-video",
+      "docs-figures/pr-to-video",
+      "docs-figures/product-launch-video",
+      "docs-figures/remotion-to-hyperframes",
+      "docs-figures/slideshow",
+      "docs-figures/talking-head-recut"
+    ],
+    "ref": "v0.8.181"
   }
 }
