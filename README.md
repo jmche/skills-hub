@@ -125,7 +125,7 @@ directories — purely additive symlinks, idempotent, never deletes your local s
 | Hub | Sub-skills | Covers |
 |---|---|---|
 | `research` | 14 | experimental design, statistics, grants, peer review, academic writing |
-| `scientific` | 131 | structure prediction, genomics, 30+ databases, single-cell, cheminformatics, PK/PD, clinical, lab platforms |
+| `scientific` | 129 | structure prediction, genomics, 30+ databases, single-cell, cheminformatics, PK/PD, clinical, lab platforms |
 | `references` | 21 | paper search, BibTeX, citation formats, patents, regulatory documents, document extraction |
 | `dev` | 6 | frontend, UI/UX systems, cloud, GPU, agent harness |
 | `data-ml` | 21 | polars/dask, time series, stats, deep learning, graphs |
@@ -148,7 +148,7 @@ to upstream; the only structural change is that a sub-skill's `SKILL.md` is stor
 
 | Upstream | Skills here | Synced to |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 156 | followed automatically (see below), except the four skills with local changes |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 154 | followed automatically (see below), except the four skills with local changes |
 | [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`, v1.2.1 (2026-09-14) |
 
 Four K-Dense skills carry local changes on top of the upstream version and are synced by
@@ -180,10 +180,17 @@ them and [`upstreams.lock.json`](upstreams.lock.json) records the version each o
 
 | Upstream | Skills here | Follows |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (MIT) | the 152 skills listed in `upstreams.json`, across the hubs and top level; a skill upstream adds is included only once it is listed there | newest `x.y.z` version tag |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (MIT) | the 150 skills listed in `upstreams.json`, across the hubs and top level; a skill upstream adds is included only once it is listed there | newest `x.y.z` version tag |
 | [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | every skill under its `skills/`, as `docs-figures/<name>`; the entry point is `docs-figures/hyperframes` | newest `x.y.z` version tag |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | latest commit on `main` |
 | [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | newest `x.y.z` version tag |
+
+`scientific/ncats-arax` has a local patch, [`patches/k-dense/ncats-arax.patch`](patches/k-dense/ncats-arax.patch):
+production ARAX 1.6.2 accepts only the `infores:retriever` provider, while upstream sends
+`infores:rtx-kg2`. Each sync first runs a live imatinib → ABL1 query with the upstream copy
+and keeps that copy when the query succeeds; otherwise it applies the patch and requires the
+same query to succeed. While the patch is in use, the check repeats every day, so the skill
+returns to the upstream copy as soon as upstream or the service is fixed.
 
 The upstream license file (`LICENSE`, K-Dense's `LICENSE.md`, and diagram-design's `THIRD_PARTY_LICENSES.md`) is copied into
 each of these skill directories. HyperFrames would otherwise install its own copies into

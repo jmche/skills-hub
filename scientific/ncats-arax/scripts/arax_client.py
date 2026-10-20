@@ -38,6 +38,8 @@ LOOKUP_TIMEOUT_SECONDS = 120
 FEDERATED_TIMEOUT_SECONDS = 180
 KP_TIMEOUT_SECONDS = 30
 LOOKUP_RESULT_LIMIT = 20
+# Production ARAX 1.6.2 accepts only this knowledge provider; it rejects infores:rtx-kg2 with HTTP 400.
+LOOKUP_PROVIDER = "infores:retriever"
 FEDERATED_RESULT_LIMIT = 50
 MAX_RESULT_LIMIT = 50
 MAX_PROVIDERS = 5
@@ -351,7 +353,7 @@ def resolve_mode(
     if mode == "lookup":
         if provider_values:
             raise UsageError("--kp is allowed only with --mode federated")
-        providers = ["infores:rtx-kg2"]
+        providers = [LOOKUP_PROVIDER]
         limit = LOOKUP_RESULT_LIMIT if result_limit is None else result_limit
     elif mode == "federated":
         providers = _unique([validate_provider_id(value) for value in provider_values], "provider")
@@ -388,7 +390,7 @@ def build_query_edge(
 
 def _provider_parameter(mode: str, provider_ids: Sequence[str]) -> str:
     if mode == "lookup":
-        return "infores:rtx-kg2"
+        return LOOKUP_PROVIDER
     return "[" + ",".join(provider_ids) + "]"
 
 
@@ -965,7 +967,7 @@ def _validate_edge_contract(edge: Any) -> tuple[str, str]:
 
 
 def _parse_kp_parameter(value: str) -> tuple[str, tuple[str, ...]]:
-    if value == "infores:rtx-kg2":
+    if value == LOOKUP_PROVIDER:
         return "lookup", (value,)
     if not value.startswith("[") or not value.endswith("]"):
         raise UsageError("saved request does not use lookup or selected-provider federation")
@@ -1072,7 +1074,7 @@ def validate_saved_request_contract(payload: Any) -> QueryContract:
     return QueryContract(
         kind=kind,
         mode=mode or "lookup",
-        provider_ids=provider_ids or ("infores:rtx-kg2",),
+        provider_ids=provider_ids or (LOOKUP_PROVIDER,),
         expand_order=expand_order,
         qnode_ids=qnode_ids,
         result_limit=result_limit,

@@ -35,6 +35,17 @@
     "license_files": ["LICENSE.md"],
     "rename": { "SKILL.md": "INSTRUCTIONS.md" },
     "note": "only the listed skills; references/literature-review, database-lookup, citation-management and pyzotero carry local changes and are synced by hand; sync to latest stable tag",
+    "patches": {
+      "ncats-arax": {
+        "patch": "patches/k-dense/ncats-arax.patch",
+        "python": "3.10",
+        "probe": ["scripts/arax_client.py", "one-hop",
+                  "--subject-id", "CHEBI:45783", "--subject-category", "biolink:SmallMolecule",
+                  "--predicate", "biolink:affects",
+                  "--object-id", "NCBIGene:25", "--object-category", "biolink:Gene",
+                  "--acknowledge-public-query", "--output-dir", "{out}"]
+      }
+    },
     "skills": {
       "adaptyv": "scientific/adaptyv",
       "aeon": "data-ml/aeon",
@@ -150,7 +161,6 @@
       "qutip": "scientific/qutip",
       "rdkit": "scientific/rdkit",
       "relion": "scientific/relion",
-      "relsa-severity-assessment": "scientific/relsa-severity-assessment",
       "research-grants": "research/research-grants",
       "research-lookup": "references/research-lookup",
       "rowan": "scientific/rowan",
@@ -176,7 +186,6 @@
       "statsmodels": "data-ml/statsmodels",
       "sympy": "scientific/sympy",
       "tamarind": "scientific/tamarind",
-      "tellurium": "scientific/tellurium",
       "tiledbvcf": "scientific/tiledbvcf",
       "timesfm-forecasting": "data-ml/timesfm-forecasting",
       "torch-geometric": "data-ml/torch-geometric",

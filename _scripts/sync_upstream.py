@@ -22,7 +22,10 @@ Steps:
   2. in each staged dir: rename per `rename` (our convention: SKILL.md ->
      INSTRUCTIONS.md; hub sub-skills only, a top-level skill keeps SKILL.md),
      drop `exclude` globs, copy `license_files` from the upstream repo root
-     when the dir has no file of that name
+     when the dir has no file of that name; for a skill in `patches`, run its
+     probe command on the upstream copy and keep that copy when the probe
+     passes, otherwise apply the local patch and require the probe to pass
+     (the lock records which patches are in use)
   3. delete the dirs the entry owned before, copy the staged dirs in (a true
      mirror); a target dir that exists but is not owned by the entry stops the
      sync
@@ -192,6 +195,38 @@ def update_audit(name, cfg, old_dirs, new_dirs):
     with open(AUDIT, "w", newline="", encoding="utf-8") as f:
         f.write(out.getvalue())
 
+def run_probe(name, p, src):
+    """run the probe command in a staged skill copy; returns the exit code"""
+    need = tuple(int(x) for x in p["python"].split("."))
+    if sys.version_info[:len(need)] < need:
+        sys.exit(f"the {name} probe needs Python {p['python']}+, this is {sys.version.split()[0]}")
+    with tempfile.TemporaryDirectory() as out:
+        args = [sys.executable] + [a.replace("{out}", os.path.join(out, "run")) for a in p["probe"]]
+        r = subprocess.run(args, cwd=src, capture_output=True, text=True, timeout=600,
+                           env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
+    last = (r.stdout.strip().splitlines() or r.stderr.strip().splitlines() or [""])[-1]
+    print(f"  {name} probe: exit {r.returncode} ({last[:120]})")
+    return r.returncode
+
+def apply_patches(cfg, staged):
+    """for each configured patch: keep the upstream copy if its probe passes, otherwise apply
+    the local patch and require the patched copy to pass; returns the patched skill names"""
+    patched = []
+    for up, p in sorted(cfg.get("patches", {}).items()):
+        src = staged[cfg["skills"][up]]
+        if run_probe(up, p, src) == 0:
+            print(f"  {up}: upstream copy passes its probe - local patch not used")
+            continue
+        patch = os.path.join(ROOT, p["patch"])
+        if subprocess.run(["git", "apply", "--check", patch], cwd=src, capture_output=True).returncode != 0:
+            sys.exit(f"{up}: upstream copy fails its probe and {p['patch']} no longer applies - review the patch")
+        subprocess.run(["git", "apply", patch], cwd=src, check=True)
+        if run_probe(up, p, src) != 0:
+            sys.exit(f"{up}: the patched copy fails its probe as well - not syncing")
+        print(f"  {up}: upstream copy fails its probe - local patch {p['patch']} applied")
+        patched.append(up)
+    return patched
+
 def main():
     name = sys.argv[1] if len(sys.argv) > 1 else ""
     cfg_all = json.load(open(os.path.join(ROOT, "upstreams.json"), encoding="utf-8"))
@@ -215,6 +250,7 @@ def main():
                 sys.exit(f"{d} exists but is not owned by '{name}' (upstreams.lock.json) - not overwriting")
         for d, src in staged.items():
             prepare(cfg, tree, d, src)
+        patched = apply_patches(cfg, staged)
         for d in old_dirs:
             p = os.path.join(ROOT, d)
             if os.path.isdir(p):
@@ -226,6 +262,8 @@ def main():
     update_assignments(old_dirs, new_dirs)
     update_audit(name, cfg, old_dirs, new_dirs)
     lock[name] = {"ref": ref, "dirs": new_dirs}
+    if "patches" in cfg:
+        lock[name]["patched"] = patched
     with open(LOCK, "w", encoding="utf-8") as f:
         f.write(json.dumps(lock, indent=2, sort_keys=True) + "\n")
     gen = sh([sys.executable, "_scripts/gen_routers.py", "--only-generate", "--force"])

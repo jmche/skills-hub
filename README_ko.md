@@ -125,7 +125,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | Hub | 서브스킬 수 | 범위 |
 |---|---|---|
 | `research` | 14 | 실험 설계, 통계, 연구제안, 동료 심사, 학술 글쓰기 |
-| `scientific` | 131 | 구조 예측, 유전체학, 30+ 데이터베이스, 단일세포, 화학정보학, PK/PD, 임상, 실험 플랫폼 |
+| `scientific` | 129 | 구조 예측, 유전체학, 30+ 데이터베이스, 단일세포, 화학정보학, PK/PD, 임상, 실험 플랫폼 |
 | `references` | 21 | 논문 검색, BibTeX, 인용 형식, 특허, 규제 문서, 문서 추출 |
 | `dev` | 6 | 프론트엔드, UI/UX, 클라우드, GPU, 에이전트 하니스 |
 | `data-ml` | 21 | polars/dask, 시계열, 통계, 딥러닝, 그래프 |
@@ -148,7 +148,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 | 업스트림 | 이 라이브러리의 스킬 수 | 동기화 기준 |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 156 | 자동으로 따라감(아래 참고), 로컬 변경이 있는 아래 네 스킬은 제외 |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 154 | 자동으로 따라감(아래 참고), 로컬 변경이 있는 아래 네 스킬은 제외 |
 | [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`, v1.2.1 (2026-09-14) |
 
 네 개의 K-Dense 스킬은 업스트림 버전 위에 로컬 변경을 담고 있어 수동으로 동기화하며,
@@ -180,10 +180,16 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 | 업스트림 | 이 라이브러리의 스킬 | 따라가는 기준 |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (MIT) | `upstreams.json`에 나열된 152개 스킬(각 허브와 최상위에 분포); 업스트림에 새로 추가된 스킬은 그 목록에 넣어야 포함됨 | 최신 `x.y.z` 버전 태그 |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (MIT) | `upstreams.json`에 나열된 150개 스킬(각 허브와 최상위에 분포); 업스트림에 새로 추가된 스킬은 그 목록에 넣어야 포함됨 | 최신 `x.y.z` 버전 태그 |
 | [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | `skills/` 아래의 모든 스킬, `docs-figures/<이름>`으로 저장; 진입점은 `docs-figures/hyperframes` | 최신 `x.y.z` 버전 태그 |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | `main` 브랜치의 최신 커밋 |
 | [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | 최신 `x.y.z` 버전 태그 |
+
+`scientific/ncats-arax`에는 로컬 패치 [`patches/k-dense/ncats-arax.patch`](patches/k-dense/ncats-arax.patch)가
+있습니다. 운영 중인 ARAX 1.6.2는 `infores:retriever` 공급자만 받는데 업스트림은 `infores:rtx-kg2`를
+보냅니다. 동기화할 때마다 먼저 업스트림 사본으로 이마티닙 → ABL1 실제 질의를 실행해 성공하면 그
+사본을 그대로 쓰고, 실패하면 패치를 적용한 뒤 같은 질의가 성공해야 반영합니다. 패치를 쓰는 동안에는
+매일 다시 확인하므로, 업스트림이나 서비스가 고쳐지면 바로 업스트림 사본으로 돌아갑니다.
 
 업스트림의 라이선스 파일(`LICENSE`, K-Dense의 `LICENSE.md`, diagram-design은 `THIRD_PARTY_LICENSES.md`도)은 각 스킬 디렉터리에
 복사됩니다. HyperFrames는 기본적으로 `~/.agents/skills`와 `~/.claude/skills`에 자체 사본을

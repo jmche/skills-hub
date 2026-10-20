@@ -79,7 +79,8 @@ scalar endpoint options.
 
 ## Fixed operations
 
-Lookup mode fixes the provider to `infores:rtx-kg2`. Federated mode requires two to five explicit,
+Lookup mode fixes the provider to `infores:retriever`, the only provider production ARAX 1.6.2
+accepts. Federated mode requires two to five explicit,
 distinct provider identifiers and emits them in one list-valued `kp=` argument. Never omit `kp` and
 never generate duplicate `kp=` arguments.
 

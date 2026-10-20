@@ -5,7 +5,8 @@ Used by `install.sh update` and .github/workflows/upstream-sync.yml. For every
 entry in upstreams.json:
   - read the vendored ref from upstreams.lock.json
   - resolve the upstream's newest stable semver tag, or the latest commit on
-    its "branch"
+    its "branch"; an entry with a local patch in use counts as stale every
+    day, so its probe decides again whether upstream works unpatched
   - report; with --sync, stale entries are synced and committed one by one
     (see sync_upstream.py); the first failure stops the run
   - with --stale, print only "<name> <ref>" per stale entry on stdout (the
@@ -41,6 +42,12 @@ def main():
                 continue
         else:
             latest = su.latest_ref(c)
+        patched = lock.get(name, {}).get("patched")
+        if local == latest and patched:
+            # 使用本地补丁期间每天重新同步一次，由探测结果决定是否回到上游原版
+            stale.append((name, latest))
+            print(f"[{name}] up to date ({su.short(local)}); re-checking local patches: {', '.join(patched)}", file=out)
+            continue
         if local == latest:
             print(f"[{name}] up to date ({su.short(local)})", file=out)
             continue

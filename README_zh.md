@@ -123,7 +123,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | Hub | 子技能数 | 覆盖 |
 |---|---|---|
 | `research` | 14 | 实验设计、统计、标书、同行评审、学术写作 |
-| `scientific` | 131 | 结构预测、基因组学、30+ 数据库、单细胞、化学信息学、PK/PD、临床、实验平台 |
+| `scientific` | 129 | 结构预测、基因组学、30+ 数据库、单细胞、化学信息学、PK/PD、临床、实验平台 |
 | `references` | 21 | 文献检索、BibTeX、引文格式、专利、监管文件、文档抽取 |
 | `dev` | 6 | 前端、UI/UX、云、GPU、agent harness |
 | `data-ml` | 21 | polars/dask、时序、统计、深度学习、图 |
@@ -144,7 +144,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 | 上游 | 本库中的技能数 | 同步到 |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 156 | 自动跟随更新（见下文），下面四个有本地改动的技能除外 |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 154 | 自动跟随更新（见下文），下面四个有本地改动的技能除外 |
 | [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`，v1.2.1（2026-09-14） |
 
 有四个 K-Dense 技能在上游版本之上带有本地改动，需要手动同步，每处改动都对照实际服务核对过：
@@ -171,10 +171,16 @@ Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另
 
 | 上游 | 本库中的技能 | 跟随 |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills)（MIT） | `upstreams.json` 中列出的 152 个技能，分布在各个分类和顶层；上游新增的技能要先列进去才会收录 | 最新的 `x.y.z` 版本标签 |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills)（MIT） | `upstreams.json` 中列出的 150 个技能，分布在各个分类和顶层；上游新增的技能要先列进去才会收录 | 最新的 `x.y.z` 版本标签 |
 | [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes)（Apache-2.0） | 其 `skills/` 下的全部技能，存放为 `docs-figures/<名称>`；入口是 `docs-figures/hyperframes` | 最新的 `x.y.z` 版本标签 |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)（MIT） | `docs-figures/diagram-design` | `main` 分支的最新提交 |
 | [tt-a1i/archify](https://github.com/tt-a1i/archify)（MIT） | `docs-figures/archify` | 最新的 `x.y.z` 版本标签 |
+
+`scientific/ncats-arax` 带有本地补丁 [`patches/k-dense/ncats-arax.patch`](patches/k-dense/ncats-arax.patch)：
+ARAX 线上服务 1.6.2 版只接受 `infores:retriever` 这个数据源，而上游脚本发送的是 `infores:rtx-kg2`。
+每次同步先用上游原版向线上服务发一次伊马替尼 → ABL1 的查询，查询成功就直接用上游原版；
+查询失败才打上补丁，并要求打补丁后同样的查询成功。使用补丁期间每天都会重新检查，
+上游或服务修复后，技能会自动回到上游原版。
 
 上游的许可文件（`LICENSE`、K-Dense 的 `LICENSE.md`，diagram-design 还有 `THIRD_PARTY_LICENSES.md`）会复制到这些技能各自的目录里。
 HyperFrames 默认会自己往 `~/.agents/skills` 和 `~/.claude/skills` 安装一份；请设置

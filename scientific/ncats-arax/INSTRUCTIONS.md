@@ -1,6 +1,6 @@
 ---
 name: ncats-arax
-description: Queries the NCATS Translator ARAX production API for bounded, typed, provenance-rich one-hop and endpoint-pinned two-hop biomedical knowledge-graph relationships. Use for Biolink-constrained RTX-KG2 lookup, explicit selected-provider ARAX federation, separate entity normalization, qualifier-aware graph traversal, and inspection of TRAPI edge bindings, publications, and knowledge-source provenance. Do not use for inference, ranking, open-ended pathfinding, clinical guidance, or sensitive queries.
+description: Queries the NCATS Translator ARAX production API for bounded, typed, provenance-rich one-hop and endpoint-pinned two-hop biomedical knowledge-graph relationships. Use for Biolink-constrained single-provider lookup, explicit selected-provider ARAX federation, separate entity normalization, qualifier-aware graph traversal, and inspection of TRAPI edge bindings, publications, and knowledge-source provenance. Do not use for inference, ranking, open-ended pathfinding, clinical guidance, or sensitive queries.
 allowed-tools: Read Bash
 license: MIT
 compatibility: Requires Python 3.10+ and outbound HTTPS access to arax.transltr.io. The client uses only the Python standard library and needs no API key. Queries and caller metadata may be publicly visible; never submit sensitive or patient-specific content.
@@ -36,7 +36,7 @@ provenance, or partial results.
 
 1. Normalize free text separately, then review and report the proposed CURIE and category.
 2. Choose a typed one-hop query or an exactly two-hop query with both endpoints pinned.
-3. Use default RTX-KG2 lookup unless the user explicitly names two to five providers.
+3. Use default lookup (`infores:retriever`) unless the user explicitly names two to five providers.
 4. Acknowledge that the biomedical query is public and choose a new or empty output directory.
 5. Run the client once. Do not silently change provider selection or expansion order after a
    failure or empty result.
@@ -90,7 +90,8 @@ python skills/ncats-arax/scripts/arax_client.py one-hop \
   --output-dir outputs/imatinib-abl1
 ```
 
-Lookup mode is the default and fixes expansion to `infores:rtx-kg2`. It defaults to 20 results.
+Lookup mode is the default and fixes expansion to `infores:retriever`, the only provider production
+ARAX 1.6.2 accepts (it rejects `infores:rtx-kg2` with HTTP 400). It defaults to 20 results.
 Use `--result-limit N` to request 1-50 results; 50 is the hard cap in either mode.
 
 ## Endpoint-pinned two-hop lookup
@@ -118,7 +119,9 @@ explicitly with `--expand-order left-first` and keep the runs separate.
 
 ## Selected-provider federation
 
-Federation is explicit and accepts two to five named providers:
+Federation is explicit and accepts two to five named providers. Production ARAX 1.6.2 accepts only
+`infores:retriever`, so it currently rejects every federated request; run `preflight` and check the
+service before relying on this mode:
 
 ```bash
 python skills/ncats-arax/scripts/arax_client.py one-hop \
