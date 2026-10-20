@@ -8,18 +8,21 @@ Usage:
 
 Driven by upstreams.json (configuration) and upstreams.lock.json (the ref each
 entry is vendored at and the directories it owns; written only by this script).
-An entry maps upstream directories to hub sub-skill directories:
+An entry maps upstream directories to local skill directories:
   - "subdir" + "vendored": one upstream directory -> one local directory
   - "subdir" + "hub":      every child directory of <subdir> holding a SKILL.md
                            -> <hub>/<child>
+  - "subdir" + "skills":   only the listed children, {upstream name: local dir};
+                           a local dir is <hub>/<name> or a top-level <name>
 The version tracked is the newest stable semver tag, or with "branch" the
 latest commit on that branch.
 
 Steps:
   1. resolve the ref, download its tarball (codeload), stage the mapped dirs
   2. in each staged dir: rename per `rename` (our convention: SKILL.md ->
-     INSTRUCTIONS.md), drop `exclude` globs, copy `license_files` from the
-     upstream repo root when the dir has no file of that name
+     INSTRUCTIONS.md; hub sub-skills only, a top-level skill keeps SKILL.md),
+     drop `exclude` globs, copy `license_files` from the upstream repo root
+     when the dir has no file of that name
   3. delete the dirs the entry owned before, copy the staged dirs in (a true
      mirror); a target dir that exists but is not owned by the entry stops the
      sync
@@ -104,12 +107,22 @@ def targets(cfg, tree):
         names = sorted(d for d in os.listdir(base)
                        if os.path.isfile(os.path.join(base, d, "SKILL.md")))
         return {f"{cfg['hub']}/{d}": os.path.join(base, d) for d in names}
+    if "skills" in cfg:
+        missing = sorted(n for n in cfg["skills"] if not os.path.isfile(os.path.join(base, n, "SKILL.md")))
+        if missing:
+            sys.exit(f"upstream no longer has {', '.join(missing)} under {cfg['subdir']}/ - update upstreams.json")
+        return {d: os.path.join(base, n) for n, d in cfg["skills"].items()}
     return {cfg["vendored"]: base}
 
-def prepare(cfg, tree, src):
-    for s, d in cfg.get("rename", {}).items():
-        if os.path.isfile(os.path.join(src, s)):
-            os.replace(os.path.join(src, s), os.path.join(src, d))
+def split_dir(d):
+    """local dir -> (_assignments.json key, name); a top-level skill belongs to "top" """
+    return tuple(d.split("/")) if "/" in d else ("top", d)
+
+def prepare(cfg, tree, d, src):
+    if "/" in d:
+        for s, t in cfg.get("rename", {}).items():
+            if os.path.isfile(os.path.join(src, s)):
+                os.replace(os.path.join(src, s), os.path.join(src, t))
     for pat in cfg.get("exclude", []):
         for f in os.listdir(src):
             if fnmatch.fnmatch(f, pat):
@@ -123,25 +136,36 @@ def update_assignments(old_dirs, new_dirs):
     a = json.load(open(ASSIGN, encoding="utf-8"))
     for d in old_dirs:
         if d not in new_dirs:
-            hub, nm = d.split("/")
+            hub, nm = split_dir(d)
             a[hub].remove(nm)
     for d in new_dirs:
-        hub, nm = d.split("/")
+        hub, nm = split_dir(d)
         if nm not in a[hub]:
             a[hub].append(nm)
     with open(ASSIGN, "w", encoding="utf-8") as f:
         f.write(json.dumps(a, ensure_ascii=False, indent=2))
 
+def skill_license(d):
+    """the `license:` value in the skill's own frontmatter, if any"""
+    for f in ("INSTRUCTIONS.md", "SKILL.md"):
+        p = os.path.join(ROOT, d, f)
+        if os.path.isfile(p):
+            head = open(p, encoding="utf-8", errors="replace").read().split("\n---", 1)[0]
+            for ln in head.splitlines():
+                if ln.startswith("license:"):
+                    return ln.split(":", 1)[1].strip().strip("\"'")
+    return None
+
 def update_audit(name, cfg, old_dirs, new_dirs):
     rows = list(csv.reader(io.StringIO(open(AUDIT, newline="", encoding="utf-8").read())))
     rows = [r for r in rows if r[0] not in old_dirs or r[0] in new_dirs]
     have = {r[0] for r in rows}
-    lic = cfg["license"]
     for d in new_dirs:
         if d in have:
             continue
-        hub = d.split("/")[0]
-        row = [d, hub, lic.split("-")[0].lower(),
+        hub = split_dir(d)[0]
+        lic = skill_license(d) or cfg["license"]
+        row = [d, hub, lic.split()[0].split("-")[0].lower(),
                f"{lic} ({cfg['repo']}, vendored; upstream-synced)", cfg["repo"], "publish"]
         last = max((i for i, r in enumerate(rows) if r[1] == hub), default=len(rows) - 1)
         rows.insert(last + 1, row)
@@ -172,7 +196,7 @@ def main():
             if d not in old_dirs and os.path.exists(os.path.join(ROOT, d)):
                 sys.exit(f"{d} exists but is not owned by '{name}' (upstreams.lock.json) - not overwriting")
         for d, src in staged.items():
-            prepare(cfg, tree, src)
+            prepare(cfg, tree, d, src)
         for d in old_dirs:
             p = os.path.join(ROOT, d)
             if os.path.isdir(p):

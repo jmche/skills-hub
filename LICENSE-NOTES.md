@@ -20,6 +20,7 @@ content (full machine-readable breakdown in `LICENSE-AUDIT.csv`):
 | `google-deepmind/science-skills` | Apache-2.0 | hypothesis-generation related |
 | `anthropics/skills` | Proprietary (Anthropic; `LICENSE.txt` in each skill) | `pdf`, `docx`, `xlsx`, `pptx` |
 | `NousResearch/hermes-agent` | MIT (`LICENSE-HERMES.txt` in each skill) | scripts, references and tests bundled in `pdf`, `docx`, `xlsx` |
+| `K-Dense-AI/scientific-agent-skills` | MIT (`LICENSE.md` in each auto-synced skill; a skill's own `license:` names the license of the tool it documents) | most `scientific`, `data-ml`, `research`, `references` sub-skills, plus `autoskill` and `generate-image` |
 | `heygen-com/hyperframes` | Apache-2.0 (`LICENSE` in each skill) | `docs-figures/hyperframes` and the other HyperFrames sub-skills (rows in `LICENSE-AUDIT.csv`) |
 | `cathrynlavery/diagram-design` | MIT (`LICENSE`, `THIRD_PARTY_LICENSES.md`) | `docs-figures/diagram-design` |
 | `tt-a1i/archify` | MIT (`LICENSE`) | `docs-figures/archify` |

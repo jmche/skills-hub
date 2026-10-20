@@ -27,18 +27,22 @@ hubs:
   scientific:
     description: >
       Biology / chemistry / medicine computation hub: structure prediction and sequence
-      design (AlphaFold2/Boltz/Chai-1/ESMFold2/ESMFold/OpenFold3/PyMOL/MD), sequence and
-      genomics tooling (Biopython/Clustal Omega/IQ-TREE/ETE), 30+ database queries
-      (UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/DepMap/1000Genomes/STRING/
-      Reactome/KEGG-JASPAR/QuickGO ...), single-cell and transcriptomics (Scanpy/anndata/
+      design (AlphaFold2/Boltz/Chai-1/ESMFold2/ESMFold/OpenFold3/PyMOL/MD/RELION cryo-EM),
+      sequence and genomics tooling (Biopython/Clustal Omega/IQ-TREE/ETE/genomic
+      coordinates/primer design/MAGeCK CRISPR screens/AlphaGenome variant effects), 30+
+      database queries (UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/DepMap/
+      1000Genomes/STRING/Reactome/KEGG-JASPAR/QuickGO/NCATS ARAX knowledge graph/ClinGen
+      gene-disease validity/ontology term resolution ...), single-cell and transcriptomics (Scanpy/anndata/
       scvi-tools/cellxgene-census/scVelo/bulk RNA-seq/DESeq2/DEEPTools/GRN/pathway
       enrichment/geniml/gtars/pysam/TileDB-VCF), clinical (CDS/clinical reporting/
       indication dossier/ISO13485/treatment plans/PyHealth/imaging BIDS/pathology WSI/
-      electrophysiology), cheminformatics and drug discovery (RDKit/datamol/medchem/
-      molfeat/DeepChem/TorchDrug/PyOpenMS/COBRApy/DiffDock/pymatgen), lab & cloud
+      electrophysiology/flow cytometry/CellProfiler imaging/animal-study severity),
+      cheminformatics and drug discovery (RDKit/datamol/medchem/molfeat/DeepChem/
+      TorchDrug/PyOpenMS/COBRApy/DiffDock/pymatgen/PK-PD modelling/NMR processing/
+      analytical method validation), lab & cloud
       platform integration (Benchling/LabArchive/DNAnexus/LatchBio/Ginkgo/Opentrons/
       pylabrobot/protocols.io/Nextflow/pacsomatic), quantum & general simulation
-      (Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB).
+      (Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB/Tellurium kinetic models).
       TRIGGER = protein folding / UniProt-PDB-ChEMBL-gnomAD lookups / run Scanpy or
       RNA-seq / dock molecules / write Opentrons protocols / query a gene variant / MD
       simulation / structural similarity search / single-cell analysis / drug molecules.
@@ -76,6 +80,7 @@ hubs:
         - tamarind
         - rowan
         - adaptyv
+        - relion
       B Sequence & genomics tooling:
         - biopython
         - gget
@@ -86,6 +91,10 @@ hubs:
         - phylogenetics
         - etetoolkit
         - scikit-bio
+        - genomic-coordinates
+        - primer-design
+        - mageck
+        - alphagenome
       C Database lookup:
         - uniprot-database
         - ensembl-database
@@ -112,6 +121,9 @@ hubs:
         - clinical-trials-database
         - gtex-database
         - human-protein-atlas-database
+        - ncats-arax
+        - folklore-variant-evidence
+        - ontology-term-resolution
       D Single-cell & transcriptomics:
         - scanpy
         - anndata
@@ -140,6 +152,9 @@ hubs:
         - pyopenms
         - cobrapy
         - pymatgen
+        - pkpd-modeling
+        - nmrglue
+        - analytical-method-validation
       F Clinical & medical:
         - clinical-decision-support
         - clinical-reports
@@ -151,6 +166,9 @@ hubs:
         - imaging-data-commons
         - bids
         - flowio
+        - flowkit
+        - cellprofiler
+        - relsa-severity-assessment
         - pydicom
         - omero-integration
         - histolab
@@ -175,6 +193,7 @@ hubs:
         - qutip
         - simpy
         - sympy
+        - tellurium
         - pymc
         - pymoo
         - astropy
@@ -187,7 +206,8 @@ hubs:
       Europe PMC / OpenAlex / PubMed / Semantic Scholar / CORE / Unpaywall / Crossref),
       literature review, citation management and BibTeX, manuscript formatting (Nature/
       Cell/CONSORT/STROBE/PRISMA), Zotero integration, patents and regulatory text
-      (US fiscal data / openFDA / database availability), document extraction (MarkItDown /
+      (US fiscal data / openFDA / database availability / Paperclip full-text papers, FDA/EMA/PMDA
+      documents and trial records), document extraction (MarkItDown /
       liteparse), parallel web search (Exa / parallel-cli / research-lookup).
       TRIGGER = find papers / look up a DOI / format BibTeX / literature review /
       check a citation / patents / regulations / extract PDF text / bulk fetch datasets.

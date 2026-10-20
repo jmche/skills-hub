@@ -125,8 +125,8 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | Hub | 서브스킬 수 | 범위 |
 |---|---|---|
 | `research` | 14 | 실험 설계, 통계, 연구제안, 동료 심사, 학술 글쓰기 |
-| `scientific` | 116 | 구조 예측, 유전체학, 30+ 데이터베이스, 단일세포, 화학정보학, 임상, 실험 플랫폼 |
-| `references` | 20 | 논문 검색, BibTeX, 인용 형식, 특허, 문서 추출 |
+| `scientific` | 131 | 구조 예측, 유전체학, 30+ 데이터베이스, 단일세포, 화학정보학, PK/PD, 임상, 실험 플랫폼 |
+| `references` | 21 | 논문 검색, BibTeX, 인용 형식, 특허, 규제 문서, 문서 추출 |
 | `dev` | 6 | 프론트엔드, UI/UX, 클라우드, GPU, 에이전트 하니스 |
 | `data-ml` | 21 | polars/dask, 시계열, 통계, 딥러닝, 그래프 |
 | `docs-figures` | 12 + HyperFrames 전체 | 논문급 도표, 슬라이드, 인포그래픽, Mermaid, 에디토리얼 다이어그램, 영상과 모션 그래픽 |
@@ -148,11 +148,11 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 | 업스트림 | 이 라이브러리의 스킬 수 | 동기화 기준 |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 140 | `92ace75` (2026-10-05) |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 156 | 자동으로 따라감(아래 참고), 로컬 변경이 있는 아래 네 스킬은 제외 |
 | [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`, v1.2.1 (2026-09-14) |
 
-네 개의 스킬은 업스트림 버전 위에 로컬 변경을 담고 있으며, 각 변경은 실제 서비스에
-대해 확인되었습니다.
+네 개의 K-Dense 스킬은 업스트림 버전 위에 로컬 변경을 담고 있어 수동으로 동기화하며,
+각 변경은 실제 서비스에 대해 확인되었습니다.
 
 | 스킬 | 로컬 차이 |
 |---|---|
@@ -173,18 +173,19 @@ npx skills add jmche/skills-hub -s scientific -a claude
 출처 표기는 [`LICENSE-NOTES.md`](LICENSE-NOTES.md)와
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)에 있습니다.
 
-세 업스트림은 자동으로 따라갑니다. 로컬 변경이 없으며, GitHub의 `upstream-sync`
+네 업스트림은 자동으로 따라갑니다. 해당 스킬에는 로컬 변경이 없으며, GitHub의 `upstream-sync`
 워크플로가 하루에 한 번 미러링합니다. `check.py`와 시크릿 스캔을 통과한 경우에만 푸시합니다.
 설정은 [`upstreams.json`](upstreams.json)에, 각 업스트림이 현재 동기화된 버전은
 [`upstreams.lock.json`](upstreams.lock.json)에 기록됩니다.
 
 | 업스트림 | 이 라이브러리의 스킬 | 따라가는 기준 |
 |---|---|---|
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (MIT) | `upstreams.json`에 나열된 152개 스킬(각 허브와 최상위에 분포); 업스트림에 새로 추가된 스킬은 그 목록에 넣어야 포함됨 | 최신 `x.y.z` 버전 태그 |
 | [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | `skills/` 아래의 모든 스킬, `docs-figures/<이름>`으로 저장; 진입점은 `docs-figures/hyperframes` | 최신 `x.y.z` 버전 태그 |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | `main` 브랜치의 최신 커밋 |
 | [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | 최신 `x.y.z` 버전 태그 |
 
-업스트림의 `LICENSE`(diagram-design은 `THIRD_PARTY_LICENSES.md`도)는 각 스킬 디렉터리에
+업스트림의 라이선스 파일(`LICENSE`, K-Dense의 `LICENSE.md`, diagram-design은 `THIRD_PARTY_LICENSES.md`도)은 각 스킬 디렉터리에
 복사됩니다. HyperFrames는 기본적으로 `~/.agents/skills`와 `~/.claude/skills`에 자체 사본을
 설치하므로, `HYPERFRAMES_SKIP_SKILLS=1`([`env.example`](env.example) 참고)을 설정해 이
 라이브러리의 스킬을 쓰도록 하세요.

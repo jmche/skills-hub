@@ -125,8 +125,8 @@ directories — purely additive symlinks, idempotent, never deletes your local s
 | Hub | Sub-skills | Covers |
 |---|---|---|
 | `research` | 14 | experimental design, statistics, grants, peer review, academic writing |
-| `scientific` | 116 | structure prediction, genomics, 30+ databases, single-cell, cheminformatics, clinical, lab platforms |
-| `references` | 20 | paper search, BibTeX, citation formats, patents, document extraction |
+| `scientific` | 131 | structure prediction, genomics, 30+ databases, single-cell, cheminformatics, PK/PD, clinical, lab platforms |
+| `references` | 21 | paper search, BibTeX, citation formats, patents, regulatory documents, document extraction |
 | `dev` | 6 | frontend, UI/UX systems, cloud, GPU, agent harness |
 | `data-ml` | 21 | polars/dask, time series, stats, deep learning, graphs |
 | `docs-figures` | 12 + HyperFrames set | publication figures, slides, infographics, Mermaid, editorial diagrams, video and motion graphics |
@@ -148,11 +148,11 @@ to upstream; the only structural change is that a sub-skill's `SKILL.md` is stor
 
 | Upstream | Skills here | Synced to |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 140 | `92ace75` (2026-10-05) |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 156 | followed automatically (see below), except the four skills with local changes |
 | [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`, v1.2.1 (2026-09-14) |
 
-Four skills carry local changes on top of the upstream version. Each change was checked
-against the live service:
+Four K-Dense skills carry local changes on top of the upstream version and are synced by
+hand. Each change was checked against the live service:
 
 | Skill | Local difference |
 |---|---|
@@ -173,18 +173,19 @@ reference-aware row/column restructuring and CSV conversion for spreadsheets. Ea
 skills is in [`LICENSE-NOTES.md`](LICENSE-NOTES.md) and
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv).
 
-Three upstreams are followed automatically. They carry no local changes, and the
-`upstream-sync` GitHub workflow mirrors them once a day; a sync is pushed only after
-`check.py` and the secret scan pass. [`upstreams.json`](upstreams.json) configures them
-and [`upstreams.lock.json`](upstreams.lock.json) records the version each one is at.
+Four upstreams are followed automatically. The skills involved carry no local changes,
+and the `upstream-sync` GitHub workflow mirrors them once a day; a sync is pushed only
+after `check.py` and the secret scan pass. [`upstreams.json`](upstreams.json) configures
+them and [`upstreams.lock.json`](upstreams.lock.json) records the version each one is at.
 
 | Upstream | Skills here | Follows |
 |---|---|---|
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (MIT) | the 152 skills listed in `upstreams.json`, across the hubs and top level; a skill upstream adds is included only once it is listed there | newest `x.y.z` version tag |
 | [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | every skill under its `skills/`, as `docs-figures/<name>`; the entry point is `docs-figures/hyperframes` | newest `x.y.z` version tag |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | latest commit on `main` |
 | [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | newest `x.y.z` version tag |
 
-The upstream `LICENSE` (and diagram-design's `THIRD_PARTY_LICENSES.md`) is copied into
+The upstream license file (`LICENSE`, K-Dense's `LICENSE.md`, and diagram-design's `THIRD_PARTY_LICENSES.md`) is copied into
 each of these skill directories. HyperFrames would otherwise install its own copies into
 `~/.agents/skills` and `~/.claude/skills`; set `HYPERFRAMES_SKIP_SKILLS=1` (see
 [`env.example`](env.example)) so that the skills from this library are the ones used.

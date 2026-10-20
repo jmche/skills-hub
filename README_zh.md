@@ -123,8 +123,8 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | Hub | 子技能数 | 覆盖 |
 |---|---|---|
 | `research` | 14 | 实验设计、统计、标书、同行评审、学术写作 |
-| `scientific` | 116 | 结构预测、基因组学、30+ 数据库、单细胞、化学信息学、临床、实验平台 |
-| `references` | 20 | 文献检索、BibTeX、引文格式、专利、文档抽取 |
+| `scientific` | 131 | 结构预测、基因组学、30+ 数据库、单细胞、化学信息学、PK/PD、临床、实验平台 |
+| `references` | 21 | 文献检索、BibTeX、引文格式、专利、监管文件、文档抽取 |
 | `dev` | 6 | 前端、UI/UX、云、GPU、agent harness |
 | `data-ml` | 21 | polars/dask、时序、统计、深度学习、图 |
 | `docs-figures` | 12 + HyperFrames 全套 | 发表级图、幻灯片、infographic、Mermaid、编辑风格图表、视频和动态图形 |
@@ -144,10 +144,10 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 | 上游 | 本库中的技能数 | 同步到 |
 |---|---|---|
-| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 140 | `92ace75`（2026-10-05） |
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | 156 | 自动跟随更新（见下文），下面四个有本地改动的技能除外 |
 | [google-deepmind/science-skills](https://github.com/google-deepmind/science-skills) | 38 | `6883275`，v1.2.1（2026-09-14） |
 
-有四个技能在上游版本之上带有本地改动，每处改动都对照实际服务核对过：
+有四个 K-Dense 技能在上游版本之上带有本地改动，需要手动同步，每处改动都对照实际服务核对过：
 
 | 技能 | 本地差异 |
 |---|---|
@@ -165,17 +165,18 @@ Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另
 以及 CSV 转换。各技能的 `SKILL.md` 写明了每类任务用哪个脚本。其余技能的来源说明见
 [`LICENSE-NOTES.md`](LICENSE-NOTES.md) 和 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)。
 
-有三个上游会自动跟随更新。它们没有本地改动，由 GitHub 上的 `upstream-sync` 工作流每天同步一次；
+有四个上游会自动跟随更新。涉及的技能都没有本地改动，由 GitHub 上的 `upstream-sync` 工作流每天同步一次；
 `check.py` 和密钥扫描都通过后才推送。配置在 [`upstreams.json`](upstreams.json)，各自当前同步到的版本记在
 [`upstreams.lock.json`](upstreams.lock.json)。
 
 | 上游 | 本库中的技能 | 跟随 |
 |---|---|---|
+| [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills)（MIT） | `upstreams.json` 中列出的 152 个技能，分布在各个分类和顶层；上游新增的技能要先列进去才会收录 | 最新的 `x.y.z` 版本标签 |
 | [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes)（Apache-2.0） | 其 `skills/` 下的全部技能，存放为 `docs-figures/<名称>`；入口是 `docs-figures/hyperframes` | 最新的 `x.y.z` 版本标签 |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)（MIT） | `docs-figures/diagram-design` | `main` 分支的最新提交 |
 | [tt-a1i/archify](https://github.com/tt-a1i/archify)（MIT） | `docs-figures/archify` | 最新的 `x.y.z` 版本标签 |
 
-上游的 `LICENSE`（diagram-design 还有 `THIRD_PARTY_LICENSES.md`）会复制到这些技能各自的目录里。
+上游的许可文件（`LICENSE`、K-Dense 的 `LICENSE.md`，diagram-design 还有 `THIRD_PARTY_LICENSES.md`）会复制到这些技能各自的目录里。
 HyperFrames 默认会自己往 `~/.agents/skills` 和 `~/.claude/skills` 安装一份；请设置
 `HYPERFRAMES_SKIP_SKILLS=1`（见 [`env.example`](env.example)），让它使用本库中的技能。
 

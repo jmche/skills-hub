@@ -28,9 +28,19 @@ def main():
     lock = su.load_lock()
 
     stale = []
+    lookup_failed = False
     for name, c in cfg.items():
         local = lock.get(name, {}).get("ref")
-        latest = su.latest_ref(c)
+        if names_only:
+            # 一个上游查询失败时，其余上游照常列出，最后以非零码退出
+            try:
+                latest = su.latest_ref(c)
+            except SystemExit as e:
+                print(f"[{name}] upstream lookup failed: {e}", file=out)
+                lookup_failed = True
+                continue
+        else:
+            latest = su.latest_ref(c)
         if local == latest:
             print(f"[{name}] up to date ({su.short(local)})", file=out)
             continue
@@ -44,7 +54,7 @@ def main():
     if names_only:
         for name, ref in stale:
             print(name, ref)
-        return 0
+        return 1 if lookup_failed else 0
     if not sync:
         if stale:
             print(f"{len(stale)} upstream update(s) available - synced daily by the "
