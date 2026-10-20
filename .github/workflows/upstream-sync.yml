@@ -33,7 +33,7 @@ jobs:
       - name: Sync stale upstreams (each sync runs check.py before it commits)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 _scripts/check_upstreams.py --sync
+        run: python3 -u _scripts/check_upstreams.py --sync
       - name: No secrets in tracked files
         run: bash _scripts/scan_secrets.sh
       - name: Push the sync commits
