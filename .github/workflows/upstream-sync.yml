@@ -1,0 +1,40 @@
+name: Upstream sync
+
+# 每天同步 upstreams.json 里登记的上游技能；check.py 和密钥扫描都通过后才推送到 main
+on:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PyYAML (check.py dependency)
+        run: pip install pyyaml
+      - name: Configure the commit author
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Sync stale upstreams (each sync runs check.py before it commits)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 _scripts/check_upstreams.py --sync
+      - name: No secrets in tracked files
+        run: bash _scripts/scan_secrets.sh
+      - name: Push the sync commits
+        run: git push origin HEAD:main

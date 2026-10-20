@@ -3,8 +3,28 @@
     "repo": "tt-a1i/archify",
     "subdir": "archify",
     "vendored": "docs-figures/archify",
+    "license": "MIT",
     "rename": { "SKILL.md": "INSTRUCTIONS.md" },
     "exclude": [".gitignore", ".github"],
     "note": "skill package lives in the archify/ subdir of the upstream monorepo; sync to latest stable tag"
+  },
+  "hyperframes": {
+    "repo": "heygen-com/hyperframes",
+    "subdir": "skills",
+    "hub": "docs-figures",
+    "license": "Apache-2.0",
+    "license_files": ["LICENSE"],
+    "rename": { "SKILL.md": "INSTRUCTIONS.md" },
+    "note": "every skills/<name>/ directory with a SKILL.md becomes docs-figures/<name>; sync to latest stable tag"
+  },
+  "diagram-design": {
+    "repo": "cathrynlavery/diagram-design",
+    "branch": "main",
+    "subdir": "skills/diagram-design",
+    "vendored": "docs-figures/diagram-design",
+    "license": "MIT",
+    "license_files": ["LICENSE", "THIRD_PARTY_LICENSES.md"],
+    "rename": { "SKILL.md": "INSTRUCTIONS.md" },
+    "note": "no release tags; sync to the latest commit on main"
   }
 }

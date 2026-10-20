@@ -129,7 +129,7 @@ directories — purely additive symlinks, idempotent, never deletes your local s
 | `references` | 20 | paper search, BibTeX, citation formats, patents, document extraction |
 | `dev` | 6 | frontend, UI/UX systems, cloud, GPU, agent harness |
 | `data-ml` | 21 | polars/dask, time series, stats, deep learning, graphs |
-| `docs-figures` | 11 | publication figures, slides, infographics, Mermaid |
+| `docs-figures` | 12 + HyperFrames set | publication figures, slides, infographics, Mermaid, editorial diagrams, video and motion graphics |
 | `team` | 33 roles | SRE, PM, Architect, QA, Security, … |
 
 Plus 16 other top-level skills: `pdf`, `docx`, `xlsx`, `pptx`, `grill-me`,
@@ -173,6 +173,22 @@ reference-aware row/column restructuring and CSV conversion for spreadsheets. Ea
 skills is in [`LICENSE-NOTES.md`](LICENSE-NOTES.md) and
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv).
 
+Three upstreams are followed automatically. They carry no local changes, and the
+`upstream-sync` GitHub workflow mirrors them once a day; a sync is pushed only after
+`check.py` and the secret scan pass. [`upstreams.json`](upstreams.json) configures them
+and [`upstreams.lock.json`](upstreams.lock.json) records the version each one is at.
+
+| Upstream | Skills here | Follows |
+|---|---|---|
+| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | every skill under its `skills/`, as `docs-figures/<name>`; the entry point is `docs-figures/hyperframes` | newest release tag |
+| [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | latest commit on `main` |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | newest release tag |
+
+The upstream `LICENSE` (and diagram-design's `THIRD_PARTY_LICENSES.md`) is copied into
+each of these skill directories. HyperFrames would otherwise install its own copies into
+`~/.agents/skills` and `~/.claude/skills`; set `HYPERFRAMES_SKIP_SKILLS=1` (see
+[`env.example`](env.example)) so that the skills from this library are the ones used.
+
 ## Updating
 
 One line, from any directory:
@@ -181,7 +197,7 @@ One line, from any directory:
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-Or inside the repo: `bash install.sh update` (git pull; grounded-build is checked out at its upstream latest, and vendored skills like archify arrive through the maintainer's sync commits — `update --commit` performs that sync and bumps the grounded-build pointer).
+Or inside the repo: `bash install.sh update` (git pull; grounded-build is checked out at its upstream latest, and the automatically followed upstreams arrive through the daily `upstream-sync` commits — `update --commit` runs the same sync locally and bumps the grounded-build pointer).
 Also available: `hidden` (list non-published skills) · `enable <name>` (restore one) ·
 `status` (what's installed and where).
 

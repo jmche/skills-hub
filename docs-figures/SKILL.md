@@ -1,6 +1,6 @@
 ---
 name: docs-figures
-description: Publication-grade visual deliverables hub: publication figures (figure-style / scientific-visualization / scientific-schematics), quick exploratory plots (seaborn/matplotlib), slide decks & presentations (scientific-slides / pptx-posters / latex-posters), infographics (infographics), Mermaid workflow diagrams (markdown-mermaid-writing / archify), scientific schematics (scientific-schematics), AI image generation (generate-image, top-level, NOT routed through this hub). TRIGGER = produce a publication figure / build slides / make a poster / generate an infographic / draw a Mermaid flow / technical schematic. SKIP = quick exploratory plots (use seaborn/matplotlib directly), UI design (-> dev), writing the paper body (-> research). 
+description: Publication-grade visual deliverables hub: publication figures (figure-style / scientific-visualization / scientific-schematics), quick exploratory plots (seaborn/matplotlib), slide decks & presentations (scientific-slides / pptx-posters / latex-posters), infographics (infographics), Mermaid workflow diagrams (markdown-mermaid-writing / archify), editorial HTML/SVG diagrams (diagram-design), video and motion graphics rendered from HTML (hyperframes and the HyperFrames sub-skills), scientific schematics (scientific-schematics), AI image generation (generate-image, top-level, NOT routed through this hub). TRIGGER = produce a publication figure / build slides / make a poster / generate an infographic / draw a Mermaid flow / draw a diagram / technical schematic / make or edit a video, animation or motion graphic. SKIP = quick exploratory plots (use seaborn/matplotlib directly), UI design (-> dev), writing the paper body (-> research). 
 ---
 
 # docs-figures hub
@@ -9,6 +9,9 @@ description: Publication-grade visual deliverables hub: publication figures (fig
 - Goal = deliverable-style figure / slides / poster / schematic -> this hub
 - Exploratory charting -> plain seaborn/matplotlib (still inside this hub, but no checklist needed)
 - Writing the paper body -> research
+- Video, animation, motion graphic, captioned clip, animated or interactive deck, Remotion port -> read hyperframes first; it selects the workflow and the domain sub-skills
+- In HyperFrames sub-skills, `/<name>` means `docs-figures/<name>/INSTRUCTIONS.md`. This library ships every HyperFrames skill: keep `HYPERFRAMES_SKIP_SKILLS=1` set (env.example) so `npx hyperframes skills update` and `init` do not install separate copies
+- Standalone diagram file: editorial HTML/SVG/PNG across many types (charts, Gantt, Sankey, Wardley, UML, ...), or .drawio / Mermaid / .excalidraw redrawn -> diagram-design; architecture, workflow, sequence, data-flow or state diagrams with trace motion and video export -> archify; Mermaid kept inside Markdown -> markdown-mermaid-writing
 
 ## Sub-skill index
 

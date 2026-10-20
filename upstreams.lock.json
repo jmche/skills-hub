@@ -1,0 +1,8 @@
+{
+  "archify": {
+    "dirs": [
+      "docs-figures/archify"
+    ],
+    "ref": "v2.16.0"
+  }
+}

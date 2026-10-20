@@ -1,30 +1,45 @@
 #!/usr/bin/env python3
-"""sync_upstream.py - pull a vendored skill's latest stable version from its upstream repo.
+"""sync_upstream.py - mirror a vendored upstream's skill directories at its latest version.
 
 Usage:
-  python3 _scripts/sync_upstream.py <name>            # sync to latest stable tag
+  python3 _scripts/sync_upstream.py <name>            # sync to the latest version
   python3 _scripts/sync_upstream.py <name> --ref v2.16.0
   python3 _scripts/sync_upstream.py <name> --commit   # also git commit the result
 
-Driven by upstreams.json. For each entry:
-  1. resolve the latest stable semver tag of <repo> (prereleases skipped)
-  2. download the tag tarball (codeload) and extract only <subdir>/
-  3. mirror it over the vendored dir:
-       - SKILL.md is renamed per `rename` (our convention: INSTRUCTIONS.md)
-       - `exclude` globs are dropped
-       - files removed upstream are removed locally too (true mirror)
-  4. print the version bump and a diff stat, then run check.py (hard gate)
-  5. with --commit, create a git commit
+Driven by upstreams.json (configuration) and upstreams.lock.json (the ref each
+entry is vendored at and the directories it owns; written only by this script).
+An entry maps upstream directories to hub sub-skill directories:
+  - "subdir" + "vendored": one upstream directory -> one local directory
+  - "subdir" + "hub":      every child directory of <subdir> holding a SKILL.md
+                           -> <hub>/<child>
+The version tracked is the newest stable semver tag, or with "branch" the
+latest commit on that branch.
 
-This is a MAINTAINER command: vendored third-party content is reviewed once by
-you at sync time, then shipped to users through the normal skills-hub update.
+Steps:
+  1. resolve the ref, download its tarball (codeload), stage the mapped dirs
+  2. in each staged dir: rename per `rename` (our convention: SKILL.md ->
+     INSTRUCTIONS.md), drop `exclude` globs, copy `license_files` from the
+     upstream repo root when the dir has no file of that name
+  3. delete the dirs the entry owned before, copy the staged dirs in (a true
+     mirror); a target dir that exists but is not owned by the entry stops the
+     sync
+  4. keep _assignments.json and the LICENSE-AUDIT.csv rows in step with the
+     owned dirs, regenerate the hub indexes (gen_routers.py --only-generate),
+     write the lock
+  5. run check.py (hard gate); with --commit, create a git commit
+
+This is a MAINTAINER command, also run daily by .github/workflows/upstream-sync.yml:
+vendored third-party content ships to users through the normal skills-hub update.
 """
-import json, os, subprocess, sys, tarfile, tempfile, urllib.request, shutil, fnmatch
+import csv, fnmatch, io, json, os, shutil, subprocess, sys, tarfile, tempfile, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOCK = os.path.join(ROOT, "upstreams.lock.json")
+ASSIGN = os.path.join(ROOT, "_assignments.json")
+AUDIT = os.path.join(ROOT, "LICENSE-AUDIT.csv")
 
-def sh(cmd, **kw):
-    return subprocess.run(cmd, shell=True, cwd=ROOT, capture_output=True, text=True, **kw)
+def sh(args):
+    return subprocess.run(args, cwd=ROOT, capture_output=True, text=True)
 
 def gh_json(url):
     r = subprocess.run(["gh", "api", url], capture_output=True, text=True)
@@ -32,74 +47,153 @@ def gh_json(url):
         sys.exit(f"gh api failed: {url}\n{r.stderr}")
     return json.loads(r.stdout)
 
-def latest_tag(repo):
-    tags = gh_json(f"repos/{repo}/tags?per_page=50")
-    for t in tags:
-        name = t["name"].lstrip("v")
-        parts = name.split(".")
-        if len(parts) == 3 and all(p.isdigit() for p in parts):
-            return t["name"]                      # first (newest) stable tag
-    sys.exit("no stable semver tag found")
+def stable_version(tag):
+    parts = tag.lstrip("v").split(".")
+    if len(parts) == 3 and all(p.isdigit() for p in parts):
+        return tuple(int(p) for p in parts)
+    return None
+
+def latest_ref(cfg):
+    if "branch" in cfg:
+        return gh_json(f"repos/{cfg['repo']}/commits/{cfg['branch']}")["sha"]
+    tags = [t["name"] for t in gh_json(f"repos/{cfg['repo']}/tags?per_page=100")]
+    stable = [t for t in tags if stable_version(t)]
+    if not stable:
+        sys.exit(f"no stable semver tag found in {cfg['repo']}")
+    return max(stable, key=stable_version)
+
+def short(ref):
+    return ref[:7] if ref and len(ref) == 40 else ref
+
+def load_lock():
+    if not os.path.isfile(LOCK):
+        return {}
+    return json.load(open(LOCK, encoding="utf-8"))
+
+def download(cfg, ref, tmp):
+    kind = ref if "branch" in cfg else f"refs/tags/{ref}"
+    tgz = os.path.join(tmp, "src.tar.gz")
+    urllib.request.urlretrieve(f"https://codeload.github.com/{cfg['repo']}/tar.gz/{kind}", tgz)
+    tree = os.path.join(tmp, "tree")
+    with tarfile.open(tgz) as tf:
+        for m in tf.getmembers():
+            if not m.isfile():
+                continue
+            rel = os.path.normpath(m.name.split("/", 1)[1]) if "/" in m.name else ""
+            if not rel or rel.startswith("..") or os.path.isabs(rel):
+                sys.exit(f"unsafe path in upstream tarball: {m.name}")
+            m.name = rel
+            tf.extract(m, tree)
+    return tree
+
+def targets(cfg, tree):
+    """{local dir (relative to ROOT): staged source dir}"""
+    base = os.path.join(tree, cfg["subdir"].strip("/"))
+    if not os.path.isdir(base):
+        sys.exit(f"upstream has no {cfg['subdir']}/")
+    if "hub" in cfg:
+        names = sorted(d for d in os.listdir(base)
+                       if os.path.isfile(os.path.join(base, d, "SKILL.md")))
+        return {f"{cfg['hub']}/{d}": os.path.join(base, d) for d in names}
+    return {cfg["vendored"]: base}
+
+def prepare(cfg, tree, src):
+    for s, d in cfg.get("rename", {}).items():
+        if os.path.isfile(os.path.join(src, s)):
+            os.replace(os.path.join(src, s), os.path.join(src, d))
+    for pat in cfg.get("exclude", []):
+        for f in os.listdir(src):
+            if fnmatch.fnmatch(f, pat):
+                p = os.path.join(src, f)
+                shutil.rmtree(p) if os.path.isdir(p) else os.remove(p)
+    for f in cfg.get("license_files", []):
+        if not os.path.exists(os.path.join(src, f)):
+            shutil.copy2(os.path.join(tree, f), os.path.join(src, f))
+
+def update_assignments(old_dirs, new_dirs):
+    a = json.load(open(ASSIGN, encoding="utf-8"))
+    for d in old_dirs:
+        if d not in new_dirs:
+            hub, nm = d.split("/")
+            a[hub].remove(nm)
+    for d in new_dirs:
+        hub, nm = d.split("/")
+        if nm not in a[hub]:
+            a[hub].append(nm)
+    with open(ASSIGN, "w", encoding="utf-8") as f:
+        f.write(json.dumps(a, ensure_ascii=False, indent=2))
+
+def update_audit(name, cfg, old_dirs, new_dirs):
+    rows = list(csv.reader(io.StringIO(open(AUDIT, newline="", encoding="utf-8").read())))
+    rows = [r for r in rows if r[0] not in old_dirs or r[0] in new_dirs]
+    have = {r[0] for r in rows}
+    lic = cfg["license"]
+    for d in new_dirs:
+        if d in have:
+            continue
+        hub = d.split("/")[0]
+        row = [d, hub, lic.split("-")[0].lower(),
+               f"{lic} ({cfg['repo']}, vendored; upstream-synced)", cfg["repo"], "publish"]
+        last = max((i for i, r in enumerate(rows) if r[1] == hub), default=len(rows) - 1)
+        rows.insert(last + 1, row)
+    out = io.StringIO()
+    csv.writer(out, lineterminator="\r\n").writerows(rows)
+    with open(AUDIT, "w", newline="", encoding="utf-8") as f:
+        f.write(out.getvalue())
 
 def main():
     name = sys.argv[1] if len(sys.argv) > 1 else ""
-    cfg_all = json.load(open(os.path.join(ROOT, "upstreams.json")))
+    cfg_all = json.load(open(os.path.join(ROOT, "upstreams.json"), encoding="utf-8"))
     if name not in cfg_all:
         sys.exit(f"unknown upstream '{name}'. known: {', '.join(cfg_all)}")
     cfg = cfg_all[name]
-    ref = sys.argv[sys.argv.index("--ref") + 1] if "--ref" in sys.argv else latest_tag(cfg["repo"])
+    ref = sys.argv[sys.argv.index("--ref") + 1] if "--ref" in sys.argv else latest_ref(cfg)
     commit = "--commit" in sys.argv
+    if commit and sh(["git", "status", "--porcelain"]).stdout.strip():
+        sys.exit("working tree has uncommitted changes - commit them first, then sync with --commit")
 
-    vendored = os.path.join(ROOT, cfg["vendored"])
-    # current version, for the report
-    old_ver = "?"
-    pkg = os.path.join(vendored, "package.json")
-    if os.path.isfile(pkg):
-        old_ver = json.load(open(pkg)).get("version", "?")
-
-    print(f"[{name}] syncing {cfg['repo']}@{ref} -> {cfg['vendored']}")
-    url = f"https://codeload.github.com/{cfg['repo']}/tar.gz/refs/tags/{ref}"
+    lock = load_lock()
+    old = lock.get(name, {})
+    old_dirs = old.get("dirs", [])
+    print(f"[{name}] syncing {cfg['repo']}@{short(ref)}")
     tmp = tempfile.mkdtemp()
-    tgz = os.path.join(tmp, "src.tar.gz")
-    urllib.request.urlretrieve(url, tgz)
-    prefix = f"{cfg['repo'].split('/')[-1]}-{ref.lstrip('v')}/"
-    src_prefix = prefix + cfg["subdir"].strip("/") + "/"
-    staging = os.path.join(tmp, "stage")
-    with tarfile.open(tgz) as tf:
-        members = [m for m in tf.getmembers() if m.name.startswith(src_prefix) and m.isfile()]
-        if not members:
-            sys.exit(f"no files under {src_prefix} in {ref}")
-        for m in members:
-            m.name = m.name[len(src_prefix):]      # strip the tarball prefix
-            tf.extract(m, staging)
+    tree = download(cfg, ref, tmp)
+    staged = targets(cfg, tree)
+    for d in staged:
+        if d not in old_dirs and os.path.exists(os.path.join(ROOT, d)):
+            sys.exit(f"{d} exists but is not owned by '{name}' (upstreams.lock.json) - not overwriting")
+    for d, src in staged.items():
+        prepare(cfg, tree, src)
+    for d in old_dirs:
+        p = os.path.join(ROOT, d)
+        if os.path.isdir(p):
+            shutil.rmtree(p)
+    for d, src in staged.items():
+        shutil.copytree(src, os.path.join(ROOT, d))
+    new_dirs = sorted(staged)
+    shutil.rmtree(tmp, ignore_errors=True)
 
-    # mirror: wipe vendored (keep nothing - upstream is the source of truth),
-    # then copy staged files, applying renames/excludes
-    new_ver = "?"
-    stage_pkg = os.path.join(staging, "package.json")
-    if os.path.isfile(stage_pkg):
-        new_ver = json.load(open(stage_pkg)).get("version", "?")
+    update_assignments(old_dirs, new_dirs)
+    update_audit(name, cfg, old_dirs, new_dirs)
+    lock[name] = {"ref": ref, "dirs": new_dirs}
+    with open(LOCK, "w", encoding="utf-8") as f:
+        f.write(json.dumps(lock, indent=2, sort_keys=True) + "\n")
+    gen = sh([sys.executable, "_scripts/gen_routers.py", "--only-generate", "--force"])
+    if gen.returncode != 0:
+        sys.exit(f"gen_routers.py failed:\n{gen.stdout}{gen.stderr}")
 
-    shutil.rmtree(vendored)
-    shutil.copytree(staging, vendored)
-    for src, dst in cfg.get("rename", {}).items():
-        s = os.path.join(vendored, src)
-        if os.path.isfile(s):
-            os.replace(s, os.path.join(vendored, dst))
-    for pat in cfg.get("exclude", []):
-        for f in os.listdir(vendored):
-            if fnmatch.fnmatch(f, pat):
-                shutil.rmtree(os.path.join(vendored, f)) if os.path.isdir(os.path.join(vendored, f)) else os.remove(os.path.join(vendored, f))
-
-    print(f"  version: {old_ver} -> {new_ver}")
-    st = sh("git status --porcelain -- " + cfg["vendored"]).stdout.strip().splitlines()
+    added = sorted(set(new_dirs) - set(old_dirs))
+    removed = sorted(set(old_dirs) - set(new_dirs))
+    print(f"  ref: {short(old.get('ref')) or '(none)'} -> {short(ref)}")
+    print(f"  dirs: {len(new_dirs)} (added {added or 'none'}, removed {removed or 'none'})")
+    st = sh(["git", "status", "--porcelain"]).stdout.strip().splitlines()
     print(f"  changed files: {len(st)}")
     for ln in st[:12]:
         print("   ", ln)
     if len(st) > 12:
         print(f"    ... and {len(st)-12} more")
 
-    gate = sh("python3 _scripts/check.py")
+    gate = sh([sys.executable, "_scripts/check.py"])
     tail = [l for l in gate.stdout.splitlines() if l.strip()][-1:]
     print("  gates:", tail[0] if tail else "?")
     if gate.returncode != 0:
@@ -107,15 +201,24 @@ def main():
         sys.exit("check.py failed - NOT committing. Resolve and retry.")
 
     if commit:
-        msg = f"sync {name}: {old_ver} -> {new_ver} ({cfg['repo']}@{ref})"
-        c = sh(f'git add -A "{cfg["vendored"]}" && git commit -m "{msg}"')
+        if not st:
+            print("  nothing to commit")
+            return
+        msg = f"sync {name}: {short(old.get('ref')) or 'new'} -> {short(ref)} ({cfg['repo']})"
+        # the owned dirs were just copied fresh, so everything in them is upstream content;
+        # -f also keeps files that a nested upstream .gitignore matches but upstream tracks
+        add = sh(["git", "add", "-A", "-f", "--"] + new_dirs)
+        if add.returncode == 0:
+            add = sh(["git", "add", "-A"])
+        c = sh(["git", "commit", "-q", "-m", msg])
+        if add.returncode != 0 or c.returncode != 0:
+            sys.exit(f"git commit failed:\n{add.stderr}{c.stdout}{c.stderr}")
         print("  committed:", msg)
         if "--push" in sys.argv:
-            p = sh("git push origin HEAD")
+            p = sh(["git", "push", "origin", "HEAD"])
             print("  pushed" if p.returncode == 0 else f"  push failed: {p.stderr.strip()[:120]}")
     else:
         print("  (dry: pass --commit to commit)")
-    shutil.rmtree(tmp, ignore_errors=True)
 
 if __name__ == "__main__":
     main()

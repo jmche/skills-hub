@@ -127,7 +127,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | `references` | 20 | 文献检索、BibTeX、引文格式、专利、文档抽取 |
 | `dev` | 6 | 前端、UI/UX、云、GPU、agent harness |
 | `data-ml` | 21 | polars/dask、时序、统计、深度学习、图 |
-| `docs-figures` | 11 | 发表级图、幻灯片、infographic、Mermaid |
+| `docs-figures` | 12 + HyperFrames 全套 | 发表级图、幻灯片、infographic、Mermaid、编辑风格图表、视频和动态图形 |
 | `team` | 33 角色 | SRE、PM、架构师、QA、安全… |
 
 另有 16 个其他顶层技能：`pdf`、`docx`、`xlsx`、`pptx`、`grill-me`、`grill-with-docs`、
@@ -165,6 +165,20 @@ Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另
 以及 CSV 转换。各技能的 `SKILL.md` 写明了每类任务用哪个脚本。其余技能的来源说明见
 [`LICENSE-NOTES.md`](LICENSE-NOTES.md) 和 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)。
 
+有三个上游会自动跟随更新。它们没有本地改动，由 GitHub 上的 `upstream-sync` 工作流每天同步一次；
+`check.py` 和密钥扫描都通过后才推送。配置在 [`upstreams.json`](upstreams.json)，各自当前同步到的版本记在
+[`upstreams.lock.json`](upstreams.lock.json)。
+
+| 上游 | 本库中的技能 | 跟随 |
+|---|---|---|
+| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes)（Apache-2.0） | 其 `skills/` 下的全部技能，存放为 `docs-figures/<名称>`；入口是 `docs-figures/hyperframes` | 最新的发布版本标签 |
+| [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)（MIT） | `docs-figures/diagram-design` | `main` 分支的最新提交 |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify)（MIT） | `docs-figures/archify` | 最新的发布版本标签 |
+
+上游的 `LICENSE`（diagram-design 还有 `THIRD_PARTY_LICENSES.md`）会复制到这些技能各自的目录里。
+HyperFrames 默认会自己往 `~/.agents/skills` 和 `~/.claude/skills` 安装一份；请设置
+`HYPERFRAMES_SKIP_SKILLS=1`（见 [`env.example`](env.example)），让它使用本库中的技能。
+
 ## 更新
 
 任意目录一行命令：
@@ -173,7 +187,7 @@ Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-或仓库内 `bash install.sh update`（git pull；grounded-build 会检出到上游最新提交，archify 等 vendored 技能则通过维护者的同步提交送达——`update --commit` 执行该同步并提交 grounded-build 指针）。
+或仓库内 `bash install.sh update`（git pull；grounded-build 会检出到上游最新提交，自动跟随的上游通过每天的 `upstream-sync` 提交送达——`update --commit` 在本地执行同样的同步并提交 grounded-build 指针）。
 另有：`hidden`（列出未发布技能）· `enable <name>`（恢复启用）· `status`（安装状态）。
 
 ## API key

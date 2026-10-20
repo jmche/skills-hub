@@ -129,7 +129,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 | `references` | 20 | 논문 검색, BibTeX, 인용 형식, 특허, 문서 추출 |
 | `dev` | 6 | 프론트엔드, UI/UX, 클라우드, GPU, 에이전트 하니스 |
 | `data-ml` | 21 | polars/dask, 시계열, 통계, 딥러닝, 그래프 |
-| `docs-figures` | 11 | 논문급 도표, 슬라이드, 인포그래픽, Mermaid |
+| `docs-figures` | 12 + HyperFrames 전체 | 논문급 도표, 슬라이드, 인포그래픽, Mermaid, 에디토리얼 다이어그램, 영상과 모션 그래픽 |
 | `team` | 33 역할 | SRE, PM, 아키텍트, QA, 보안 등 |
 
 그 외 16개 최상위 스킬: `pdf`, `docx`, `xlsx`, `pptx`, `grill-me`,
@@ -173,6 +173,22 @@ npx skills add jmche/skills-hub -s scientific -a claude
 출처 표기는 [`LICENSE-NOTES.md`](LICENSE-NOTES.md)와
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)에 있습니다.
 
+세 업스트림은 자동으로 따라갑니다. 로컬 변경이 없으며, GitHub의 `upstream-sync`
+워크플로가 하루에 한 번 미러링합니다. `check.py`와 시크릿 스캔을 통과한 경우에만 푸시합니다.
+설정은 [`upstreams.json`](upstreams.json)에, 각 업스트림이 현재 동기화된 버전은
+[`upstreams.lock.json`](upstreams.lock.json)에 기록됩니다.
+
+| 업스트림 | 이 라이브러리의 스킬 | 따라가는 기준 |
+|---|---|---|
+| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | `skills/` 아래의 모든 스킬, `docs-figures/<이름>`으로 저장; 진입점은 `docs-figures/hyperframes` | 최신 릴리스 태그 |
+| [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | `main` 브랜치의 최신 커밋 |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | 최신 릴리스 태그 |
+
+업스트림의 `LICENSE`(diagram-design은 `THIRD_PARTY_LICENSES.md`도)는 각 스킬 디렉터리에
+복사됩니다. HyperFrames는 기본적으로 `~/.agents/skills`와 `~/.claude/skills`에 자체 사본을
+설치하므로, `HYPERFRAMES_SKIP_SKILLS=1`([`env.example`](env.example) 참고)을 설정해 이
+라이브러리의 스킬을 쓰도록 하세요.
+
 ## 업데이트
 
 어느 디렉터리에서든 한 줄:
@@ -181,7 +197,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 curl -fsSL https://raw.githubusercontent.com/jmche/skills-hub/main/install.sh | bash -s -- update
 ```
 
-또는 리포 안에서 `bash install.sh update`(git pull; grounded-build는 업스트림 최신 커밋으로 체크아웃되고, archify 등 vendored 스킬은 메인테이너의 동기화 커밋을 통해 전달됨 — `update --commit`이 그 동기화와 grounded-build 포인터 갱신을 수행).
+또는 리포 안에서 `bash install.sh update`(git pull; grounded-build는 업스트림 최신 커밋으로 체크아웃되고, 자동으로 따라가는 업스트림은 매일의 `upstream-sync` 커밋으로 전달됨 — `update --commit`은 같은 동기화를 로컬에서 실행하고 grounded-build 포인터를 갱신).
 기타: `hidden`(미공개 스킬 목록) · `enable <name>`(복원) · `status`(설치 상태).
 
 ## API 키
