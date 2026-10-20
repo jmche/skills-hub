@@ -33,13 +33,18 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-      - name: Sync stale upstreams (each sync runs check.py before it commits)
+      - name: List stale upstreams
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          python3 -u _scripts/check_upstreams.py --stale > "$RUNNER_TEMP/stale.txt" \
+            || touch "$RUNNER_TEMP/lookup_failed"
+      # 这一步会运行上游的探测代码，所以整个进程树里都没有 token
+      - name: Sync stale upstreams (each sync runs check.py before it commits)
+        run: |
           stale="$RUNNER_TEMP/stale.txt"
           failed=0
-          python3 -u _scripts/check_upstreams.py --stale > "$stale" || failed=1
+          [ -e "$RUNNER_TEMP/lookup_failed" ] && failed=1
           while read -r -u 3 name ref; do
             if ! python3 -u _scripts/sync_upstream.py "$name" --ref "$ref" --commit; then
               echo "::error::sync of $name failed; the other upstreams are still pushed"
