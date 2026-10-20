@@ -35,7 +35,6 @@ This is a MAINTAINER command, also run daily by .github/workflows/upstream-sync.
 vendored third-party content ships to users through the normal skills-hub update.
 """
 import csv, fnmatch, io, json, os, shutil, subprocess, sys, tarfile, tempfile, urllib.request
-import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCK = os.path.join(ROOT, "upstreams.lock.json")
@@ -160,12 +159,16 @@ SPDX_STATUS = {"MIT": "mit", "Apache-2.0": "apache", "BSD-2-Clause": "bsd", "BSD
 
 def skill_license(d):
     """the `license:` value in the skill's own frontmatter, if any"""
+    # 只在同步时需要 PyYAML；install.sh update 只查看更新，不加载它
+    import yaml
     for f in ("INSTRUCTIONS.md", "SKILL.md"):
         p = os.path.join(ROOT, d, f)
         if os.path.isfile(p):
             text = open(p, encoding="utf-8", errors="replace").read()
             if text.startswith("---"):
                 fm = yaml.safe_load(text.split("\n---", 1)[0][3:]) or {}
+                if not isinstance(fm, dict):
+                    sys.exit(f"{d}/{f}: frontmatter is not a mapping")
                 lic = fm.get("license")
                 return str(lic).strip() if lic else None
     return None
