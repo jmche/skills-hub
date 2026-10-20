@@ -202,9 +202,7 @@
     "ontology-term-resolution",
     "pkpd-modeling",
     "primer-design",
-    "relion",
-    "relsa-severity-assessment",
-    "tellurium"
+    "relion"
   ],
   "data-ml": [
     "dask",

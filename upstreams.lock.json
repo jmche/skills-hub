@@ -178,7 +178,6 @@
       "scientific/qutip",
       "scientific/rdkit",
       "scientific/relion",
-      "scientific/relsa-severity-assessment",
       "scientific/rowan",
       "scientific/scanpy",
       "scientific/scikit-bio",
@@ -187,10 +186,12 @@
       "scientific/simpy",
       "scientific/sympy",
       "scientific/tamarind",
-      "scientific/tellurium",
       "scientific/tiledbvcf",
       "scientific/torchdrug",
       "scientific/treatment-plans"
+    ],
+    "patched": [
+      "ncats-arax"
     ],
     "ref": "v2.72.0"
   }

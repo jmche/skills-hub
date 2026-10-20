@@ -142,8 +142,6 @@ scientific/ontology-term-resolution,scientific,mit,"MIT (K-Dense-AI/scientific-a
 scientific/pkpd-modeling,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
 scientific/primer-design,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
 scientific/relion,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
-scientific/relsa-severity-assessment,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
-scientific/tellurium,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
 references/citation-management,references,mit,mit (header),inline,publish
 references/database-lookup,references,unknown,?,?,"publish (library content, user-curated)"
 references/dataset-acquisition,references,unknown,?,?,"publish (library content, user-curated)"
