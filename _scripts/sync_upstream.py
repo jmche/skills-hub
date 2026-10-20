@@ -35,6 +35,7 @@ This is a MAINTAINER command, also run daily by .github/workflows/upstream-sync.
 vendored third-party content ships to users through the normal skills-hub update.
 """
 import csv, fnmatch, io, json, os, shutil, subprocess, sys, tarfile, tempfile, urllib.request
+import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCK = os.path.join(ROOT, "upstreams.lock.json")
@@ -48,7 +49,13 @@ def gh_json(url):
     r = subprocess.run(["gh", "api", url], capture_output=True, text=True)
     if r.returncode != 0:
         sys.exit(f"gh api failed: {url}\n{r.stderr}")
-    return json.loads(r.stdout)
+    try:
+        data = json.loads(r.stdout)
+    except ValueError:
+        sys.exit(f"gh api returned non-JSON for {url}")
+    if not isinstance(data, (dict, list)):
+        sys.exit(f"gh api returned an unexpected value for {url}")
+    return data
 
 def stable_version(tag):
     parts = tag.lstrip("v").split(".")
@@ -58,7 +65,10 @@ def stable_version(tag):
 
 def latest_ref(cfg):
     if "branch" in cfg:
-        return gh_json(f"repos/{cfg['repo']}/commits/{cfg['branch']}")["sha"]
+        data = gh_json(f"repos/{cfg['repo']}/commits/{cfg['branch']}")
+        if not isinstance(data, dict) or "sha" not in data:
+            sys.exit(f"no commit sha for {cfg['repo']}@{cfg['branch']}")
+        return data["sha"]
     r = subprocess.run(["gh", "api", "--paginate", f"repos/{cfg['repo']}/tags?per_page=100",
                         "--jq", ".[].name"], capture_output=True, text=True)
     if r.returncode != 0:
@@ -145,15 +155,19 @@ def update_assignments(old_dirs, new_dirs):
     with open(ASSIGN, "w", encoding="utf-8") as f:
         f.write(json.dumps(a, ensure_ascii=False, indent=2))
 
+SPDX_STATUS = {"MIT": "mit", "Apache-2.0": "apache", "BSD-2-Clause": "bsd", "BSD-3-Clause": "bsd",
+               "CC-BY-4.0": "cc-by", "CC0-1.0": "cc0"}
+
 def skill_license(d):
     """the `license:` value in the skill's own frontmatter, if any"""
     for f in ("INSTRUCTIONS.md", "SKILL.md"):
         p = os.path.join(ROOT, d, f)
         if os.path.isfile(p):
-            head = open(p, encoding="utf-8", errors="replace").read().split("\n---", 1)[0]
-            for ln in head.splitlines():
-                if ln.startswith("license:"):
-                    return ln.split(":", 1)[1].strip().strip("\"'")
+            text = open(p, encoding="utf-8", errors="replace").read()
+            if text.startswith("---"):
+                fm = yaml.safe_load(text.split("\n---", 1)[0][3:]) or {}
+                lic = fm.get("license")
+                return str(lic).strip() if lic else None
     return None
 
 def update_audit(name, cfg, old_dirs, new_dirs):
@@ -165,7 +179,8 @@ def update_audit(name, cfg, old_dirs, new_dirs):
             continue
         hub = split_dir(d)[0]
         lic = skill_license(d) or cfg["license"]
-        row = [d, hub, lic.split()[0].split("-")[0].lower(),
+        # 只有可识别的 SPDX 标识才写入 raw_status，其余写 unknown，留给人工核对
+        row = [d, hub, SPDX_STATUS.get(lic, "unknown"),
                f"{lic} ({cfg['repo']}, vendored; upstream-synced)", cfg["repo"], "publish"]
         last = max((i for i, r in enumerate(rows) if r[1] == hub), default=len(rows) - 1)
         rows.insert(last + 1, row)
