@@ -56,7 +56,11 @@ def stable_version(tag):
 def latest_ref(cfg):
     if "branch" in cfg:
         return gh_json(f"repos/{cfg['repo']}/commits/{cfg['branch']}")["sha"]
-    tags = [t["name"] for t in gh_json(f"repos/{cfg['repo']}/tags?per_page=100")]
+    r = subprocess.run(["gh", "api", "--paginate", f"repos/{cfg['repo']}/tags?per_page=100",
+                        "--jq", ".[].name"], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit(f"gh api failed: tags of {cfg['repo']}\n{r.stderr}")
+    tags = r.stdout.split()
     stable = [t for t in tags if stable_version(t)]
     if not stable:
         sys.exit(f"no stable semver tag found in {cfg['repo']}")
@@ -76,12 +80,17 @@ def download(cfg, ref, tmp):
     urllib.request.urlretrieve(f"https://codeload.github.com/{cfg['repo']}/tar.gz/{kind}", tgz)
     tree = os.path.join(tmp, "tree")
     with tarfile.open(tgz) as tf:
+        sub = cfg["subdir"].strip("/") + "/"
         for m in tf.getmembers():
-            if not m.isfile():
-                continue
             rel = os.path.normpath(m.name.split("/", 1)[1]) if "/" in m.name else ""
-            if not rel or rel.startswith("..") or os.path.isabs(rel):
+            if m.isdir() or not rel:
+                continue
+            if rel.startswith("..") or os.path.isabs(rel):
                 sys.exit(f"unsafe path in upstream tarball: {m.name}")
+            if not m.isfile():
+                if rel.startswith(sub):
+                    sys.exit(f"{rel} is not a regular file; the mirror cannot reproduce it")
+                continue
             m.name = rel
             tf.extract(m, tree)
     return tree
@@ -156,22 +165,21 @@ def main():
     old = lock.get(name, {})
     old_dirs = old.get("dirs", [])
     print(f"[{name}] syncing {cfg['repo']}@{short(ref)}")
-    tmp = tempfile.mkdtemp()
-    tree = download(cfg, ref, tmp)
-    staged = targets(cfg, tree)
-    for d in staged:
-        if d not in old_dirs and os.path.exists(os.path.join(ROOT, d)):
-            sys.exit(f"{d} exists but is not owned by '{name}' (upstreams.lock.json) - not overwriting")
-    for d, src in staged.items():
-        prepare(cfg, tree, src)
-    for d in old_dirs:
-        p = os.path.join(ROOT, d)
-        if os.path.isdir(p):
-            shutil.rmtree(p)
-    for d, src in staged.items():
-        shutil.copytree(src, os.path.join(ROOT, d))
-    new_dirs = sorted(staged)
-    shutil.rmtree(tmp, ignore_errors=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        tree = download(cfg, ref, tmp)
+        staged = targets(cfg, tree)
+        for d in staged:
+            if d not in old_dirs and os.path.exists(os.path.join(ROOT, d)):
+                sys.exit(f"{d} exists but is not owned by '{name}' (upstreams.lock.json) - not overwriting")
+        for d, src in staged.items():
+            prepare(cfg, tree, src)
+        for d in old_dirs:
+            p = os.path.join(ROOT, d)
+            if os.path.isdir(p):
+                shutil.rmtree(p)
+        for d, src in staged.items():
+            shutil.copytree(src, os.path.join(ROOT, d))
+        new_dirs = sorted(staged)
 
     update_assignments(old_dirs, new_dirs)
     update_audit(name, cfg, old_dirs, new_dirs)

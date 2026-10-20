@@ -8,6 +8,8 @@ entry in upstreams.json:
     its "branch"
   - report; with --sync, stale entries are synced and committed one by one
     (see sync_upstream.py); the first failure stops the run
+  - with --stale, print only "<name> <ref>" per stale entry on stdout (the
+    report goes to stderr); the workflow syncs each of them separately
 
 Exit codes: 0 = up to date / synced, 1 = failure.
 """
@@ -19,6 +21,8 @@ sys.path.insert(0, HERE)
 
 def main():
     sync = "--sync" in sys.argv
+    names_only = "--stale" in sys.argv
+    out = sys.stderr if names_only else sys.stdout
     cfg = json.load(open(os.path.join(ROOT, "upstreams.json"), encoding="utf-8"))
     import sync_upstream as su
     lock = su.load_lock()
@@ -28,14 +32,19 @@ def main():
         local = lock.get(name, {}).get("ref")
         latest = su.latest_ref(c)
         if local == latest:
-            print(f"[{name}] up to date ({su.short(local)})")
+            print(f"[{name}] up to date ({su.short(local)})", file=out)
             continue
-        if "branch" not in c and local and su.stable_version(local) > su.stable_version(latest):
-            print(f"[{name}] vendored {local} is newer than upstream {latest} - skipping")
+        lv = su.stable_version(local) if local and "branch" not in c else None
+        if lv and lv > su.stable_version(latest):
+            print(f"[{name}] vendored {local} is newer than upstream {latest} - skipping", file=out)
             continue
         stale.append((name, latest))
-        print(f"[{name}] UPDATE AVAILABLE: {su.short(local) or '(not vendored)'} -> {su.short(latest)}")
+        print(f"[{name}] UPDATE AVAILABLE: {su.short(local) or '(not vendored)'} -> {su.short(latest)}", file=out)
 
+    if names_only:
+        for name, ref in stale:
+            print(name, ref)
+        return 0
     if not sync:
         if stale:
             print(f"{len(stale)} upstream update(s) available - synced daily by the "

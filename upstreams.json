@@ -4,6 +4,7 @@
     "subdir": "archify",
     "vendored": "docs-figures/archify",
     "license": "MIT",
+    "license_files": ["LICENSE"],
     "rename": { "SKILL.md": "INSTRUCTIONS.md" },
     "exclude": [".gitignore", ".github"],
     "note": "skill package lives in the archify/ subdir of the upstream monorepo; sync to latest stable tag"

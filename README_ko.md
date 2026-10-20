@@ -180,9 +180,9 @@ npx skills add jmche/skills-hub -s scientific -a claude
 
 | 업스트림 | 이 라이브러리의 스킬 | 따라가는 기준 |
 |---|---|---|
-| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | `skills/` 아래의 모든 스킬, `docs-figures/<이름>`으로 저장; 진입점은 `docs-figures/hyperframes` | 최신 릴리스 태그 |
+| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | `skills/` 아래의 모든 스킬, `docs-figures/<이름>`으로 저장; 진입점은 `docs-figures/hyperframes` | 최신 `x.y.z` 버전 태그 |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | `main` 브랜치의 최신 커밋 |
-| [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | 최신 릴리스 태그 |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | 최신 `x.y.z` 버전 태그 |
 
 업스트림의 `LICENSE`(diagram-design은 `THIRD_PARTY_LICENSES.md`도)는 각 스킬 디렉터리에
 복사됩니다. HyperFrames는 기본적으로 `~/.agents/skills`와 `~/.claude/skills`에 자체 사본을

@@ -171,9 +171,9 @@ Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另
 
 | 上游 | 本库中的技能 | 跟随 |
 |---|---|---|
-| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes)（Apache-2.0） | 其 `skills/` 下的全部技能，存放为 `docs-figures/<名称>`；入口是 `docs-figures/hyperframes` | 最新的发布版本标签 |
+| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes)（Apache-2.0） | 其 `skills/` 下的全部技能，存放为 `docs-figures/<名称>`；入口是 `docs-figures/hyperframes` | 最新的 `x.y.z` 版本标签 |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)（MIT） | `docs-figures/diagram-design` | `main` 分支的最新提交 |
-| [tt-a1i/archify](https://github.com/tt-a1i/archify)（MIT） | `docs-figures/archify` | 最新的发布版本标签 |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify)（MIT） | `docs-figures/archify` | 最新的 `x.y.z` 版本标签 |
 
 上游的 `LICENSE`（diagram-design 还有 `THIRD_PARTY_LICENSES.md`）会复制到这些技能各自的目录里。
 HyperFrames 默认会自己往 `~/.agents/skills` 和 `~/.claude/skills` 安装一份；请设置

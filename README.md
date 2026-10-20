@@ -180,9 +180,9 @@ and [`upstreams.lock.json`](upstreams.lock.json) records the version each one is
 
 | Upstream | Skills here | Follows |
 |---|---|---|
-| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | every skill under its `skills/`, as `docs-figures/<name>`; the entry point is `docs-figures/hyperframes` | newest release tag |
+| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache-2.0) | every skill under its `skills/`, as `docs-figures/<name>`; the entry point is `docs-figures/hyperframes` | newest `x.y.z` version tag |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) | `docs-figures/diagram-design` | latest commit on `main` |
-| [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | newest release tag |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | `docs-figures/archify` | newest `x.y.z` version tag |
 
 The upstream `LICENSE` (and diagram-design's `THIRD_PARTY_LICENSES.md`) is copied into
 each of these skill directories. HyperFrames would otherwise install its own copies into

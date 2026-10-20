@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           submodules: recursive
       - uses: actions/setup-python@v5
         with:
@@ -33,8 +34,24 @@ jobs:
       - name: Sync stale upstreams (each sync runs check.py before it commits)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 -u _scripts/check_upstreams.py --sync
+        run: |
+          stale="$RUNNER_TEMP/stale.txt"
+          python3 -u _scripts/check_upstreams.py --stale > "$stale"
+          failed=0
+          while read -r name ref; do
+            if ! python3 -u _scripts/sync_upstream.py "$name" --ref "$ref" --commit; then
+              echo "::error::sync of $name failed; the other upstreams are still pushed"
+              failed=1
+              # 丢弃这一个上游在 runner 上留下的未提交改动，后面的上游从干净的工作区开始
+              git reset -q --hard HEAD
+              git clean -qfd
+            fi
+          done < "$stale"
+          exit "$failed"
       - name: No secrets in tracked files
+        id: scan
+        if: ${{ !cancelled() }}
         run: bash _scripts/scan_secrets.sh
       - name: Push the sync commits
+        if: ${{ !cancelled() && steps.scan.outcome == 'success' }}
         run: git push origin HEAD:main
