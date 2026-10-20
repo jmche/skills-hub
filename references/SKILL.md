@@ -1,6 +1,6 @@
 ---
 name: references
-description: Literature / citation / formatting / regulatory hub: paper search (arXiv / bioRxiv / Europe PMC / OpenAlex / PubMed / Semantic Scholar / CORE / Unpaywall / Crossref), literature review, citation management and BibTeX, manuscript formatting (Nature/ Cell/CONSORT/STROBE/PRISMA), Zotero integration, patents and regulatory text (US fiscal data / openFDA / database availability), document extraction (MarkItDown / liteparse), parallel web search (Exa / parallel-cli / research-lookup). TRIGGER = find papers / look up a DOI / format BibTeX / literature review / check a citation / patents / regulations / extract PDF text / bulk fetch datasets. SKIP = synthesizing or critiquing paper claims (-> research), publication-grade figures (-> docs-figures), bio-computation (-> scientific). 
+description: Literature / citation / formatting / regulatory hub: paper search (arXiv / bioRxiv / Europe PMC / OpenAlex / PubMed / Semantic Scholar / CORE / Unpaywall / Crossref), literature review, citation management and BibTeX, manuscript formatting (Nature/ Cell/CONSORT/STROBE/PRISMA), Zotero integration, patents and regulatory text (US fiscal data / openFDA / database availability / Paperclip full-text papers, FDA/EMA/PMDA documents and trial records), document extraction (MarkItDown / liteparse), parallel web search (Exa / parallel-cli / research-lookup). TRIGGER = find papers / look up a DOI / format BibTeX / literature review / check a citation / patents / regulations / extract PDF text / bulk fetch datasets. SKIP = synthesizing or critiquing paper claims (-> research), publication-grade figures (-> docs-figures), bio-computation (-> scientific). 
 ---
 
 # references hub
@@ -34,6 +34,7 @@ description: Literature / citation / formatting / regulatory hub: paper search (
 | openfda-database | Query, search, and download data from the openFDA API for drugs, devices, foods, tobacco, cosmetics, animal… |
 | liteparse | Local document and PDF parsing that returns spatial text with bounding boxes. Use for extracting text from… |
 | markitdown | Converts heterogeneous documents and selected URIs to Markdown with Microsoft MarkItDown for text analysis,… |
+| paperclip | Searches and reads biomedical papers, FDA/PMDA/EMA documents, clinical trials, and protein records with the… |
 
 ## Cross-hub handoff
 - Critiquing literature's claims -> research (scientific-critical-thinking)

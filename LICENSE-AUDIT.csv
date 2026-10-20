@@ -129,6 +129,21 @@ scientific/treatment-plans,scientific,mit,mit (header),inline,publish
 scientific/ucsc-conservation-and-tfbs,scientific,unknown,?,?,"publish (library content, user-curated)"
 scientific/unibind-database,scientific,unknown,?,?,"publish (library content, user-curated)"
 scientific/uniprot-database,scientific,unknown,?,?,"publish (library content, user-curated)"
+scientific/alphagenome,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/analytical-method-validation,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/cellprofiler,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/flowkit,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/folklore-variant-evidence,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/genomic-coordinates,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/mageck,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/ncats-arax,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/nmrglue,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/ontology-term-resolution,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/pkpd-modeling,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/primer-design,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/relion,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/relsa-severity-assessment,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
+scientific/tellurium,scientific,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
 references/citation-management,references,mit,mit (header),inline,publish
 references/database-lookup,references,unknown,?,?,"publish (library content, user-curated)"
 references/dataset-acquisition,references,unknown,?,?,"publish (library content, user-curated)"
@@ -149,6 +164,7 @@ references/pyzotero,references,mit,mit (header),inline,publish
 references/research-lookup,references,mit,mit (header),inline,publish
 references/usfiscaldata,references,unknown,?,?,"publish (library content, user-curated)"
 references/venue-templates,references,mit,mit (header),inline,publish
+references/paperclip,references,mit,"MIT (K-Dense-AI/scientific-agent-skills, vendored; upstream-synced)",K-Dense-AI/scientific-agent-skills,publish
 dev/frontend-design,dev,apache,apache-2.0 (header),inline,publish
 dev/modal,dev,apache,apache-2.0 (header),inline,publish
 dev/optimize-for-gpu,dev,unknown,?,?,"publish (library content, user-curated)"

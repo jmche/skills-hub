@@ -1,6 +1,6 @@
 ---
 name: scientific
-description: Biology / chemistry / medicine computation hub: structure prediction and sequence design (AlphaFold2/Boltz/Chai-1/ESMFold2/ESMFold/OpenFold3/PyMOL/MD), sequence and genomics tooling (Biopython/Clustal Omega/IQ-TREE/ETE), 30+ database queries (UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/DepMap/1000Genomes/STRING/ Reactome/KEGG-JASPAR/QuickGO ...), single-cell and transcriptomics (Scanpy/anndata/ scvi-tools/cellxgene-census/scVelo/bulk RNA-seq/DESeq2/DEEPTools/GRN/pathway enrichment/geniml/gtars/pysam/TileDB-VCF), clinical (CDS/clinical reporting/ indication dossier/ISO13485/treatment plans/PyHealth/imaging BIDS/pathology WSI/ electrophysiology), cheminformatics and drug discovery (RDKit/datamol/medchem/ molfeat/DeepChem/TorchDrug/PyOpenMS/COBRApy/DiffDock/pymatgen), lab & cloud platform integration (Benchling/LabArchive/DNAnexus/LatchBio/Ginkgo/Opentrons/ pylabrobot/protocols.io/Nextflow/pacsomatic), quantum & general simulation (Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB). TRIGGER = protein folding / UniProt-PDB-ChEMBL-gnomAD lookups / run Scanpy or RNA-seq / dock molecules / write Opentrons protocols / query a gene variant / MD simulation / structural similarity search / single-cell analysis / drug molecules. SKIP = statistical methodology and hypothesis design (-> research), literature and citation (-> references), generic ML frameworks (transformers/polars/ pytorch-lightning -> data-ml), publication figures and slides (-> docs-figures), UI engineering and GPU clouds (-> dev). 
+description: Biology / chemistry / medicine computation hub: structure prediction and sequence design (AlphaFold2/Boltz/Chai-1/ESMFold2/ESMFold/OpenFold3/PyMOL/MD/RELION cryo-EM), sequence and genomics tooling (Biopython/Clustal Omega/IQ-TREE/ETE/genomic coordinates/primer design/MAGeCK CRISPR screens/AlphaGenome variant effects), 30+ database queries (UniProt/Ensembl/PDB/PubChem/ChEMBL/gnomAD/clinVar/DepMap/ 1000Genomes/STRING/Reactome/KEGG-JASPAR/QuickGO/NCATS ARAX knowledge graph/ClinGen gene-disease validity/ontology term resolution ...), single-cell and transcriptomics (Scanpy/anndata/ scvi-tools/cellxgene-census/scVelo/bulk RNA-seq/DESeq2/DEEPTools/GRN/pathway enrichment/geniml/gtars/pysam/TileDB-VCF), clinical (CDS/clinical reporting/ indication dossier/ISO13485/treatment plans/PyHealth/imaging BIDS/pathology WSI/ electrophysiology/flow cytometry/CellProfiler imaging/animal-study severity), cheminformatics and drug discovery (RDKit/datamol/medchem/molfeat/DeepChem/ TorchDrug/PyOpenMS/COBRApy/DiffDock/pymatgen/PK-PD modelling/NMR processing/ analytical method validation), lab & cloud platform integration (Benchling/LabArchive/DNAnexus/LatchBio/Ginkgo/Opentrons/ pylabrobot/protocols.io/Nextflow/pacsomatic), quantum & general simulation (Qiskit/cirq/PennyLane/QuTiP/SimPy/PyMC/Astropy/FluidSim/MATLAB/Tellurium kinetic models). TRIGGER = protein folding / UniProt-PDB-ChEMBL-gnomAD lookups / run Scanpy or RNA-seq / dock molecules / write Opentrons protocols / query a gene variant / MD simulation / structural similarity search / single-cell analysis / drug molecules. SKIP = statistical methodology and hypothesis design (-> research), literature and citation (-> references), generic ML frameworks (transformers/polars/ pytorch-lightning -> data-ml), publication figures and slides (-> docs-figures), UI engineering and GPU clouds (-> dev). 
 ---
 
 # scientific hub
@@ -36,6 +36,7 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 | tamarind | Provides access to a collection of open-source molecular design and structural biology tools on the Tamarind… |
 | rowan | Rowan is a cloud-native molecular modeling and medicinal-chemistry workflow platform with a Python API. Use… |
 | adaptyv | Uses the Adaptyv Bio Foundry API and Python SDK to design protein characterization experiments, estimate… |
+| relion | Validates and executes RELION single-particle cryo-EM refinement and half-map postprocessing. Supports STAR… |
 
 ### B Sequence & genomics tooling
 
@@ -50,6 +51,10 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 | phylogenetics | Builds and analyzes phylogenetic trees using MAFFT multiple sequence alignment, IQ-TREE maximum likelihood… |
 | etetoolkit | Analyzes, manipulates, compares, annotates, and visualizes phylogenetic or other hierarchical trees with ETE… |
 | scikit-bio | Biological data toolkit. Sequence analysis, alignments, phylogenetic trees, diversity metrics (alpha/beta,… |
+| genomic-coordinates | Converts genomic intervals between coordinate conventions, normalises and compares variant representations,… |
+| primer-design | Designs and audits PCR and RT-qPCR primers with Primer3, explicit thermodynamic conditions, reference-based… |
+| mageck | Analyzes pooled CRISPR screen FASTQ reads and guide-count matrices with MAGeCK, validates guide libraries and… |
+| alphagenome | "Looks up precomputed AlphaGenome Atlas effects for any GRCh38 single-nucleotide variant (AVI score with… |
 
 ### C Database lookup
 
@@ -80,6 +85,9 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 | clinical-trials-database | Query ClinicalTrials.gov via APIv2. Use when you want to search for trials by condition, drug, location,… |
 | gtex-database | Use when you want to retrieve quantitative RNA expression data and variant eQTL information from the GTEx… |
 | human-protein-atlas-database | Use when you want to retrieve semi-quantitative protein expression and spatial localisation data from the… |
+| ncats-arax | Queries the NCATS Translator ARAX production API for bounded, typed, provenance-rich one-hop and… |
+| folklore-variant-evidence | "Retrieves ClinGen gene-disease validity assertions for a public gene or disease, and reviews source-linked… |
+| ontology-term-resolution | Resolves free-text scientific labels to ontology term IDs and validates existing CURIEs against the EBI… |
 
 ### D Single-cell & transcriptomics
 
@@ -116,6 +124,9 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 | pyopenms | Processes mass spectrometry data with pyOpenMS. Supports proteomics and metabolomics workflows—feature… |
 | cobrapy | Performs constraint-based metabolic modeling with COBRApy, including FBA, pFBA, FVA, gene knockouts, flux… |
 | pymatgen | Analyzes, validates, converts, and transforms materials structures and computed materials data with pymatgen.… |
+| pkpd-modeling | Pharmacokinetic and pharmacodynamic modelling and simulation - non-compartmental analysis, compartmental and… |
+| nmrglue | Processes calibrated one-dimensional complex NMR free-induction decays with nmrglue into phased spectra, peak… |
+| analytical-method-validation | Plans, executes, and documents validation, verification, and transfer of analytical procedures under the… |
 
 ### F Clinical & medical
 
@@ -131,6 +142,9 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 | imaging-data-commons | Queries and downloads public cancer imaging data from NCI Imaging Data Commons. Supports IDC collection… |
 | bids | Organizes, queries, validates, and converts Brain Imaging Data Structure (BIDS) datasets. Supports organizing… |
 | flowio | Reads, inspects, and writes Flow Cytometry Standard (FCS) 2.0, 3.0, and 3.1 files with FlowIO. Use for… |
+| flowkit | Analyzes flow cytometry data with FlowKit, including spillover compensation, logicle and biexponential… |
+| cellprofiler | Runs reproducible CellProfiler microscopy pipelines for nuclear segmentation, cell counts, and per-object… |
+| relsa-severity-assessment | Supports multivariate severity assessment and exploratory endpoint-time score forecasting for laboratory… |
 | pydicom | Reads, inspects, writes, transforms, and preflights local DICOM datasets and pixel data. Applies to DICOM… |
 | omero-integration | Inspects and automates microscopy data workflows against OMERO.server with omero-py, BlitzGateway, OMERO CLI,… |
 | histolab | Extracts and preprocesses whole-slide histology image tiles with Histolab. Use for WSI inspection, tissue… |
@@ -163,6 +177,7 @@ description: Biology / chemistry / medicine computation hub: structure predictio
 | qutip | Simulate and audit closed and open quantum-system models with QuTiP 5, including deterministic, trajectory,… |
 | simpy | Builds, inspects, tests, and analyzes bounded process-based discrete-event simulations with SimPy. Use for… |
 | sympy | Performs exact symbolic mathematics with SymPy for algebra, calculus, equation solving, symbolic linear… |
+| tellurium | Simulates biochemical kinetic models from SBML or Antimony with Tellurium and libRoadRunner, checks model… |
 | pymc | Builds and checks Bayesian models with PyMC, including hierarchical models, NUTS MCMC, variational inference,… |
 | pymoo | Solves and validates single-, multi-, and many-objective optimization with pymoo, including NSGA-II,… |
 | astropy | Core Python library for astronomy and astrophysics workflows that need Astropy APIs, including… |

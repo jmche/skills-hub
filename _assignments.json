@@ -70,7 +70,8 @@
     "usfiscaldata",
     "openfda-database",
     "liteparse",
-    "markitdown"
+    "markitdown",
+    "paperclip"
   ],
   "scientific": [
     "uniprot-database",
@@ -188,7 +189,22 @@
     "clinical-trials-database",
     "gtex-database",
     "human-protein-atlas-database",
-    "etetoolkit"
+    "etetoolkit",
+    "alphagenome",
+    "analytical-method-validation",
+    "cellprofiler",
+    "flowkit",
+    "folklore-variant-evidence",
+    "genomic-coordinates",
+    "mageck",
+    "ncats-arax",
+    "nmrglue",
+    "ontology-term-resolution",
+    "pkpd-modeling",
+    "primer-design",
+    "relion",
+    "relsa-severity-assessment",
+    "tellurium"
   ],
   "data-ml": [
     "dask",
