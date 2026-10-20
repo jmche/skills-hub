@@ -5,6 +5,12 @@
     ],
     "ref": "v3.2.0"
   },
+  "diagram-design": {
+    "dirs": [
+      "docs-figures/diagram-design"
+    ],
+    "ref": "f2f4d49ea8d632f17cf196ba26599277a93f767b"
+  },
   "hyperframes": {
     "dirs": [
       "docs-figures/embedded-captions",

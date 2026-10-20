@@ -208,6 +208,7 @@ docs-figures/product-launch-video,docs-figures,apache,"Apache-2.0 (heygen-com/hy
 docs-figures/remotion-to-hyperframes,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
 docs-figures/slideshow,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
 docs-figures/talking-head-recut,docs-figures,apache,"Apache-2.0 (heygen-com/hyperframes, vendored; upstream-synced)",heygen-com/hyperframes,publish
+docs-figures/diagram-design,docs-figures,mit,"MIT (cathrynlavery/diagram-design, vendored; upstream-synced)",cathrynlavery/diagram-design,publish
 autoskill,top,mit,mit,screenpipe/screenpipe,publish
 credentials,top,own,self-authored or anthropic-ecosystem (mit),self / anthropics/skills,publish
 docx,top,docx,proprietary+mit,"anthropics/skills (proprietary, LICENSE.txt); NousResearch/hermes-agent (MIT, LICENSE-HERMES.txt)",publish

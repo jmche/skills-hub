@@ -49,6 +49,7 @@ description: Publication-grade visual deliverables hub: publication figures (fig
 | remotion-to-hyperframes | 'Port an existing Remotion (React) composition''s source to HyperFrames HTML. Use ONLY on an explicit ask to… |
 | slideshow | Author a HyperFrames slideshow — a presentation, pitch deck, or interactive deck with discrete slides,… |
 | talking-head-recut | Package an existing talking-head / interview / podcast video with timed, designed GRAPHIC OVERLAY cards —… |
+| diagram-design | Create branded architecture, architecture delta, IT current-state, flowchart, sequence, state machine,… |
 
 ## Cross-hub handoff
 - Quick exploratory plot -> plain seaborn/matplotlib, skip the checklist
