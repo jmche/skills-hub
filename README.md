@@ -173,8 +173,8 @@ reference-aware row/column restructuring and CSV conversion for spreadsheets. Ea
 skills is in [`LICENSE-NOTES.md`](LICENSE-NOTES.md) and
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv).
 
-Four upstreams are followed automatically. The skills involved carry no local changes,
-and the `upstream-sync` GitHub workflow mirrors them once a day; a sync is pushed only
+Four upstreams are followed automatically. The skills involved carry no local changes
+(apart from the ncats-arax patch described below), and the `upstream-sync` GitHub workflow mirrors them once a day; a sync is pushed only
 after `check.py` and the secret scan pass. [`upstreams.json`](upstreams.json) configures
 them and [`upstreams.lock.json`](upstreams.lock.json) records the version each one is at.
 
@@ -190,7 +190,9 @@ production ARAX 1.6.2 accepts only the `infores:retriever` provider, while upstr
 `infores:rtx-kg2`. Each sync first runs a live imatinib → ABL1 query with the upstream copy
 and keeps that copy when the query succeeds; otherwise it applies the patch and requires the
 same query to succeed. While the patch is in use, the check repeats every day, so the skill
-returns to the upstream copy as soon as upstream or the service is fixed.
+returns to the upstream copy as soon as upstream or the service is fixed. When ARAX is
+unreachable, neither copy passes, so that day's K-Dense sync stops and nothing changes. The
+query runs with a minimal environment (no tokens or API keys) and needs Python 3.10+.
 
 The upstream license file (`LICENSE`, K-Dense's `LICENSE.md`, and diagram-design's `THIRD_PARTY_LICENSES.md`) is copied into
 each of these skill directories. HyperFrames would otherwise install its own copies into

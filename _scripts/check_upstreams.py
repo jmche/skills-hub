@@ -29,6 +29,7 @@ def main():
     lock = su.load_lock()
 
     stale = []
+    rechecks = 0
     lookup_failed = False
     for name, c in cfg.items():
         local = lock.get(name, {}).get("ref")
@@ -46,7 +47,8 @@ def main():
         if local == latest and patched:
             # 使用本地补丁期间每天重新同步一次，由探测结果决定是否回到上游原版
             stale.append((name, latest))
-            print(f"[{name}] up to date ({su.short(local)}); re-checking local patches: {', '.join(patched)}", file=out)
+            rechecks += 1
+            print(f"[{name}] up to date ({su.short(local)}); local patch in use, re-checked daily: {', '.join(patched)}", file=out)
             continue
         if local == latest:
             print(f"[{name}] up to date ({su.short(local)})", file=out)
@@ -63,8 +65,8 @@ def main():
             print(name, ref)
         return 1 if lookup_failed else 0
     if not sync:
-        if stale:
-            print(f"{len(stale)} upstream update(s) available - synced daily by the "
+        if len(stale) > rechecks:
+            print(f"{len(stale) - rechecks} upstream update(s) available - synced daily by the "
                   f"upstream-sync workflow (or: bash install.sh update --commit); users "
                   f"receive the result through the next update's git pull")
         return 0
@@ -73,7 +75,7 @@ def main():
         r = subprocess.run([sys.executable, os.path.join(HERE, "sync_upstream.py"),
                             name, "--ref", ref, "--commit"], cwd=ROOT).returncode
         if r != 0:
-            print(f"[{name}] sync FAILED - left uncommitted for review")
+            print(f"[{name}] sync FAILED - nothing committed for it; see the message above")
             return 1
     return 0
 

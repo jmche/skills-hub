@@ -173,7 +173,7 @@ npx skills add jmche/skills-hub -s scientific -a claude
 출처 표기는 [`LICENSE-NOTES.md`](LICENSE-NOTES.md)와
 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)에 있습니다.
 
-네 업스트림은 자동으로 따라갑니다. 해당 스킬에는 로컬 변경이 없으며, GitHub의 `upstream-sync`
+네 업스트림은 자동으로 따라갑니다. 해당 스킬에는 로컬 변경이 없으며(아래 ncats-arax 패치는 예외), GitHub의 `upstream-sync`
 워크플로가 하루에 한 번 미러링합니다. `check.py`와 시크릿 스캔을 통과한 경우에만 푸시합니다.
 설정은 [`upstreams.json`](upstreams.json)에, 각 업스트림이 현재 동기화된 버전은
 [`upstreams.lock.json`](upstreams.lock.json)에 기록됩니다.
@@ -189,7 +189,9 @@ npx skills add jmche/skills-hub -s scientific -a claude
 있습니다. 운영 중인 ARAX 1.6.2는 `infores:retriever` 공급자만 받는데 업스트림은 `infores:rtx-kg2`를
 보냅니다. 동기화할 때마다 먼저 업스트림 사본으로 이마티닙 → ABL1 실제 질의를 실행해 성공하면 그
 사본을 그대로 쓰고, 실패하면 패치를 적용한 뒤 같은 질의가 성공해야 반영합니다. 패치를 쓰는 동안에는
-매일 다시 확인하므로, 업스트림이나 서비스가 고쳐지면 바로 업스트림 사본으로 돌아갑니다.
+매일 다시 확인하므로, 업스트림이나 서비스가 고쳐지면 바로 업스트림 사본으로 돌아갑니다. ARAX에
+접속할 수 없으면 두 사본 모두 실패하므로 그날의 K-Dense 동기화는 멈추고 아무것도 바뀌지 않습니다. 이 질의는
+필요한 환경 변수만 있는 환경(토큰이나 API 키 없음)에서 실행되며 Python 3.10+가 필요합니다.
 
 업스트림의 라이선스 파일(`LICENSE`, K-Dense의 `LICENSE.md`, diagram-design은 `THIRD_PARTY_LICENSES.md`도)은 각 스킬 디렉터리에
 복사됩니다. HyperFrames는 기본적으로 `~/.agents/skills`와 `~/.claude/skills`에 자체 사본을

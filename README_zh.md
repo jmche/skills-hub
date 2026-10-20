@@ -165,7 +165,7 @@ Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另
 以及 CSV 转换。各技能的 `SKILL.md` 写明了每类任务用哪个脚本。其余技能的来源说明见
 [`LICENSE-NOTES.md`](LICENSE-NOTES.md) 和 [`LICENSE-AUDIT.csv`](LICENSE-AUDIT.csv)。
 
-有四个上游会自动跟随更新。涉及的技能都没有本地改动，由 GitHub 上的 `upstream-sync` 工作流每天同步一次；
+有四个上游会自动跟随更新。涉及的技能都没有本地改动（下文 ncats-arax 的补丁除外），由 GitHub 上的 `upstream-sync` 工作流每天同步一次；
 `check.py` 和密钥扫描都通过后才推送。配置在 [`upstreams.json`](upstreams.json)，各自当前同步到的版本记在
 [`upstreams.lock.json`](upstreams.lock.json)。
 
@@ -180,7 +180,8 @@ Anthropic 的专有条款。`docx`、`pdf`、`xlsx` 同步到 `dbd4588`，并另
 ARAX 线上服务 1.6.2 版只接受 `infores:retriever` 这个数据源，而上游脚本发送的是 `infores:rtx-kg2`。
 每次同步先用上游原版向线上服务发一次伊马替尼 → ABL1 的查询，查询成功就直接用上游原版；
 查询失败才打上补丁，并要求打补丁后同样的查询成功。使用补丁期间每天都会重新检查，
-上游或服务修复后，技能会自动回到上游原版。
+上游或服务修复后，技能会自动回到上游原版。ARAX 无法访问时两个版本都查询失败，当天的 K-Dense
+同步会停止，什么都不改。这条查询在只含必要环境变量的环境里运行（不带任何 token 或 API key），需要 Python 3.10+。
 
 上游的许可文件（`LICENSE`、K-Dense 的 `LICENSE.md`，diagram-design 还有 `THIRD_PARTY_LICENSES.md`）会复制到这些技能各自的目录里。
 HyperFrames 默认会自己往 `~/.agents/skills` 和 `~/.claude/skills` 安装一份；请设置

@@ -195,6 +195,10 @@ def update_audit(name, cfg, old_dirs, new_dirs):
     with open(AUDIT, "w", newline="", encoding="utf-8") as f:
         f.write(out.getvalue())
 
+PROBE_ENV = {"PATH", "LANG", "LC_ALL", "TZ", "SSL_CERT_FILE", "SSL_CERT_DIR", "REQUESTS_CA_BUNDLE",
+             "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "no_proxy"}
+PROBE_TIMEOUT = 120
+
 def run_probe(name, p, src):
     """run the probe command in a staged skill copy; returns the exit code"""
     need = tuple(int(x) for x in p["python"].split("."))
@@ -202,8 +206,13 @@ def run_probe(name, p, src):
         sys.exit(f"the {name} probe needs Python {p['python']}+, this is {sys.version.split()[0]}")
     with tempfile.TemporaryDirectory() as out:
         args = [sys.executable] + [a.replace("{out}", os.path.join(out, "run")) for a in p["probe"]]
-        r = subprocess.run(args, cwd=src, capture_output=True, text=True, timeout=600,
-                           env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
+        # the probe runs upstream code: pass only what a network client needs, no tokens or API keys
+        env = {k: v for k, v in os.environ.items() if k in PROBE_ENV}
+        env.update(HOME=out, PYTHONDONTWRITEBYTECODE="1")
+        try:
+            r = subprocess.run(args, cwd=src, capture_output=True, text=True, timeout=PROBE_TIMEOUT, env=env)
+        except subprocess.TimeoutExpired:
+            sys.exit(f"the {name} probe did not finish within {PROBE_TIMEOUT} s - not syncing")
     last = (r.stdout.strip().splitlines() or r.stderr.strip().splitlines() or [""])[-1]
     print(f"  {name} probe: exit {r.returncode} ({last[:120]})")
     return r.returncode
@@ -218,9 +227,11 @@ def apply_patches(cfg, staged):
             print(f"  {up}: upstream copy passes its probe - local patch not used")
             continue
         patch = os.path.join(ROOT, p["patch"])
-        if subprocess.run(["git", "apply", "--check", patch], cwd=src, capture_output=True).returncode != 0:
+        # keep git from treating an enclosing repository as the patch root
+        genv = dict(os.environ, GIT_CEILING_DIRECTORIES=os.path.dirname(src))
+        if subprocess.run(["git", "apply", "--check", patch], cwd=src, capture_output=True, env=genv).returncode != 0:
             sys.exit(f"{up}: upstream copy fails its probe and {p['patch']} no longer applies - review the patch")
-        subprocess.run(["git", "apply", patch], cwd=src, check=True)
+        subprocess.run(["git", "apply", patch], cwd=src, check=True, env=genv)
         if run_probe(up, p, src) != 0:
             sys.exit(f"{up}: the patched copy fails its probe as well - not syncing")
         print(f"  {up}: upstream copy fails its probe - local patch {p['patch']} applied")

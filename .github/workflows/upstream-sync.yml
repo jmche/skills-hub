@@ -18,10 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # 不把 token 留在 .git/config 里：同步时会运行上游的探测代码，token 只在推送步骤里提供
       - uses: actions/checkout@v4
         with:
           ref: main
           submodules: recursive
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -54,4 +56,13 @@ jobs:
         run: bash _scripts/scan_secrets.sh
       - name: Push the sync commits
         if: ${{ !cancelled() && steps.scan.outcome == 'success' }}
-        run: git push origin HEAD:main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          # git 通过 askpass 从环境变量读取 token，token 不出现在命令行参数和 .git/config 里
+          askpass="$RUNNER_TEMP/askpass.sh"
+          printf '#!/bin/sh\nprintf "%%s" "$GH_TOKEN"\n' > "$askpass"
+          chmod 700 "$askpass"
+          GIT_ASKPASS="$askpass" GIT_TERMINAL_PROMPT=0 git push "https://x-access-token@github.com/$REPO.git" HEAD:main
+          rm -f "$askpass"
