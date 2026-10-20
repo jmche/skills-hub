@@ -19,12 +19,12 @@ jobs:
     timeout-minutes: 20
     steps:
       # 不把 token 留在 .git/config 里：同步时会运行上游的探测代码，token 只在推送步骤里提供
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
           submodules: recursive
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install PyYAML (check.py dependency)
