@@ -19,9 +19,10 @@
       "docs-figures/hyperframes-registry",
       "docs-figures/media-use",
       "docs-figures/remotion-to-hyperframes",
+      "docs-figures/reverse-any-video",
       "docs-figures/slideshow"
     ],
-    "ref": "v0.8.221"
+    "ref": "v0.8.223"
   },
   "k-dense": {
     "dirs": [

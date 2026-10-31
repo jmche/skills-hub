@@ -36,6 +36,7 @@ description: Publication-grade visual deliverables hub: publication figures (fig
 | remotion-to-hyperframes | Bring existing video code or footage into HyperFrames and verify it frame by frame against the original -… |
 | slideshow | Build a HyperFrames slideshow to present live - slides, fragment reveals, branching hotspots and presenter… |
 | diagram-design | Create branded architecture, architecture delta, IT current-state, flowchart, sequence, state machine,… |
+| reverse-any-video | Rebuild any video file as an editable HyperFrames project - motion graphics, talking heads, live action or… |
 
 ## Cross-hub handoff
 - Quick exploratory plot -> plain seaborn/matplotlib, skip the checklist
