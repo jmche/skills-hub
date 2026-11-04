@@ -223,7 +223,8 @@
       "scientific-slides",
       "scientific-visualization",
       "seaborn",
-      "slideshow"
+      "slideshow",
+      "style-sampling"
     ],
     "team": []
   },

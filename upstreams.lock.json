@@ -20,9 +20,10 @@
       "docs-figures/media-use",
       "docs-figures/remotion-to-hyperframes",
       "docs-figures/reverse-any-video",
-      "docs-figures/slideshow"
+      "docs-figures/slideshow",
+      "docs-figures/style-sampling"
     ],
-    "ref": "v0.9.8"
+    "ref": "v0.9.10"
   },
   "k-dense": {
     "dirs": [

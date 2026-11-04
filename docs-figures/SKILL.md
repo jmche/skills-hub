@@ -37,6 +37,7 @@ description: Publication-grade visual deliverables hub: publication figures (fig
 | slideshow | Build a HyperFrames slideshow to present live - slides, fragment reveals, branching hotspots and presenter… |
 | diagram-design | Create branded architecture, architecture delta, IT current-state, flowchart, sequence, state machine,… |
 | reverse-any-video | Rebuild any video file as an editable HyperFrames project - motion graphics, talking heads, live action or… |
+| style-sampling | Make a new episode in a proven video style - Collage Explainer, Finance Explainer, Animated Science… |
 
 ## Cross-hub handoff
 - Quick exploratory plot -> plain seaborn/matplotlib, skip the checklist
